@@ -40,11 +40,11 @@ fun AboutScreen() {
             appIcon = context.packageManager.getApplicationIcon(context.packageName),
             appVersion = context.getString(R.string.version, BuildConfig.VERSION_NAME),
         )
-        OurTeamCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = MaterialTheme.spacing.medium)
-        )
+//        OurTeamCard(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(horizontal = MaterialTheme.spacing.medium)
+//        )
         Spacer(modifier = Modifier.height(MaterialTheme.spacing.small + MaterialTheme.spacing.extraSmall))
         SourceCodeCard(
             modifier = Modifier
