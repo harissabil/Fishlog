@@ -206,8 +206,8 @@ fun AddCatchContent(
 
                 FishReleasedToggle(
                     modifier = Modifier.padding(
-                        top = MaterialTheme.spacing.small,
-                        bottom = MaterialTheme.spacing.small + MaterialTheme.spacing.small
+                        top = MaterialTheme.spacing.extraSmall,
+                        bottom = MaterialTheme.spacing.small + MaterialTheme.spacing.extraSmall
                     ),
                     isReleased = state.isReleased,
                     onValueChange = { onEvent(AddCatchEvent.SetIsReleased(it)) }
