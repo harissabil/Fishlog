@@ -45,7 +45,7 @@ fun CatchesScreen(
 
     val isLoading by viewModel.isLoading.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
-    val logbooks by viewModel.filteredLogbooks.collectAsState(null)
+    val logbooks by viewModel.filteredLogbooks.collectAsState()
 
     val moreOptionBottomSheetState = rememberModalBottomSheetState()
     var showMoreOptionBottomSheet by rememberSaveable { mutableStateOf(false) }
