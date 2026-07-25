@@ -13,6 +13,10 @@ internal fun LogbookResponse.toLogbook() = Logbook(
     waktuPenangkapan = this.waktuPenangkapan,
     tempatPenangkapan = this.tempatPenangkapan,
     fotoIkan = this.fotoIkan,
+    beratIkan = this.beratIkan,
+    panjangIkan = this.panjangIkan,
+    umpan = this.umpan,
+    dilepaskan = this.dilepaskan,
     catatan = this.catatan,
 )
 

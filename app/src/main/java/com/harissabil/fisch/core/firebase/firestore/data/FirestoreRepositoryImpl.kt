@@ -5,6 +5,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.GeoPoint
 import com.harissabil.fisch.core.common.util.Resource
+import com.harissabil.fisch.core.common.util.toCompressedJpeg
 import com.harissabil.fisch.core.firebase.firestore.data.dto.LogbookResponse
 import com.harissabil.fisch.core.firebase.firestore.data.dto.MapResponse
 import com.harissabil.fisch.core.firebase.firestore.domain.FirestoreRepository
@@ -19,7 +20,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import timber.log.Timber
-import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
@@ -83,11 +83,8 @@ class FirestoreRepositoryImpl @Inject constructor(
             val logbookDocument = logbooksRef.document()
 
             val fishImageUrl = if (fishImage != null) {
-                val byteArrayOutputStream = ByteArrayOutputStream()
-                fishImage.compress(Bitmap.CompressFormat.JPEG, 30, byteArrayOutputStream)
-
                 storageRepository.uploadImage(
-                    image = byteArrayOutputStream.toByteArray(),
+                    image = fishImage.toCompressedJpeg(),
                     fileName = System.currentTimeMillis().toString()
                 ).data
             } else {
@@ -102,6 +99,10 @@ class FirestoreRepositoryImpl @Inject constructor(
                 waktuPenangkapan = logbook.waktuPenangkapan,
                 tempatPenangkapan = logbook.tempatPenangkapan,
                 fotoIkan = fishImageUrl,
+                beratIkan = logbook.beratIkan,
+                panjangIkan = logbook.panjangIkan,
+                umpan = logbook.umpan,
+                dilepaskan = logbook.dilepaskan,
                 catatan = logbook.catatan,
             )
             logbooksRef.document(logbookDocument.id).set(logbookToAdd).await()
@@ -132,17 +133,16 @@ class FirestoreRepositoryImpl @Inject constructor(
     ): Resource<Boolean> = try {
 
         val fishImageUrl = if (fishImage != null) {
-            val byteArrayOutputStream = ByteArrayOutputStream()
-            fishImage.compress(Bitmap.CompressFormat.JPEG, 30, byteArrayOutputStream)
+            val compressedImage = fishImage.toCompressedJpeg()
 
             if (logbook.fotoIkan != null) {
                 storageRepository.updateImage(
-                    image = byteArrayOutputStream.toByteArray(),
+                    image = compressedImage,
                     path = logbook.fotoIkan!!.getFilenameFromUrl()
                 ).data
             } else {
                 storageRepository.uploadImage(
-                    image = byteArrayOutputStream.toByteArray(),
+                    image = compressedImage,
                     fileName = System.currentTimeMillis().toString()
                 ).data
             }
@@ -170,6 +170,10 @@ class FirestoreRepositoryImpl @Inject constructor(
             waktuPenangkapan = logbook.waktuPenangkapan,
             tempatPenangkapan = logbook.tempatPenangkapan,
             fotoIkan = fishImageUrl,
+            beratIkan = logbook.beratIkan,
+            panjangIkan = logbook.panjangIkan,
+            umpan = logbook.umpan,
+            dilepaskan = logbook.dilepaskan,
             catatan = logbook.catatan,
         )
 
