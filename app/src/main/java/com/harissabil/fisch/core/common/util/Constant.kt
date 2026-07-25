@@ -12,7 +12,7 @@ object Constant {
     const val WEB_CLIENT_ID =
         "364098767076-ilammc30qms83ecgt97evdu5ndjhltuv.apps.googleusercontent.com"
 
-    const val GEMINI_PRO_VISION = "gemini-pro-vision"
+    const val GEMINI_FLASH = "gemini-1.5-flash"
     const val FISH_IDENTIFIER_PROMPT_ID =
         "Perhatikan ikan yang ada di gambar! Jawab hanya dengan satu kata, apa nama jenis ikan ini?"
     const val FISH_IDENTIFIER_PROMPT_EN =

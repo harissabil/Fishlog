@@ -13,8 +13,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.ripple.LocalRippleTheme
+import androidx.compose.material.ripple.RippleAlpha
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RippleConfiguration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -28,7 +31,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.harissabil.fisch.core.common.theme.FischTheme
-import com.harissabil.fisch.core.common.theme.NoRippleTheme
 import kotlinx.coroutines.delay
 
 @Composable
@@ -87,11 +89,17 @@ fun FishLoading(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FishFullscreenLoading(
     modifier: Modifier = Modifier,
 ) {
-    CompositionLocalProvider(LocalRippleTheme provides NoRippleTheme) {
+    CompositionLocalProvider(
+        LocalRippleConfiguration provides RippleConfiguration(
+            color = Color.Transparent,
+            rippleAlpha = RippleAlpha(0f, 0f, 0f, 0f)
+        )
+    ) {
         Box(modifier = Modifier
             .fillMaxSize()
             .background(Color.Gray.copy(alpha = 0.3f))
