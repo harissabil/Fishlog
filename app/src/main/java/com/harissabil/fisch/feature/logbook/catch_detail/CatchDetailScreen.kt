@@ -40,12 +40,17 @@ import com.harissabil.fisch.core.common.component.FishAlertDialog
 import com.harissabil.fisch.core.common.component.FishButton
 import com.harissabil.fisch.core.common.component.FishFullscreenLoading
 import com.harissabil.fisch.core.common.theme.spacing
+import com.harissabil.fisch.feature.logbook.add_catch.presentation.AddCatchEvent
+import com.harissabil.fisch.feature.logbook.common.component.FishBaitTextField
 import com.harissabil.fisch.feature.logbook.common.component.FishCaptureDateTimeTextField
 import com.harissabil.fisch.feature.logbook.common.component.FishCaptureLocationTextField
+import com.harissabil.fisch.feature.logbook.common.component.FishLengthTextField
 import com.harissabil.fisch.feature.logbook.common.component.FishNotesTextField
 import com.harissabil.fisch.feature.logbook.common.component.FishQuantityTextField
+import com.harissabil.fisch.feature.logbook.common.component.FishReleasedToggle
 import com.harissabil.fisch.feature.logbook.common.component.FishTypeTextFieldWithAi
 import com.harissabil.fisch.feature.logbook.common.component.FishUploadImage
+import com.harissabil.fisch.feature.logbook.common.component.FishWeightTextField
 import com.harissabil.fisch.feature.logbook.common.component.MoreOptionBottomSheet
 import com.harissabil.fisch.feature.logbook.common.state.ToDetailState
 import kotlinx.coroutines.flow.collectLatest
@@ -252,6 +257,38 @@ fun CatchDetailContent(
                 supportingText = state.fishQuantityError,
                 isInEditMode = isInEditMode
             )
+
+            FishWeightTextField(
+                value = state.fishWeight,
+                onValueChange = { onEvent(CatchDetailEvent.SetFishWeight(it)) },
+                isError = state.fishWeightError != null,
+                supportingText = state.fishWeightError
+            )
+
+            FishLengthTextField(
+                value = state.fishLength,
+                onValueChange = { onEvent(CatchDetailEvent.SetFishLength(it)) },
+                isError = state.fishLengthError != null,
+                supportingText = state.fishLengthError
+            )
+
+            FishReleasedToggle(
+                modifier = Modifier.padding(
+                    top = MaterialTheme.spacing.small,
+                    bottom = MaterialTheme.spacing.small + MaterialTheme.spacing.small
+                ),
+                isReleased = state.isReleased,
+                onValueChange = { onEvent(CatchDetailEvent.SetIsReleased(it)) }
+            )
+
+            FishBaitTextField(
+                value = state.bait,
+                onValueChange = { onEvent(CatchDetailEvent.SetBait(it)) },
+                suggestions = state.baitSuggestions
+            )
+
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.small + MaterialTheme.spacing.small))
+
 
             FishCaptureDateTimeTextField(
                 dateValue = state.captureDate,

@@ -85,7 +85,7 @@ fun ViewAllRecentCatches(
                         )
                     }
                 } else {
-                    item {
+                    item(span = { GridItemSpan(maxLineSpan) }) {
                         Column(
                             modifier = modifier,
                             verticalArrangement = Arrangement.Center,

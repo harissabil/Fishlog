@@ -128,14 +128,35 @@ fun CatchesListItem(
                                 .alpha(0.5f)
                                 .padding(end = MaterialTheme.spacing.medium)
                         )
-                        Text(
-                            text = logbook?.jenisIkan ?: "N/A",
-                            style = MaterialTheme.typography.titleMedium,
-                            overflow = TextOverflow.Ellipsis,
-                            maxLines = 1,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.padding(end = MaterialTheme.spacing.medium)
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
+                        ) {
+                            Text(
+                                text = logbook?.jenisIkan ?: "N/A",
+                                style = MaterialTheme.typography.titleMedium,
+                                overflow = TextOverflow.Ellipsis,
+                                maxLines = 2,
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = Modifier
+                                    .weight(1f, fill = false)
+                                    .padding(end = MaterialTheme.spacing.medium)
+                            )
+                            if (logbook?.dilepaskan == true) {
+                                Text(
+                                    text = "Released",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                    modifier = Modifier
+                                        .clip(MaterialTheme.shapes.small)
+                                        .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f))
+                                        .padding(
+                                            horizontal = MaterialTheme.spacing.small,
+                                            vertical = 2.dp
+                                        )
+                                )
+                            }
+                        }
                     }
                     Icon(
                         imageVector = Icons.Default.MoreHoriz,
@@ -147,36 +168,34 @@ fun CatchesListItem(
                     )
                 }
 
+                val details = buildList {
+                    add("Caught" to "${logbook?.jumlahIkan ?: "N/A"}")
+                    logbook?.beratIkan?.let { add("Weight" to "$it kg") }
+                    logbook?.panjangIkan?.let { add("Length" to "$it cm") }
+                    add("Location" to (logbook?.tempatPenangkapan ?: "N/A"))
+                }
+
                 Row(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(end = MaterialTheme.spacing.small)) {
-                        Text(
-                            text = "Caught",
-                            style = MaterialTheme.typography.titleSmall,
-                            overflow = TextOverflow.Ellipsis,
-                            maxLines = 1,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                        Text(
-                            text = "Location",
-                            style = MaterialTheme.typography.titleSmall,
-                            overflow = TextOverflow.Ellipsis,
-                            maxLines = 1,
-                            fontWeight = FontWeight.SemiBold
-                        )
+                        details.forEach { (label, _) ->
+                            Text(
+                                text = label,
+                                style = MaterialTheme.typography.titleSmall,
+                                overflow = TextOverflow.Ellipsis,
+                                maxLines = 1,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
                     }
                     Column(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            text = ": ${logbook?.jumlahIkan ?: "N/A"}",
-                            style = MaterialTheme.typography.titleSmall,
-                            overflow = TextOverflow.Ellipsis,
-                            maxLines = 1,
-                        )
-                        Text(
-                            text = ": ${logbook?.tempatPenangkapan ?: "N/A"}",
-                            style = MaterialTheme.typography.titleSmall,
-                            overflow = TextOverflow.Ellipsis,
-                            maxLines = 1,
-                        )
+                        details.forEach { (_, value) ->
+                            Text(
+                                text = ": $value",
+                                style = MaterialTheme.typography.titleSmall,
+                                overflow = TextOverflow.Ellipsis,
+                                maxLines = 1,
+                            )
+                        }
                     }
                 }
             }
@@ -199,7 +218,10 @@ private fun CatchesListItemPreview() {
                     tempatPenangkapan = "Florida",
                     waktuPenangkapan = null,
                     fotoIkan = "https://www.fisheries.noaa.gov/s3//2023-06/750x500-Great-White-iStock.jpg",
-                    catatan = null
+                    catatan = null,
+                    beratIkan = 100.0,
+                    panjangIkan = 200.0,
+                    dilepaskan = true
                 ),
                 onItemClick = {},
                 onMoreClick = {}

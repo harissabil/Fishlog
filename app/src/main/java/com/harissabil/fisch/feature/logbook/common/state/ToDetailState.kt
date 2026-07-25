@@ -37,5 +37,21 @@ data class ToDetailState(
     @set:PropertyName("foto_ikan")
     var fotoIkan: String? = null,
 
+    @get:PropertyName("berat_ikan")
+    @set:PropertyName("berat_ikan")
+    var beratIkan: Double? = null,
+
+    @get:PropertyName("panjang_ikan")
+    @set:PropertyName("panjang_ikan")
+    var panjangIkan: Double? = null,
+
+    @get:PropertyName("umpan")
+    @set:PropertyName("umpan")
+    var umpan: String? = null,
+
+    @get:PropertyName("dilepaskan")
+    @set:PropertyName("dilepaskan")
+    var dilepaskan: Boolean? = null,
+
     val catatan: String? = null,
 ) : Parcelable

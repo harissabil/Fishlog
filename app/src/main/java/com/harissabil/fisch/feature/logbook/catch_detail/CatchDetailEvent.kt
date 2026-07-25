@@ -22,6 +22,14 @@ sealed class CatchDetailEvent {
 
     data class SetFishQuantity(val fishQuantity: String) : CatchDetailEvent()
 
+    data class SetFishWeight(val fishWeight: String) : CatchDetailEvent()
+
+    data class SetFishLength(val fishLength: String) : CatchDetailEvent()
+
+    data class SetBait(val bait: String) : CatchDetailEvent()
+
+    data class SetIsReleased(val isReleased: Boolean) : CatchDetailEvent()
+
     data class SetCaptureDate(val captureDate: String) : CatchDetailEvent()
 
     data class SetCaptureTime(val captureTime: String) : CatchDetailEvent()

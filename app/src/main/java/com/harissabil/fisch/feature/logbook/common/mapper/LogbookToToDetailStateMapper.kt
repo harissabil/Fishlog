@@ -13,6 +13,10 @@ internal fun Logbook.toToDetailState(isInEditMode: Boolean): ToDetailState {
         waktuPenangkapan = waktuPenangkapan,
         tempatPenangkapan = tempatPenangkapan,
         fotoIkan = fotoIkan,
+        beratIkan = beratIkan,
+        panjangIkan = panjangIkan,
+        umpan = umpan,
+        dilepaskan = dilepaskan,
         catatan = catatan
     )
 }

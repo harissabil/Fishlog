@@ -28,6 +28,7 @@ import com.harissabil.fisch.core.common.util.toTime
 import com.harissabil.fisch.core.common.util.toTimestamp
 import com.harissabil.fisch.core.datastore.preference.domain.AiLanguage
 import com.harissabil.fisch.core.datastore.preference.domain.usecase.AiLanguageUseCase
+import com.harissabil.fisch.core.datastore.bait_manager.domain.BaitManager
 import com.harissabil.fisch.core.firebase.firestore.domain.model.Logbook
 import com.harissabil.fisch.core.firebase.firestore.domain.usecase.DeleteLogbook
 import com.harissabil.fisch.core.firebase.firestore.domain.usecase.UpdateLogbook
@@ -52,6 +53,7 @@ import javax.inject.Inject
 class CatchDetailViewModel @Inject constructor(
     private val geminiClient: GeminiClient,
     private val updateLogbook: UpdateLogbook,
+    private val baitManager: BaitManager,
     private val locationTracker: LocationTracker,
     private val locationHelper: LocationHelper,
     private val deleteLogbook: DeleteLogbook,
@@ -74,6 +76,7 @@ class CatchDetailViewModel @Inject constructor(
     init {
         updateLocationServiceStatus()
         getAiLanguage()
+        getBaitSuggestions()
     }
 
     fun onEvent(event: CatchDetailEvent) {
@@ -86,6 +89,10 @@ class CatchDetailViewModel @Inject constructor(
             is CatchDetailEvent.SetFishType -> setFishType(event.fishType)
             CatchDetailEvent.IdentifyFishType -> identifyFish()
             is CatchDetailEvent.SetFishQuantity -> setFishQuantity(event.fishQuantity)
+            is CatchDetailEvent.SetFishWeight -> setFishWeight(event.fishWeight)
+            is CatchDetailEvent.SetFishLength -> setFishLength(event.fishLength)
+            is CatchDetailEvent.SetBait -> setBait(event.bait)
+            is CatchDetailEvent.SetIsReleased -> setIsReleased(event.isReleased)
             is CatchDetailEvent.SetCaptureDate -> setCaptureDate(event.captureDate)
             is CatchDetailEvent.SetCaptureTime -> setCaptureTime(event.captureTime)
             is CatchDetailEvent.SetCaptureLocation -> setCaptureLocation(event.captureLocation)
@@ -123,6 +130,10 @@ class CatchDetailViewModel @Inject constructor(
                     fishType = logbook.jenisIkan!!,
                     fishQuantity = logbook.jumlahIkan.toString(),
                     imageBitmaps = (result as BitmapDrawable).bitmap,
+                    fishWeight = logbook.beratIkan?.toString() ?: "",
+                    fishLength = logbook.panjangIkan?.toString() ?: "",
+                    bait = logbook.umpan ?: "",
+                    isReleased = logbook.dilepaskan ?: false,
                     captureDate = logbook.waktuPenangkapan?.toDateYyyyMmDd() ?: "",
                     captureTime = logbook.waktuPenangkapan?.toTime(context) ?: "",
                     captureLocation = logbook.tempatPenangkapan ?: "",
@@ -178,6 +189,10 @@ class CatchDetailViewModel @Inject constructor(
                         ),
                         tempatPenangkapan = _state.value.captureLocation,
                         fotoIkan = _state.value.fishUrl,
+                        beratIkan = _state.value.fishWeight.toDoubleOrNull(),
+                        panjangIkan = _state.value.fishLength.toDoubleOrNull(),
+                        umpan = _state.value.bait.ifBlank { null },
+                        dilepaskan = _state.value.isReleased,
                         catatan = _state.value.notes,
                     ),
                     fishImage = _state.value.imageBitmaps,
@@ -185,6 +200,9 @@ class CatchDetailViewModel @Inject constructor(
                     lon = _geoPoint.value?.longitude,
                 )
                 updateLogbook.data?.let { isUploaded ->
+                    if (isUploaded && _state.value.bait.isNotBlank()) {
+                        baitManager.addBait(_state.value.bait)
+                    }
                     _state.value = _state.value.copy(isUploaded = isUploaded, isUploading = false)
                     _eventFlow.emit(
                         UIEvent.ShowSnackbar(
@@ -210,6 +228,14 @@ class CatchDetailViewModel @Inject constructor(
             _state.value = _state.value.copy(fishQuantityError = "*Fish quantity is required")
             isValid = false
         }
+        if (_state.value.fishWeight.isNotEmpty() && _state.value.fishWeight.toDoubleOrNull().let { it == null || it <= 0.0 }) {
+            _state.value = _state.value.copy(fishWeightError = "*Enter a valid weight")
+            isValid = false
+        }
+        if (_state.value.fishLength.isNotEmpty() && _state.value.fishLength.toDoubleOrNull().let { it == null || it <= 0.0 }) {
+            _state.value = _state.value.copy(fishLengthError = "*Enter a valid length")
+            isValid = false
+        }
         return isValid
     }
 
@@ -223,6 +249,28 @@ class CatchDetailViewModel @Inject constructor(
 
     private fun setFishQuantity(fishQuantity: String) {
         _state.value = _state.value.copy(fishQuantity = fishQuantity)
+    }
+
+    private fun setFishWeight(fishWeight: String) {
+        _state.value = _state.value.copy(fishWeight = fishWeight)
+    }
+
+    private fun setFishLength(fishLength: String) {
+        _state.value = _state.value.copy(fishLength = fishLength)
+    }
+
+    private fun setBait(bait: String) {
+        _state.value = _state.value.copy(bait = bait)
+    }
+
+    private fun setIsReleased(isReleased: Boolean) {
+        _state.value = _state.value.copy(isReleased = isReleased)
+    }
+
+    private fun getBaitSuggestions() {
+        baitManager.readBaits().onEach { baits ->
+            _state.value = _state.value.copy(baitSuggestions = baits.sorted())
+        }.launchIn(viewModelScope)
     }
 
     private fun setCaptureDate(captureDate: String) {

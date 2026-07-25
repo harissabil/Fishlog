@@ -81,7 +81,7 @@ fun FishSearchBar(
                         content = {
                             Icon(
                                 imageVector = Icons.Default.Clear,
-                                contentDescription = "Sort by"
+                                contentDescription = "Clear search query"
                             )
                         }
                     )
@@ -113,7 +113,7 @@ private fun FishSearchBarPreview() {
         Surface {
             FishSearchBar(
                 modifier = Modifier.padding(horizontal = MaterialTheme.spacing.medium),
-                query = "",
+                query = "Organisasi dan Arsitektur Komputer",
                 onQueryChange = {},
             ) {}
         }

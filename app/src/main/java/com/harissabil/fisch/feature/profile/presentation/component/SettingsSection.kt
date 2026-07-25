@@ -144,12 +144,12 @@ fun SettingsSection(
                 )
             }
 
-            SettingItem(
-                icon = Icons.Outlined.SmartToy,
-                title = "AI Language",
-                value = aiLanguageValue,
-                onCLick = { aiLanguageMenu = true }
-            )
+//            SettingItem(
+//                icon = Icons.Outlined.SmartToy,
+//                title = "AI Language",
+//                value = aiLanguageValue,
+//                onCLick = { aiLanguageMenu = true }
+//            )
         }
         SettingItem(
             icon = Icons.Outlined.Info,

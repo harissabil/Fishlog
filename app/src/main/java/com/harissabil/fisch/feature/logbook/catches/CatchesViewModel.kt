@@ -50,7 +50,8 @@ class CatchesViewModel @Inject constructor(
         } else {
             logbooks?.filter { logbook ->
                 query in (logbook.jenisIkan?.lowercase().orEmpty()) ||
-                        query in (logbook.tempatPenangkapan?.lowercase().orEmpty())
+                        query in (logbook.tempatPenangkapan?.lowercase().orEmpty()) ||
+                        query in (logbook.umpan?.lowercase().orEmpty())
             }
         }
 

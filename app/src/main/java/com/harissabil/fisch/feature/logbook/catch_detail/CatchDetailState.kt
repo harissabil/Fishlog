@@ -19,6 +19,17 @@ data class CatchDetailState(
     val fishQuantity: String = "",
     val fishQuantityError: String? = null,
 
+    val fishWeight: String = "",
+    val fishWeightError: String? = null,
+
+    val fishLength: String = "",
+    val fishLengthError: String? = null,
+
+    val bait: String = "",
+    val baitSuggestions: List<String> = emptyList(),
+
+    val isReleased: Boolean = false,
+
     val captureDate: String = "",
     val captureTime: String = "",
 

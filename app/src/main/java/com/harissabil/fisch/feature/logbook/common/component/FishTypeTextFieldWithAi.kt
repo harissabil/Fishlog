@@ -125,67 +125,67 @@ fun IntroShowcaseScope.FishTypeTextFieldWithAi(
             readOnly = !isInEditMode
         )
 
-        if (isInEditMode) {
-            FloatingActionButton(
-                modifier = Modifier
-                    .padding(top = 8.dp)
-                    .introShowCaseTarget(
-                        index = 0,
-                        style = ShowcaseStyle.Default.copy(
-                            backgroundColor = MaterialTheme.colorScheme.tertiary,
-                            backgroundAlpha = 0.98f,
-                            targetCircleColor = MaterialTheme.colorScheme.inverseOnSurface
-                        ),
-                        content = {
-                            Column {
-                                Text(
-                                    text = "Identify Fish Type with AI",
-                                    color = MaterialTheme.colorScheme.onTertiary,
-                                    style = MaterialTheme.typography.headlineSmall,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                                Spacer(modifier = Modifier.height(MaterialTheme.spacing.extraSmall))
-                                Text(
-                                    text = "Caught something new? Identify its type with AI powered by Gemini. It might be a new species!",
-                                    color = MaterialTheme.colorScheme.onTertiary,
-                                    style = MaterialTheme.typography.bodyLarge
-                                )
-                            }
-                        }
-                    ),
-                onClick = {
-                    keyboardController?.hide()
-                    onIdentifyFishType()
-                },
-                containerColor = MaterialTheme.colorScheme.surface,
-                elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 5.dp),
-            ) {
-                val rotation: Float
-                if (isIdentifying) {
-                    val infiniteTransition = rememberInfiniteTransition(label = "rotation")
-                    rotation = infiniteTransition.animateValue(
-                        0f,
-                        1f,
-                        Float.VectorConverter,
-                        infiniteRepeatable(
-                            animation = tween(
-                                durationMillis = 2000,
-                                easing = LinearEasing
-                            )
-                        ), label = "rotation"
-                    ).value * 360
-                } else {
-                    rotation = 0f
-                }
-
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_gemini_ai),
-                    tint = Color.Unspecified,
-                    contentDescription = "Identify Fish Type with AI",
-                    modifier = Modifier.rotate(rotation)
-                )
-            }
-        }
+//        if (isInEditMode) {
+//            FloatingActionButton(
+//                modifier = Modifier
+//                    .padding(top = 8.dp)
+//                    .introShowCaseTarget(
+//                        index = 0,
+//                        style = ShowcaseStyle.Default.copy(
+//                            backgroundColor = MaterialTheme.colorScheme.tertiary,
+//                            backgroundAlpha = 0.98f,
+//                            targetCircleColor = MaterialTheme.colorScheme.inverseOnSurface
+//                        ),
+//                        content = {
+//                            Column {
+//                                Text(
+//                                    text = "Identify Fish Type with AI",
+//                                    color = MaterialTheme.colorScheme.onTertiary,
+//                                    style = MaterialTheme.typography.headlineSmall,
+//                                    fontWeight = FontWeight.SemiBold
+//                                )
+//                                Spacer(modifier = Modifier.height(MaterialTheme.spacing.extraSmall))
+//                                Text(
+//                                    text = "Caught something new? Identify its type with AI powered by Gemini. It might be a new species!",
+//                                    color = MaterialTheme.colorScheme.onTertiary,
+//                                    style = MaterialTheme.typography.bodyLarge
+//                                )
+//                            }
+//                        }
+//                    ),
+//                onClick = {
+//                    keyboardController?.hide()
+//                    onIdentifyFishType()
+//                },
+//                containerColor = MaterialTheme.colorScheme.surface,
+//                elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 5.dp),
+//            ) {
+//                val rotation: Float
+//                if (isIdentifying) {
+//                    val infiniteTransition = rememberInfiniteTransition(label = "rotation")
+//                    rotation = infiniteTransition.animateValue(
+//                        0f,
+//                        1f,
+//                        Float.VectorConverter,
+//                        infiniteRepeatable(
+//                            animation = tween(
+//                                durationMillis = 2000,
+//                                easing = LinearEasing
+//                            )
+//                        ), label = "rotation"
+//                    ).value * 360
+//                } else {
+//                    rotation = 0f
+//                }
+//
+//                Icon(
+//                    painter = painterResource(id = R.drawable.ic_gemini_ai),
+//                    tint = Color.Unspecified,
+//                    contentDescription = "Identify Fish Type with AI",
+//                    modifier = Modifier.rotate(rotation)
+//                )
+//            }
+//        }
     }
 }
 
@@ -263,43 +263,43 @@ fun FishTypeTextFieldWithAi(
             readOnly = !isInEditMode
         )
 
-        if (isInEditMode) {
-            FloatingActionButton(
-                modifier = Modifier
-                    .padding(top = 8.dp),
-                onClick = {
-                    keyboardController?.hide()
-                    onIdentifyFishType()
-                },
-                containerColor = MaterialTheme.colorScheme.surface,
-                elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 5.dp),
-            ) {
-                val rotation: Float
-                if (isIdentifying) {
-                    val infiniteTransition = rememberInfiniteTransition(label = "rotation")
-                    rotation = infiniteTransition.animateValue(
-                        0f,
-                        1f,
-                        Float.VectorConverter,
-                        infiniteRepeatable(
-                            animation = tween(
-                                durationMillis = 2000,
-                                easing = LinearEasing
-                            )
-                        ), label = "rotation"
-                    ).value * 360
-                } else {
-                    rotation = 0f
-                }
-
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_gemini_ai),
-                    tint = Color.Unspecified,
-                    contentDescription = "Identify Fish Type with AI",
-                    modifier = Modifier.rotate(rotation)
-                )
-            }
-        }
+//        if (isInEditMode) {
+//            FloatingActionButton(
+//                modifier = Modifier
+//                    .padding(top = 8.dp),
+//                onClick = {
+//                    keyboardController?.hide()
+//                    onIdentifyFishType()
+//                },
+//                containerColor = MaterialTheme.colorScheme.surface,
+//                elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 5.dp),
+//            ) {
+//                val rotation: Float
+//                if (isIdentifying) {
+//                    val infiniteTransition = rememberInfiniteTransition(label = "rotation")
+//                    rotation = infiniteTransition.animateValue(
+//                        0f,
+//                        1f,
+//                        Float.VectorConverter,
+//                        infiniteRepeatable(
+//                            animation = tween(
+//                                durationMillis = 2000,
+//                                easing = LinearEasing
+//                            )
+//                        ), label = "rotation"
+//                    ).value * 360
+//                } else {
+//                    rotation = 0f
+//                }
+//
+//                Icon(
+//                    painter = painterResource(id = R.drawable.ic_gemini_ai),
+//                    tint = Color.Unspecified,
+//                    contentDescription = "Identify Fish Type with AI",
+//                    modifier = Modifier.rotate(rotation)
+//                )
+//            }
+//        }
     }
 }
 
