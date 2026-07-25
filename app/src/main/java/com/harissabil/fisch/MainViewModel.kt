@@ -47,8 +47,8 @@ class MainViewModel @Inject constructor(
         ) { onBoardingScreenPassed, isUserSignedIn ->
             startDestionation = when {
                 onBoardingScreenPassed -> {
-//                    if (isUserSignedIn && getSignedInUser.invoke().data != null) {
-                    if (isUserSignedIn) {
+                    if (isUserSignedIn && getSignedInUser.invoke().data != null) {
+//                    if (isUserSignedIn) {
                         Route.MainNavigation.route
                     } else {
                         Route.SignInNavigation.route

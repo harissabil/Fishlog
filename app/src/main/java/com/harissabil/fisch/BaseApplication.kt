@@ -3,7 +3,6 @@ package com.harissabil.fisch
 import android.app.Application
 import coil.ImageLoader
 import coil.ImageLoaderFactory
-import com.harissabil.fisch.core.firebase.auth.domain.AuthRepository
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 import javax.inject.Inject
