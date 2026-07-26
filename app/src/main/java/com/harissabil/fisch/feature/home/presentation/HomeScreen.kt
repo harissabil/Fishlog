@@ -40,11 +40,10 @@ import com.harissabil.fisch.core.common.theme.FischTheme
 import com.harissabil.fisch.core.common.theme.spacing
 import com.harissabil.fisch.core.common.util.getReadableLocation
 import com.harissabil.fisch.core.firebase.firestore.domain.model.Logbook
+import com.harissabil.fisch.feature.home.presentation.component.HomeStats
 import com.harissabil.fisch.feature.home.presentation.component.OpenMeteoCredit
 import com.harissabil.fisch.feature.home.presentation.component.RecentCatches
-import com.harissabil.fisch.feature.home.presentation.component.RecentVisits
 import com.harissabil.fisch.feature.home.presentation.component.ViewAllRecentCatches
-import com.harissabil.fisch.feature.home.presentation.component.ViewAllRecentVisits
 import com.harissabil.fisch.feature.home.presentation.component.WeatherCard
 import com.harissabil.fisch.feature.logbook.common.mapper.toToDetailState
 import com.harissabil.fisch.feature.logbook.common.state.ToDetailState
@@ -139,21 +138,6 @@ fun HomeScreen(
         )
     }
 
-    var isViewAllRecentVisitsSheetVisible by rememberSaveable { mutableStateOf(false) }
-    val viewAllRecentVisitsSheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true,
-    )
-
-    if (isViewAllRecentVisitsSheetVisible) {
-        ViewAllRecentVisits(
-            onDismissRequest = { isViewAllRecentVisitsSheetVisible = false },
-            sheetState = viewAllRecentVisitsSheetState,
-            isLoading = logbooksState.isLoading,
-            onItemClick = { it?.let { it1 -> onNavigateToDetail(it1.toToDetailState(isInEditMode = false)) } },
-            logbooks = logbooksState.logbooks,
-        )
-    }
-
     FishPullToRefresh(
         state = pullToRefreshState,
         onRefresh = { viewModel.onEvent(HomeEvent.PullToRefresh) },
@@ -173,7 +157,6 @@ fun HomeScreen(
                 }
             },
             onViewAllCatchesClick = { isViewAllRecentCatchesSheetVisible = true },
-            onViewAllVisitsClick = { isViewAllRecentVisitsSheetVisible = true }
         )
     }
 }
@@ -187,7 +170,6 @@ fun HomeContent(
     logbooksState: LogbooksState,
     onCatchClick: (logbook: Logbook?) -> Unit,
     onViewAllCatchesClick: () -> Unit,
-    onViewAllVisitsClick: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -202,17 +184,16 @@ fun HomeContent(
             isLoading = weatherState.isLoading,
             city = city,
         )
+        Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium + MaterialTheme.spacing.small))
+        HomeStats(
+            modifier = Modifier.padding(horizontal = MaterialTheme.spacing.medium),
+            logbooks = logbooksState.logbooks,
+            isLoading = logbooksState.isLoading
+        )
         Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
         RecentCatches(
             logbooks = logbooksState.logbooks,
             onViewAllClick = { onViewAllCatchesClick() },
-            onCatchClick = onCatchClick,
-            isLoading = logbooksState.isLoading
-        )
-        Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
-        RecentVisits(
-            logbooks = logbooksState.logbooks,
-            onViewAllClick = { onViewAllVisitsClick() },
             onCatchClick = onCatchClick,
             isLoading = logbooksState.isLoading
         )
@@ -244,7 +225,6 @@ private fun HomeContentPreview() {
                 context = LocalContext.current,
                 onCatchClick = {},
                 onViewAllCatchesClick = {},
-                onViewAllVisitsClick = {},
                 logbooksState = LogbooksState(
                     logbooks = listOf(
                         Logbook(
