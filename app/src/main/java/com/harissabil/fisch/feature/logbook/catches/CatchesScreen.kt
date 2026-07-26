@@ -67,9 +67,7 @@ fun CatchesScreen(
             when (event) {
                 is CatchesViewModel.UIEvent.ShowSnackbar -> {
                     snackbarHostState.currentSnackbarData?.dismiss()
-                    snackbarHostState.showSnackbar(
-                        message = event.message
-                    )
+                    snackbarHostState.showSnackbar(message = event.message)
                 }
             }
         }
@@ -87,11 +85,13 @@ fun CatchesScreen(
                 }
 
                 is CatchesEvent.SortCatches -> {
-                    scope.launch { sortOptionsBottomSheetState.hide() }.invokeOnCompletion {
-                        if (!sortOptionsBottomSheetState.isVisible) {
-                            showSortOptionsBottomSheet = false
+                    scope
+                        .launch { sortOptionsBottomSheetState.hide() }
+                        .invokeOnCompletion {
+                            if (!sortOptionsBottomSheetState.isVisible) {
+                                showSortOptionsBottomSheet = false
+                            }
                         }
-                    }
                 }
 
                 CatchesEvent.FilterIconClick -> {
@@ -99,11 +99,13 @@ fun CatchesScreen(
                 }
 
                 is CatchesEvent.FilterCatches -> {
-                    scope.launch { filterOptionsBottomSheetState.hide() }.invokeOnCompletion {
-                        if (!filterOptionsBottomSheetState.isVisible) {
-                            showFilterOptionsBottomSheet = false
+                    scope
+                        .launch { filterOptionsBottomSheetState.hide() }
+                        .invokeOnCompletion {
+                            if (!filterOptionsBottomSheetState.isVisible) {
+                                showFilterOptionsBottomSheet = false
+                            }
                         }
-                    }
                 }
 
                 is CatchesEvent.MoreOption -> {
@@ -113,19 +115,25 @@ fun CatchesScreen(
                 CatchesEvent.DeleteLogbook -> openAlertDialog = false
 
                 CatchesEvent.EditLogbook -> {
-                    scope.launch { moreOptionBottomSheetState.hide() }.invokeOnCompletion {
-                        if (!moreOptionBottomSheetState.isVisible) {
-                            showMoreOptionBottomSheet = false
+                    scope
+                        .launch { moreOptionBottomSheetState.hide() }
+                        .invokeOnCompletion {
+                            if (!moreOptionBottomSheetState.isVisible) {
+                                showMoreOptionBottomSheet = false
+                            }
                         }
-                    }
-                    onNavigateToDetail(viewModel.logbookOnMore.value!!.toToDetailState(isInEditMode = true))
+                    onNavigateToDetail(
+                        viewModel.logbookOnMore.value!!.toToDetailState(isInEditMode = true)
+                    )
                 }
 
                 else -> Unit
             }
             viewModel.onEvent(event)
         },
-        onItemClick = { it?.let { logbook -> onNavigateToDetail(logbook.toToDetailState(isInEditMode = false)) } },
+        onItemClick = {
+            it?.let { logbook -> onNavigateToDetail(logbook.toToDetailState(isInEditMode = false)) }
+        },
         showMoreOptionBottomSheet = showMoreOptionBottomSheet,
         moreOptionBottomSheetState = moreOptionBottomSheetState,
         onMoreOptionBottomSheetDismissRequest = { showMoreOptionBottomSheet = false },
@@ -133,11 +141,13 @@ fun CatchesScreen(
         onDismissRequest = { openAlertDialog = false },
         onDeleteClick = {
             openAlertDialog = true
-            scope.launch { moreOptionBottomSheetState.hide() }.invokeOnCompletion {
-                if (!moreOptionBottomSheetState.isVisible) {
-                    showMoreOptionBottomSheet = false
+            scope
+                .launch { moreOptionBottomSheetState.hide() }
+                .invokeOnCompletion {
+                    if (!moreOptionBottomSheetState.isVisible) {
+                        showMoreOptionBottomSheet = false
+                    }
                 }
-            }
         },
         showSortOptionsBottomSheet = showSortOptionsBottomSheet,
         sortOptionsBottomSheetState = sortOptionsBottomSheetState,
@@ -184,10 +194,11 @@ fun CatchesContent(
             onConfirmation = { onEvent(CatchesEvent.DeleteLogbook) },
             isDestructiveType = true,
             dialogTitle = "Delete catch",
-            dialogText = "This action cannot be undone. Are you sure you want to delete this catch?",
+            dialogText =
+                "This action cannot be undone. Are you sure you want to delete this catch?",
             confirmText = "Delete",
             dismissText = "Cancel",
-            icon = Icons.Outlined.DeleteForever
+            icon = Icons.Outlined.DeleteForever,
         )
     }
 
@@ -196,7 +207,7 @@ fun CatchesContent(
             onDismissRequest = onMoreOptionBottomSheetDismissRequest,
             sheetState = moreOptionBottomSheetState,
             onEditClick = { onEvent(CatchesEvent.EditLogbook) },
-            onDeleteClick = onDeleteClick
+            onDeleteClick = onDeleteClick,
         )
     }
     if (showSortOptionsBottomSheet) {
@@ -204,7 +215,7 @@ fun CatchesContent(
             onDismissRequest = onSortOptionsBottomSheetDismissRequest,
             sheetState = sortOptionsBottomSheetState,
             selectedSortOption = selectedSortOption,
-            onSortOptionClick = { onEvent(CatchesEvent.SortCatches(it)) }
+            onSortOptionClick = { onEvent(CatchesEvent.SortCatches(it)) },
         )
     }
     if (showFilterOptionsBottomSheet) {
@@ -213,14 +224,12 @@ fun CatchesContent(
             sheetState = filterOptionsBottomSheetState,
             filterState = selectedFilterState,
             availableBaits = availableBaits,
-            onApply = { onEvent(CatchesEvent.FilterCatches(it)) }
+            onApply = { onEvent(CatchesEvent.FilterCatches(it)) },
         )
     }
 
     CatchesList(
-        modifier = Modifier
-            .fillMaxWidth()
-            .then(modifier),
+        modifier = Modifier.fillMaxWidth().then(modifier),
         listState = listState,
         query = query,
         onQueryChange = { onEvent(CatchesEvent.UpdateSearchQuery(it)) },
@@ -233,7 +242,6 @@ fun CatchesContent(
         onMoreClick = { onEvent(CatchesEvent.MoreOption(it!!)) },
     )
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
@@ -251,19 +259,19 @@ private fun CatchesContentPreview() {
                 onItemClick = {},
                 showMoreOptionBottomSheet = false,
                 moreOptionBottomSheetState = rememberModalBottomSheetState(),
-                onMoreOptionBottomSheetDismissRequest = { },
-                onSortOptionsBottomSheetDismissRequest = { },
+                onMoreOptionBottomSheetDismissRequest = {},
+                onSortOptionsBottomSheetDismissRequest = {},
                 showSortOptionsBottomSheet = false,
                 sortOptionsBottomSheetState = rememberModalBottomSheetState(),
                 selectedSortOption = SortBy.LATEST,
                 showFilterOptionsBottomSheet = false,
                 filterOptionsBottomSheetState = rememberModalBottomSheetState(),
-                onFilterOptionsBottomSheetDismissRequest = { },
+                onFilterOptionsBottomSheetDismissRequest = {},
                 selectedFilterState = FilterState(),
                 availableBaits = emptyList(),
                 openAlertDialog = false,
                 onDismissRequest = {},
-                onDeleteClick = {}
+                onDeleteClick = {},
             )
         }
     }

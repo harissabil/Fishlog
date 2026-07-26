@@ -20,11 +20,7 @@ import com.harissabil.fisch.core.common.theme.FischTheme
 import com.harissabil.fisch.core.common.theme.spacing
 
 @Composable
-fun ErrorMessage(
-    message: String,
-    onClickRetry: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
+fun ErrorMessage(message: String, onClickRetry: () -> Unit, modifier: Modifier = Modifier) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -38,16 +34,10 @@ fun ErrorMessage(
         )
         Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
         Button(onClick = onClickRetry) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Icon(
-                    Icons.Default.Refresh,
-                    contentDescription = null
-                )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Default.Refresh, contentDescription = null)
                 Text(text = "Retry")
             }
-
         }
     }
 }
@@ -55,7 +45,5 @@ fun ErrorMessage(
 @Preview
 @Composable
 fun ErrorMessagePreview() {
-    FischTheme {
-        ErrorMessage(message = "Error not found", onClickRetry = { })
-    }
+    FischTheme { ErrorMessage(message = "Error not found", onClickRetry = {}) }
 }

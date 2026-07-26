@@ -20,51 +20,56 @@ class DefaultLocationTracker(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun getCurrentLocation(): Location? {
-        val hasAccessFineLocationPermission = ContextCompat.checkSelfPermission(
-            application,
-            android.Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
+        val hasAccessFineLocationPermission =
+            ContextCompat.checkSelfPermission(
+                application,
+                android.Manifest.permission.ACCESS_FINE_LOCATION,
+            ) == PackageManager.PERMISSION_GRANTED
 
-        val hasAccessCoarseLocationPermission = ContextCompat.checkSelfPermission(
-            application,
-            android.Manifest.permission.ACCESS_COARSE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
+        val hasAccessCoarseLocationPermission =
+            ContextCompat.checkSelfPermission(
+                application,
+                android.Manifest.permission.ACCESS_COARSE_LOCATION,
+            ) == PackageManager.PERMISSION_GRANTED
 
-        val locationManager = application.getSystemService(
-            Context.LOCATION_SERVICE
-        ) as LocationManager
+        val locationManager =
+            application.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
-        val isGpsEnabled = locationManager
-            .isProviderEnabled(LocationManager.NETWORK_PROVIDER) ||
+        val isGpsEnabled =
+            locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) ||
                 locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
 
-        if (!isGpsEnabled && !(hasAccessCoarseLocationPermission || hasAccessFineLocationPermission)) {
+        if (
+            !isGpsEnabled && !(hasAccessCoarseLocationPermission || hasAccessFineLocationPermission)
+        ) {
             return null
         }
 
         return suspendCancellableCoroutine { cont ->
-            fusedLocationProviderClient.getCurrentLocation(
-                Priority.PRIORITY_BALANCED_POWER_ACCURACY,
-                CancellationTokenSource().token,
-            ).apply {
-                if (isComplete) {
-                    if (isSuccessful) {
-                        cont.resume(result) {} // Resume coroutine with location result
-                    } else {
+            fusedLocationProviderClient
+                .getCurrentLocation(
+                    Priority.PRIORITY_BALANCED_POWER_ACCURACY,
+                    CancellationTokenSource().token,
+                )
+                .apply {
+                    if (isComplete) {
+                        if (isSuccessful) {
+                            cont.resume(result) {} // Resume coroutine with location result
+                        } else {
+                            cont.resume(null) {} // Resume coroutine with null location result
+                        }
+                        return@suspendCancellableCoroutine
+                    }
+                    addOnSuccessListener {
+                        cont.resume(it) {} // Resume coroutine with location result
+                    }
+                    addOnFailureListener {
                         cont.resume(null) {} // Resume coroutine with null location result
                     }
-                    return@suspendCancellableCoroutine
+                    addOnCanceledListener {
+                        cont.cancel() // Cancel the coroutine
+                    }
                 }
-                addOnSuccessListener {
-                    cont.resume(it) {}  // Resume coroutine with location result
-                }
-                addOnFailureListener {
-                    cont.resume(null) {} // Resume coroutine with null location result
-                }
-                addOnCanceledListener {
-                    cont.cancel() // Cancel the coroutine
-                }
-            }
         }
     }
 }

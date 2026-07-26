@@ -26,27 +26,27 @@ fun SettingItem(
     onCLick: () -> Unit,
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onCLick() }
-            .padding(
-                horizontal = MaterialTheme.spacing.large,
-                vertical = MaterialTheme.spacing.medium
-            )
-            .then(modifier),
+        modifier =
+            Modifier.fillMaxWidth()
+                .clickable { onCLick() }
+                .padding(
+                    horizontal = MaterialTheme.spacing.large,
+                    vertical = MaterialTheme.spacing.medium,
+                )
+                .then(modifier),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.large)
+        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.large),
     ) {
         Icon(imageVector = icon, contentDescription = null)
         Column {
             Text(
                 text = title,
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold)
+                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
             )
             Text(
                 text = value,
                 style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.alpha(0.75f)
+                modifier = Modifier.alpha(0.75f),
             )
         }
     }

@@ -18,77 +18,79 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-private val lightScheme = lightColorScheme(
-    primary = primaryLight,
-    onPrimary = onPrimaryLight,
-    primaryContainer = primaryContainerLight,
-    onPrimaryContainer = onPrimaryContainerLight,
-    secondary = secondaryLight,
-    onSecondary = onSecondaryLight,
-    secondaryContainer = secondaryContainerLight,
-    onSecondaryContainer = onSecondaryContainerLight,
-    tertiary = tertiaryLight,
-    onTertiary = onTertiaryLight,
-    tertiaryContainer = tertiaryContainerLight,
-    onTertiaryContainer = onTertiaryContainerLight,
-    error = errorLight,
-    onError = onErrorLight,
-    errorContainer = errorContainerLight,
-    onErrorContainer = onErrorContainerLight,
-    background = backgroundLight,
-    onBackground = onBackgroundLight,
-    surface = surfaceLight,
-    onSurface = onSurfaceLight,
-    surfaceVariant = surfaceVariantLight,
-    onSurfaceVariant = onSurfaceVariantLight,
-    surfaceContainer = surfaceContainerLight,
-    surfaceContainerLowest = surfaceContainerLowestLight,
-    surfaceContainerLow = surfaceContainerLowLight,
-    surfaceContainerHigh = surfaceContainerHighLight,
-    surfaceContainerHighest = surfaceContainerHighestLight,
-    outline = outlineLight,
-    outlineVariant = outlineVariantLight,
-    scrim = scrimLight,
-    inverseSurface = inverseSurfaceLight,
-    inverseOnSurface = inverseOnSurfaceLight,
-    inversePrimary = inversePrimaryLight,
-)
+private val lightScheme =
+    lightColorScheme(
+        primary = primaryLight,
+        onPrimary = onPrimaryLight,
+        primaryContainer = primaryContainerLight,
+        onPrimaryContainer = onPrimaryContainerLight,
+        secondary = secondaryLight,
+        onSecondary = onSecondaryLight,
+        secondaryContainer = secondaryContainerLight,
+        onSecondaryContainer = onSecondaryContainerLight,
+        tertiary = tertiaryLight,
+        onTertiary = onTertiaryLight,
+        tertiaryContainer = tertiaryContainerLight,
+        onTertiaryContainer = onTertiaryContainerLight,
+        error = errorLight,
+        onError = onErrorLight,
+        errorContainer = errorContainerLight,
+        onErrorContainer = onErrorContainerLight,
+        background = backgroundLight,
+        onBackground = onBackgroundLight,
+        surface = surfaceLight,
+        onSurface = onSurfaceLight,
+        surfaceVariant = surfaceVariantLight,
+        onSurfaceVariant = onSurfaceVariantLight,
+        surfaceContainer = surfaceContainerLight,
+        surfaceContainerLowest = surfaceContainerLowestLight,
+        surfaceContainerLow = surfaceContainerLowLight,
+        surfaceContainerHigh = surfaceContainerHighLight,
+        surfaceContainerHighest = surfaceContainerHighestLight,
+        outline = outlineLight,
+        outlineVariant = outlineVariantLight,
+        scrim = scrimLight,
+        inverseSurface = inverseSurfaceLight,
+        inverseOnSurface = inverseOnSurfaceLight,
+        inversePrimary = inversePrimaryLight,
+    )
 
-private val darkScheme = darkColorScheme(
-    primary = primaryDark,
-    onPrimary = onPrimaryDark,
-    primaryContainer = primaryContainerDark,
-    onPrimaryContainer = onPrimaryContainerDark,
-    secondary = secondaryDark,
-    onSecondary = onSecondaryDark,
-    secondaryContainer = secondaryContainerDark,
-    onSecondaryContainer = onSecondaryContainerDark,
-    tertiary = tertiaryDark,
-    onTertiary = onTertiaryDark,
-    tertiaryContainer = tertiaryContainerDark,
-    onTertiaryContainer = onTertiaryContainerDark,
-    error = errorDark,
-    onError = onErrorDark,
-    errorContainer = errorContainerDark,
-    onErrorContainer = onErrorContainerDark,
-    background = backgroundDark,
-    onBackground = onBackgroundDark,
-    surface = surfaceDark,
-    onSurface = onSurfaceDark,
-    surfaceVariant = surfaceVariantDark,
-    onSurfaceVariant = onSurfaceVariantDark,
-    surfaceContainer = surfaceContainerDark,
-    surfaceContainerLowest = surfaceContainerLowestDark,
-    surfaceContainerLow = surfaceContainerLowDark,
-    surfaceContainerHigh = surfaceContainerHighDark,
-    surfaceContainerHighest = surfaceContainerHighestDark,
-    outline = outlineDark,
-    outlineVariant = outlineVariantDark,
-    scrim = scrimDark,
-    inverseSurface = inverseSurfaceDark,
-    inverseOnSurface = inverseOnSurfaceDark,
-    inversePrimary = inversePrimaryDark,
-)
+private val darkScheme =
+    darkColorScheme(
+        primary = primaryDark,
+        onPrimary = onPrimaryDark,
+        primaryContainer = primaryContainerDark,
+        onPrimaryContainer = onPrimaryContainerDark,
+        secondary = secondaryDark,
+        onSecondary = onSecondaryDark,
+        secondaryContainer = secondaryContainerDark,
+        onSecondaryContainer = onSecondaryContainerDark,
+        tertiary = tertiaryDark,
+        onTertiary = onTertiaryDark,
+        tertiaryContainer = tertiaryContainerDark,
+        onTertiaryContainer = onTertiaryContainerDark,
+        error = errorDark,
+        onError = onErrorDark,
+        errorContainer = errorContainerDark,
+        onErrorContainer = onErrorContainerDark,
+        background = backgroundDark,
+        onBackground = onBackgroundDark,
+        surface = surfaceDark,
+        onSurface = onSurfaceDark,
+        surfaceVariant = surfaceVariantDark,
+        onSurfaceVariant = onSurfaceVariantDark,
+        surfaceContainer = surfaceContainerDark,
+        surfaceContainerLowest = surfaceContainerLowestDark,
+        surfaceContainerLow = surfaceContainerLowDark,
+        surfaceContainerHigh = surfaceContainerHighDark,
+        surfaceContainerHighest = surfaceContainerHighestDark,
+        outline = outlineDark,
+        outlineVariant = outlineVariantDark,
+        scrim = scrimDark,
+        inverseSurface = inverseSurfaceDark,
+        inverseOnSurface = inverseOnSurfaceDark,
+        inversePrimary = inversePrimaryDark,
+    )
 
 @Composable
 fun FischTheme(
@@ -97,15 +99,16 @@ fun FischTheme(
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit,
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
+    val colorScheme =
+        when {
+            dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+                val context = LocalContext.current
+                if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            }
 
-        darkTheme -> darkScheme
-        else -> lightScheme
-    }
+            darkTheme -> darkScheme
+            else -> lightScheme
+        }
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
@@ -118,56 +121,50 @@ fun FischTheme(
         }
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme.switch(),
-        typography = Typography,
-        content = content
-    )
+    MaterialTheme(colorScheme = colorScheme.switch(), typography = Typography, content = content)
 }
 
 @Composable
 private fun animateColor(targetValue: Color) =
-    animateColorAsState(
-        targetValue = targetValue,
-        label = "AnimateColor"
-    ).value
+    animateColorAsState(targetValue = targetValue, label = "AnimateColor").value
 
 @Composable
-fun ColorScheme.switch() = copy(
-    primary = animateColor(primary),
-    onPrimary = animateColor(onPrimary),
-    primaryContainer = animateColor(primaryContainer),
-    onPrimaryContainer = animateColor(onPrimaryContainer),
-    inversePrimary = animateColor(inversePrimary),
-    secondary = animateColor(secondary),
-    onSecondary = animateColor(onSecondary),
-    secondaryContainer = animateColor(secondaryContainer),
-    onSecondaryContainer = animateColor(onSecondaryContainer),
-    tertiary = animateColor(tertiary),
-    onTertiary = animateColor(onTertiary),
-    tertiaryContainer = animateColor(tertiaryContainer),
-    onTertiaryContainer = animateColor(onTertiaryContainer),
-    background = animateColor(background),
-    onBackground = animateColor(onBackground),
-    surface = animateColor(surface),
-    onSurface = animateColor(onSurface),
-    surfaceVariant = animateColor(surfaceVariant),
-    onSurfaceVariant = animateColor(onSurfaceVariant),
-    surfaceTint = animateColor(surfaceTint),
-    inverseSurface = animateColor(inverseSurface),
-    inverseOnSurface = animateColor(inverseOnSurface),
-    error = animateColor(error),
-    onError = animateColor(onError),
-    errorContainer = animateColor(errorContainer),
-    onErrorContainer = animateColor(onErrorContainer),
-    outline = animateColor(outline),
-    outlineVariant = animateColor(outlineVariant),
-    scrim = animateColor(scrim),
-    surfaceBright = animateColor(surfaceBright),
-    surfaceDim = animateColor(surfaceDim),
-    surfaceContainer = animateColor(surfaceContainer),
-    surfaceContainerLowest = animateColor(surfaceContainerLowest),
-    surfaceContainerLow = animateColor(surfaceContainerLow),
-    surfaceContainerHigh = animateColor(surfaceContainerHigh),
-    surfaceContainerHighest = animateColor(surfaceContainerHighest),
-)
+fun ColorScheme.switch() =
+    copy(
+        primary = animateColor(primary),
+        onPrimary = animateColor(onPrimary),
+        primaryContainer = animateColor(primaryContainer),
+        onPrimaryContainer = animateColor(onPrimaryContainer),
+        inversePrimary = animateColor(inversePrimary),
+        secondary = animateColor(secondary),
+        onSecondary = animateColor(onSecondary),
+        secondaryContainer = animateColor(secondaryContainer),
+        onSecondaryContainer = animateColor(onSecondaryContainer),
+        tertiary = animateColor(tertiary),
+        onTertiary = animateColor(onTertiary),
+        tertiaryContainer = animateColor(tertiaryContainer),
+        onTertiaryContainer = animateColor(onTertiaryContainer),
+        background = animateColor(background),
+        onBackground = animateColor(onBackground),
+        surface = animateColor(surface),
+        onSurface = animateColor(onSurface),
+        surfaceVariant = animateColor(surfaceVariant),
+        onSurfaceVariant = animateColor(onSurfaceVariant),
+        surfaceTint = animateColor(surfaceTint),
+        inverseSurface = animateColor(inverseSurface),
+        inverseOnSurface = animateColor(inverseOnSurface),
+        error = animateColor(error),
+        onError = animateColor(onError),
+        errorContainer = animateColor(errorContainer),
+        onErrorContainer = animateColor(onErrorContainer),
+        outline = animateColor(outline),
+        outlineVariant = animateColor(outlineVariant),
+        scrim = animateColor(scrim),
+        surfaceBright = animateColor(surfaceBright),
+        surfaceDim = animateColor(surfaceDim),
+        surfaceContainer = animateColor(surfaceContainer),
+        surfaceContainerLowest = animateColor(surfaceContainerLowest),
+        surfaceContainerLow = animateColor(surfaceContainerLow),
+        surfaceContainerHigh = animateColor(surfaceContainerHigh),
+        surfaceContainerHighest = animateColor(surfaceContainerHighest),
+    )

@@ -12,7 +12,7 @@ interface FirestoreRepository {
 
     fun getMap(): Flow<Resource<List<MapResponse>>>
 
-//    suspend fun addLogbook(logbook: Logbook): Resource<Boolean>
+    //    suspend fun addLogbook(logbook: Logbook): Resource<Boolean>
 
     suspend fun addLogbook(
         logbook: Logbook,
@@ -22,12 +22,13 @@ interface FirestoreRepository {
     ): Resource<Boolean>
 
     suspend fun updateLogbook(
-        logbook: Logbook, fishImage: Bitmap?,
+        logbook: Logbook,
+        fishImage: Bitmap?,
         lat: Double?,
         lon: Double?,
     ): Resource<Boolean>
 
     suspend fun deleteLogbook(logbookId: String, imageUrl: String?): Resource<Boolean>
 
-//    suspend fun addMap(map: Map): Resource<Boolean>
+    //    suspend fun addMap(map: Map): Resource<Boolean>
 }

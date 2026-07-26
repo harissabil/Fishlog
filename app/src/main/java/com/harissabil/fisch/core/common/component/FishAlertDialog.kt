@@ -21,44 +21,34 @@ fun FishAlertDialog(
     icon: ImageVector? = null,
 ) {
     AlertDialog(
-        icon = if (icon != null) {
-            {
-                Icon(imageVector = icon, contentDescription = null)
-            }
-        } else null,
+        icon =
+            if (icon != null) {
+                { Icon(imageVector = icon, contentDescription = null) }
+            } else null,
         title = {
             Text(
                 text = dialogTitle,
                 style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
             )
         },
-        text = {
-            Text(text = dialogText, style = MaterialTheme.typography.bodyMedium)
-        },
+        text = { Text(text = dialogText, style = MaterialTheme.typography.bodyMedium) },
         onDismissRequest = onDismissRequest,
         confirmButton = {
             FishTextButton(
-                onClick = {
-                    onConfirmation()
-                },
-                color = if (isDestructiveType) {
-                    ButtonColors(
-                        containerColor = MaterialTheme.colorScheme.surface,
-                        contentColor = MaterialTheme.colorScheme.error,
-                        disabledContainerColor = MaterialTheme.colorScheme.surface,
-                        disabledContentColor = MaterialTheme.colorScheme.error,
-                    )
-                } else null,
-                text = confirmText
+                onClick = { onConfirmation() },
+                color =
+                    if (isDestructiveType) {
+                        ButtonColors(
+                            containerColor = MaterialTheme.colorScheme.surface,
+                            contentColor = MaterialTheme.colorScheme.error,
+                            disabledContainerColor = MaterialTheme.colorScheme.surface,
+                            disabledContentColor = MaterialTheme.colorScheme.error,
+                        )
+                    } else null,
+                text = confirmText,
             )
-        }, dismissButton = {
-            FishTextButton(
-                onClick = {
-                    onDismissRequest()
-                },
-                text = dismissText
-            )
-        }
+        },
+        dismissButton = { FishTextButton(onClick = { onDismissRequest() }, text = dismissText) },
     )
 }

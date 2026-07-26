@@ -46,47 +46,35 @@ fun RecentCatches(
     val listState = rememberLazyListState()
 
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .then(modifier),
+        modifier = Modifier.fillMaxWidth().then(modifier),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small),
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = MaterialTheme.spacing.medium),
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.fillMaxWidth().padding(horizontal = MaterialTheme.spacing.medium),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 text = "Recent Catches",
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
             )
-            FishTextButton(
-                text = "View all",
-                onClick = { onViewAllClick(logbooks) }
-            )
+            FishTextButton(text = "View all", onClick = { onViewAllClick(logbooks) })
         }
         LazyRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .animateContentSize(),
+            modifier = Modifier.fillMaxWidth().animateContentSize(),
             state = listState,
-            horizontalArrangement = if (!logbooks.isNullOrEmpty()) Arrangement.Start else Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
+            horizontalArrangement =
+                if (!logbooks.isNullOrEmpty()) Arrangement.Start else Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             if (isLoading) {
                 item {
                     Box(
                         contentAlignment = Alignment.Center,
-                        modifier = Modifier.padding(MaterialTheme.spacing.large)
+                        modifier = Modifier.padding(MaterialTheme.spacing.large),
                     ) {
-                        FishLoading(
-                            circleSize = 8.dp,
-                            spaceBetween = 6.dp,
-                            travelDistance = 16.dp,
-                        )
+                        FishLoading(circleSize = 8.dp, spaceBetween = 6.dp, travelDistance = 16.dp)
                     }
                 }
             } else if (!logbooks.isNullOrEmpty()) {
@@ -102,40 +90,44 @@ fun RecentCatches(
                     }
                 }
 
-                item {
-                    Spacer(modifier = Modifier.width(MaterialTheme.spacing.medium))
-                }
+                item { Spacer(modifier = Modifier.width(MaterialTheme.spacing.medium)) }
                 items(count = uniqueRecentCatchList.size, key = { it }) { index ->
                     CatchItem(
                         logbook = uniqueRecentCatchList[index],
                         onClick = onCatchClick,
-                        modifier = Modifier.animateItemPlacement()
+                        modifier = Modifier.animateItemPlacement(),
                     )
-                    Spacer(modifier = Modifier.width(MaterialTheme.spacing.extraSmall + MaterialTheme.spacing.small))
+                    Spacer(
+                        modifier =
+                            Modifier.width(
+                                MaterialTheme.spacing.extraSmall + MaterialTheme.spacing.small
+                            )
+                    )
                 }
-                item {
-                    Spacer(modifier = Modifier.width(MaterialTheme.spacing.extraSmall))
-                }
+                item { Spacer(modifier = Modifier.width(MaterialTheme.spacing.extraSmall)) }
             } else {
                 item {
                     Column(
                         modifier = modifier,
                         verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.Sailing,
                             contentDescription = null,
                             modifier = Modifier.size(50.dp),
-                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                         )
                         Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
                         Text(
                             text = "No recent catches",
-                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
+                            style =
+                                MaterialTheme.typography.titleSmall.copy(
+                                    fontWeight = FontWeight.SemiBold
+                                ),
                             modifier = Modifier.fillMaxWidth(),
                             textAlign = TextAlign.Center,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                         )
                     }
                 }
@@ -154,7 +146,7 @@ private fun RecentCatchesPreview() {
                 logbooks = emptyList(),
                 onViewAllClick = {},
                 onCatchClick = {},
-                isLoading = false
+                isLoading = false,
             )
         }
     }

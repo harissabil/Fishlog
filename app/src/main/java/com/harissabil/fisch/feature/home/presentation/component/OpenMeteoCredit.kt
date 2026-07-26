@@ -16,12 +16,12 @@ import androidx.compose.ui.text.withStyle
 import com.harissabil.fisch.core.common.theme.spacing
 
 @Composable
-fun OpenMeteoCredit(
-    onClick: () -> Unit,
-) {
+fun OpenMeteoCredit(onClick: () -> Unit) {
     val openMeteo = "Open-Meteo"
     val annotatedString = buildAnnotatedString {
-        withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))) {
+        withStyle(
+            style = SpanStyle(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
+        ) {
             append("Weather data provided by ")
             withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
                 pushStringAnnotation(tag = openMeteo, annotation = openMeteo)
@@ -30,25 +30,25 @@ fun OpenMeteoCredit(
         }
     }
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.Gray.copy(alpha = 0.1f))
-            .padding(
-                horizontal = MaterialTheme.spacing.medium,
-                vertical = MaterialTheme.spacing.small
-            )
+        modifier =
+            Modifier.fillMaxWidth()
+                .background(Color.Gray.copy(alpha = 0.1f))
+                .padding(
+                    horizontal = MaterialTheme.spacing.medium,
+                    vertical = MaterialTheme.spacing.small,
+                )
     ) {
         ClickableText(
             text = annotatedString,
             style = MaterialTheme.typography.labelSmall,
             onClick = { offset ->
-                annotatedString.getStringAnnotations(offset, offset)
-                    .firstOrNull()?.let { annotation ->
-                        if (annotation.tag == openMeteo) {
-                            onClick()
-                        }
+                annotatedString.getStringAnnotations(offset, offset).firstOrNull()?.let { annotation
+                    ->
+                    if (annotation.tag == openMeteo) {
+                        onClick()
                     }
-            }
+                }
+            },
         )
     }
 }

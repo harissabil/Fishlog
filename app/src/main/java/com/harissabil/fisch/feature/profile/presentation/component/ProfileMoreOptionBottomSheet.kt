@@ -34,38 +34,35 @@ fun ProfileMoreOptionBottomSheet(
     sheetState: SheetState,
     onSignOutClick: () -> Unit,
 ) {
-    ModalBottomSheet(
-        onDismissRequest = onDismissRequest,
-        sheetState = sheetState,
-    ) {
+    ModalBottomSheet(onDismissRequest = onDismissRequest, sheetState = sheetState) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = MaterialTheme.spacing.medium + MaterialTheme.spacing.small)
-                .then(modifier),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier =
+                Modifier.fillMaxWidth()
+                    .padding(bottom = MaterialTheme.spacing.medium + MaterialTheme.spacing.small)
+                    .then(modifier),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onSignOutClick() }
-                    .padding(
-                        horizontal = MaterialTheme.spacing.medium + MaterialTheme.spacing.small,
-                        vertical = MaterialTheme.spacing.small
-                    ),
-                verticalAlignment = Alignment.CenterVertically
+                modifier =
+                    Modifier.fillMaxWidth()
+                        .clickable { onSignOutClick() }
+                        .padding(
+                            horizontal = MaterialTheme.spacing.medium + MaterialTheme.spacing.small,
+                            vertical = MaterialTheme.spacing.small,
+                        ),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Outlined.Logout,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.error
+                    tint = MaterialTheme.colorScheme.error,
                 )
                 Spacer(modifier = Modifier.width(MaterialTheme.spacing.medium))
                 Text(
                     text = "Sign out",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.error
+                    color = MaterialTheme.colorScheme.error,
                 )
             }
         }

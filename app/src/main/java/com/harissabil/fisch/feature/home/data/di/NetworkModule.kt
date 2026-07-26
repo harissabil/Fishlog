@@ -9,6 +9,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Named
+import javax.inject.Singleton
 import okhttp3.Cache
 import okhttp3.CertificatePinner
 import okhttp3.Interceptor
@@ -16,8 +18,6 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import javax.inject.Named
-import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
@@ -27,11 +27,12 @@ object NetworkModule {
     @Singleton
     fun provideLoggingInterceptor(): HttpLoggingInterceptor {
         return HttpLoggingInterceptor().apply {
-            level = if (BuildConfig.DEBUG) {
-                HttpLoggingInterceptor.Level.BODY
-            } else {
-                HttpLoggingInterceptor.Level.NONE
-            }
+            level =
+                if (BuildConfig.DEBUG) {
+                    HttpLoggingInterceptor.Level.BODY
+                } else {
+                    HttpLoggingInterceptor.Level.NONE
+                }
         }
     }
 
@@ -58,11 +59,12 @@ object NetworkModule {
             val isConnectivityAvailable = connectivityChecker(mContext)
             if (!isConnectivityAvailable) {
                 val maxStale = 60 * 60 * 24 * 7
-                request = request
-                    .newBuilder()
-                    .header(CACHE_CONTROL, "public, only-if-cached, max-stale=$maxStale")
-                    .removeHeader(PRAGMA)
-                    .build()
+                request =
+                    request
+                        .newBuilder()
+                        .header(CACHE_CONTROL, "public, only-if-cached, max-stale=$maxStale")
+                        .removeHeader(PRAGMA)
+                        .build()
             }
             chain.proceed(request)
         }
@@ -73,11 +75,12 @@ object NetworkModule {
         Cache(context.cacheDir, CACHE_SIZE)
 
     private const val HOST_NAME = "api.open-meteo.com"
-    private val certificatePinner = CertificatePinner.Builder()
-        .add(HOST_NAME, "sha256/Mg8VP+/mow0f1wW03lfDgVBJ4271IlltuzOgV2Pc6WU=")
-        .add(HOST_NAME, "sha256/jQJTbIh0grw0/1TkHSumWb+Fs0Ggogr621gT3PvPKG0=")
-        .add(HOST_NAME, "sha256/C5+lpZ7tcVwmwQIMcRtPbsQtWLABXhQzejna0wHFr8M=")
-        .build()
+    private val certificatePinner =
+        CertificatePinner.Builder()
+            .add(HOST_NAME, "sha256/Mg8VP+/mow0f1wW03lfDgVBJ4271IlltuzOgV2Pc6WU=")
+            .add(HOST_NAME, "sha256/jQJTbIh0grw0/1TkHSumWb+Fs0Ggogr621gT3PvPKG0=")
+            .add(HOST_NAME, "sha256/C5+lpZ7tcVwmwQIMcRtPbsQtWLABXhQzejna0wHFr8M=")
+            .build()
 
     @Provides
     @Singleton
@@ -98,9 +101,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(
-        okHttpClient: OkHttpClient,
-    ): Retrofit {
+    fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
             .baseUrl("https://api.open-meteo.com/v1/")
             .client(okHttpClient)

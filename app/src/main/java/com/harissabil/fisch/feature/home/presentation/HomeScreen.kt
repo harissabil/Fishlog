@@ -61,15 +61,18 @@ fun HomeScreen(
     val state by viewModel.state.collectAsState()
     val weatherState by viewModel.weatherState.collectAsState()
     val logbooksState by viewModel.logbooksState.collectAsState()
-    val pullToRefreshState = com.github.fengdai.compose.pulltorefresh.rememberPullToRefreshState(
-        isRefreshing = state.isLoading,
-    )
+    val pullToRefreshState =
+        com.github.fengdai.compose.pulltorefresh.rememberPullToRefreshState(
+            isRefreshing = state.isLoading
+        )
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val isLocationEnabled by viewModel.isLocationEnabled.collectAsState()
     val locationRequestLauncher =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.StartIntentSenderForResult()) { activityResult ->
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.StartIntentSenderForResult()
+        ) { activityResult ->
             if (activityResult.resultCode == RESULT_OK) {
                 // User has enabled location
                 Timber.d("Location enabled")
@@ -79,11 +82,11 @@ fun HomeScreen(
                     // If the user cancels, still make a check and then give a snackbar
                     scope.launch {
                         snackbarHostState.currentSnackbarData?.dismiss()
-                        val result = snackbarHostState
-                            .showSnackbar(
+                        val result =
+                            snackbarHostState.showSnackbar(
                                 message = "Location is required to get weather data",
                                 actionLabel = "Enable",
-                                duration = SnackbarDuration.Long
+                                duration = SnackbarDuration.Long,
                             )
                         when (result) {
                             SnackbarResult.ActionPerformed -> {
@@ -103,9 +106,11 @@ fun HomeScreen(
     LaunchedEffect(key1 = isLocationEnabled) {
         if (!isLocationEnabled) {
             try {
-                viewModel.onEvent(HomeEvent.EnableLocationRequest(context = context) {
-                    locationRequestLauncher.launch(it)
-                })
+                viewModel.onEvent(
+                    HomeEvent.EnableLocationRequest(context = context) {
+                        locationRequestLauncher.launch(it)
+                    }
+                )
             } catch (e: Exception) {
                 Timber.e(e)
             }
@@ -117,9 +122,7 @@ fun HomeScreen(
             when (event) {
                 is HomeViewModel.UIEvent.ShowSnackbar -> {
                     snackbarHostState.currentSnackbarData?.dismiss()
-                    snackbarHostState.showSnackbar(
-                        message = event.message
-                    )
+                    snackbarHostState.showSnackbar(message = event.message)
                 }
             }
         }
@@ -133,7 +136,9 @@ fun HomeScreen(
             onDismissRequest = { isViewAllRecentCatchesSheetVisible = false },
             sheetState = viewAllRecentCatchesSheetState,
             isLoading = logbooksState.isLoading,
-            onItemClick = { it?.let { it1 -> onNavigateToDetail(it1.toToDetailState(isInEditMode = false)) } },
+            onItemClick = {
+                it?.let { it1 -> onNavigateToDetail(it1.toToDetailState(isInEditMode = false)) }
+            },
             logbooks = logbooksState.logbooks,
         )
     }
@@ -149,11 +154,7 @@ fun HomeScreen(
             logbooksState = logbooksState,
             onCatchClick = {
                 it?.let { logbook ->
-                    onNavigateToDetail(
-                        logbook.toToDetailState(
-                            isInEditMode = false
-                        )
-                    )
+                    onNavigateToDetail(logbook.toToDetailState(isInEditMode = false))
                 }
             },
             onViewAllCatchesClick = { isViewAllRecentCatchesSheetVisible = true },
@@ -172,11 +173,11 @@ fun HomeContent(
     onViewAllCatchesClick: () -> Unit,
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(top = MaterialTheme.spacing.small)
-            .then(modifier),
+        modifier =
+            Modifier.fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(top = MaterialTheme.spacing.small)
+                .then(modifier)
     ) {
         WeatherCard(
             modifier = Modifier.padding(horizontal = MaterialTheme.spacing.medium),
@@ -184,25 +185,23 @@ fun HomeContent(
             isLoading = weatherState.isLoading,
             city = city,
         )
-        Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium + MaterialTheme.spacing.small))
+        Spacer(
+            modifier = Modifier.height(MaterialTheme.spacing.medium + MaterialTheme.spacing.small)
+        )
         HomeStats(
             modifier = Modifier.padding(horizontal = MaterialTheme.spacing.medium),
             logbooks = logbooksState.logbooks,
-            isLoading = logbooksState.isLoading
+            isLoading = logbooksState.isLoading,
         )
         Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
         RecentCatches(
             logbooks = logbooksState.logbooks,
             onViewAllClick = { onViewAllCatchesClick() },
             onCatchClick = onCatchClick,
-            isLoading = logbooksState.isLoading
+            isLoading = logbooksState.isLoading,
         )
         Spacer(modifier = Modifier.height(MaterialTheme.spacing.large))
-        Spacer(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-        )
+        Spacer(modifier = Modifier.fillMaxWidth().weight(1f))
         OpenMeteoCredit(
             onClick = {
                 val intent = Intent(Intent.ACTION_VIEW)
@@ -225,60 +224,67 @@ private fun HomeContentPreview() {
                 context = LocalContext.current,
                 onCatchClick = {},
                 onViewAllCatchesClick = {},
-                logbooksState = LogbooksState(
-                    logbooks = listOf(
-                        Logbook(
-                            id = "1",
-                            email = "tes@gmail.com",
-                            jenisIkan = "Ikan Hiu",
-                            jumlahIkan = 10,
-                            tempatPenangkapan = "Florida",
-                            waktuPenangkapan = null,
-                            fotoIkan = "https://www.fisheries.noaa.gov/s3//2023-06/750x500-Great-White-iStock.jpg",
-                            catatan = null
-                        ),
-                        Logbook(
-                            id = "2",
-                            email = "tes@gmail.com",
-                            jenisIkan = "Gurita",
-                            jumlahIkan = 10,
-                            tempatPenangkapan = "Laut Pasifik",
-                            waktuPenangkapan = null,
-                            fotoIkan = "https://www.aquariumofpacific.org/images/made_new/email_images-godzilla_in_new_exhibit_600_q85.jpg",
-                            catatan = null
-                        ),
-                        Logbook(
-                            id = "1",
-                            email = "tes@gmail.com",
-                            jenisIkan = "Piranha",
-                            jumlahIkan = 10,
-                            tempatPenangkapan = "Amazon",
-                            waktuPenangkapan = null,
-                            fotoIkan = "https://www.balisafarimarinepark.com/wp-content/uploads/2022/02/foto-ikan-piranha-600x401.jpg?p=27780",
-                            catatan = null
-                        ),
-                        Logbook(
-                            id = "1",
-                            email = "tes@gmail.com",
-                            jenisIkan = "Ikan Mas",
-                            jumlahIkan = 10,
-                            tempatPenangkapan = "Sungai Deli",
-                            waktuPenangkapan = null,
-                            fotoIkan = "https://awsimages.detik.net.id/community/media/visual/2021/07/15/ikan-mas-raksasa.jpeg?w=1200",
-                            catatan = null
-                        ),
-                        Logbook(
-                            id = "1",
-                            email = "tes@gmail.com",
-                            jenisIkan = "Ikan Mas",
-                            jumlahIkan = 10,
-                            tempatPenangkapan = null,
-                            waktuPenangkapan = null,
-                            fotoIkan = "https://awsimages.detik.net.id/community/media/visual/2021/07/15/ikan-mas-raksasa.jpeg?w=1200",
-                            catatan = null
-                        )
+                logbooksState =
+                    LogbooksState(
+                        logbooks =
+                            listOf(
+                                Logbook(
+                                    id = "1",
+                                    email = "tes@gmail.com",
+                                    jenisIkan = "Ikan Hiu",
+                                    jumlahIkan = 10,
+                                    tempatPenangkapan = "Florida",
+                                    waktuPenangkapan = null,
+                                    fotoIkan =
+                                        "https://www.fisheries.noaa.gov/s3//2023-06/750x500-Great-White-iStock.jpg",
+                                    catatan = null,
+                                ),
+                                Logbook(
+                                    id = "2",
+                                    email = "tes@gmail.com",
+                                    jenisIkan = "Gurita",
+                                    jumlahIkan = 10,
+                                    tempatPenangkapan = "Laut Pasifik",
+                                    waktuPenangkapan = null,
+                                    fotoIkan =
+                                        "https://www.aquariumofpacific.org/images/made_new/email_images-godzilla_in_new_exhibit_600_q85.jpg",
+                                    catatan = null,
+                                ),
+                                Logbook(
+                                    id = "1",
+                                    email = "tes@gmail.com",
+                                    jenisIkan = "Piranha",
+                                    jumlahIkan = 10,
+                                    tempatPenangkapan = "Amazon",
+                                    waktuPenangkapan = null,
+                                    fotoIkan =
+                                        "https://www.balisafarimarinepark.com/wp-content/uploads/2022/02/foto-ikan-piranha-600x401.jpg?p=27780",
+                                    catatan = null,
+                                ),
+                                Logbook(
+                                    id = "1",
+                                    email = "tes@gmail.com",
+                                    jenisIkan = "Ikan Mas",
+                                    jumlahIkan = 10,
+                                    tempatPenangkapan = "Sungai Deli",
+                                    waktuPenangkapan = null,
+                                    fotoIkan =
+                                        "https://awsimages.detik.net.id/community/media/visual/2021/07/15/ikan-mas-raksasa.jpeg?w=1200",
+                                    catatan = null,
+                                ),
+                                Logbook(
+                                    id = "1",
+                                    email = "tes@gmail.com",
+                                    jenisIkan = "Ikan Mas",
+                                    jumlahIkan = 10,
+                                    tempatPenangkapan = null,
+                                    waktuPenangkapan = null,
+                                    fotoIkan =
+                                        "https://awsimages.detik.net.id/community/media/visual/2021/07/15/ikan-mas-raksasa.jpeg?w=1200",
+                                    catatan = null,
+                                ),
+                            )
                     ),
-                )
             )
         }
     }

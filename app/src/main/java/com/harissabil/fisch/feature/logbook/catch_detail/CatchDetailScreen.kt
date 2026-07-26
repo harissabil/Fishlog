@@ -40,7 +40,6 @@ import com.harissabil.fisch.core.common.component.FishAlertDialog
 import com.harissabil.fisch.core.common.component.FishButton
 import com.harissabil.fisch.core.common.component.FishFullscreenLoading
 import com.harissabil.fisch.core.common.theme.spacing
-import com.harissabil.fisch.feature.logbook.add_catch.presentation.AddCatchEvent
 import com.harissabil.fisch.feature.logbook.common.component.FishBaitTextField
 import com.harissabil.fisch.feature.logbook.common.component.FishCaptureDateTimeTextField
 import com.harissabil.fisch.feature.logbook.common.component.FishCaptureLocationTextField
@@ -85,9 +84,7 @@ fun CatchDetailScreen(
             when (event) {
                 is CatchDetailViewModel.UIEvent.ShowSnackbar -> {
                     snackbarHostState.currentSnackbarData?.dismiss()
-                    snackbarHostState.showSnackbar(
-                        message = event.message
-                    )
+                    snackbarHostState.showSnackbar(message = event.message)
                 }
             }
         }
@@ -96,13 +93,14 @@ fun CatchDetailScreen(
     val photoPicker =
         rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
             uri?.let {
-                val bitmap = if (Build.VERSION.SDK_INT < 28) {
-                    @Suppress("DEPRECATION")
-                    MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
-                } else {
-                    val source = ImageDecoder.createSource(context.contentResolver, uri)
-                    ImageDecoder.decodeBitmap(source)
-                }
+                val bitmap =
+                    if (Build.VERSION.SDK_INT < 28) {
+                        @Suppress("DEPRECATION")
+                        MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+                    } else {
+                        val source = ImageDecoder.createSource(context.contentResolver, uri)
+                        ImageDecoder.decodeBitmap(source)
+                    }
                 viewModel.onEvent(CatchDetailEvent.SetFishImage(bitmap))
             }
         }
@@ -110,7 +108,9 @@ fun CatchDetailScreen(
     val isLocationEnabled by viewModel.isLocationEnabled.collectAsState()
 
     val locationRequestLauncher =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.StartIntentSenderForResult()) { activityResult ->
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.StartIntentSenderForResult()
+        ) { activityResult ->
             if (activityResult.resultCode == Activity.RESULT_OK) {
                 // User has enabled location
                 viewModel.onEvent(CatchDetailEvent.SetCurrentLocation(true, context))
@@ -123,9 +123,11 @@ fun CatchDetailScreen(
 
     LaunchedEffect(key1 = state.isCurrentLocation) {
         if (!isLocationEnabled && state.isCurrentLocation) {
-            viewModel.onEvent(CatchDetailEvent.EnableLocationRequest(context = context) {
-                locationRequestLauncher.launch(it)
-            })
+            viewModel.onEvent(
+                CatchDetailEvent.EnableLocationRequest(context = context) {
+                    locationRequestLauncher.launch(it)
+                }
+            )
         } else {
             if (state.isCurrentLocation) {
                 viewModel.onEvent(CatchDetailEvent.SetCurrentLocation(true, context))
@@ -142,20 +144,24 @@ fun CatchDetailScreen(
             sheetState = moreOptionBottomSheetState,
             onEditClick = {
                 viewModel.onEvent(CatchDetailEvent.SetIsInEditMode(true))
-                scope.launch { moreOptionBottomSheetState.hide() }.invokeOnCompletion {
-                    if (!moreOptionBottomSheetState.isVisible) {
-                        viewModel.onEvent(CatchDetailEvent.MoreOption(false))
+                scope
+                    .launch { moreOptionBottomSheetState.hide() }
+                    .invokeOnCompletion {
+                        if (!moreOptionBottomSheetState.isVisible) {
+                            viewModel.onEvent(CatchDetailEvent.MoreOption(false))
+                        }
                     }
-                }
             },
             onDeleteClick = {
                 openAlertDialog = true
-                scope.launch { moreOptionBottomSheetState.hide() }.invokeOnCompletion {
-                    if (!moreOptionBottomSheetState.isVisible) {
-                        viewModel.onEvent(CatchDetailEvent.MoreOption(false))
+                scope
+                    .launch { moreOptionBottomSheetState.hide() }
+                    .invokeOnCompletion {
+                        if (!moreOptionBottomSheetState.isVisible) {
+                            viewModel.onEvent(CatchDetailEvent.MoreOption(false))
+                        }
                     }
-                }
-            }
+            },
         )
     }
 
@@ -171,11 +177,13 @@ fun CatchDetailScreen(
                 }
 
                 is CatchDetailEvent.SetIsInEditMode -> {
-                    scope.launch { moreOptionBottomSheetState.hide() }.invokeOnCompletion {
-                        if (!moreOptionBottomSheetState.isVisible) {
-                            viewModel.onEvent(CatchDetailEvent.MoreOption(false))
+                    scope
+                        .launch { moreOptionBottomSheetState.hide() }
+                        .invokeOnCompletion {
+                            if (!moreOptionBottomSheetState.isVisible) {
+                                viewModel.onEvent(CatchDetailEvent.MoreOption(false))
+                            }
                         }
-                    }
                 }
 
                 is CatchDetailEvent.SetFishImage -> {
@@ -190,7 +198,7 @@ fun CatchDetailScreen(
         },
         openAlertDialog = openAlertDialog,
         onDismissRequest = { openAlertDialog = false },
-        onConfirmation = { viewModel.onEvent(CatchDetailEvent.DeleteLogbook(detailState)) }
+        onConfirmation = { viewModel.onEvent(CatchDetailEvent.DeleteLogbook(detailState)) },
     )
 }
 
@@ -210,123 +218,138 @@ fun CatchDetailContent(
             onConfirmation = onConfirmation,
             isDestructiveType = true,
             dialogTitle = "Delete catch",
-            dialogText = "This action cannot be undone. Are you sure you want to delete this catch?",
+            dialogText =
+                "This action cannot be undone. Are you sure you want to delete this catch?",
             confirmText = "Delete",
             dismissText = "Cancel",
-            icon = Icons.Outlined.DeleteForever
+            icon = Icons.Outlined.DeleteForever,
         )
     }
 
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+    Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .verticalScroll(rememberScrollState())
-                .padding(
-                    horizontal = MaterialTheme.spacing.medium,
-                    vertical = MaterialTheme.spacing.small
-                ),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier =
+                Modifier.fillMaxWidth()
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
+                    .padding(
+                        horizontal = MaterialTheme.spacing.medium,
+                        vertical = MaterialTheme.spacing.small,
+                    ),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             FishUploadImage(
                 image = state.imageBitmaps,
                 onImageClick = { onEvent(CatchDetailEvent.SetFishImage(it)) },
-                isInEditMode = isInEditMode
+                isInEditMode = isInEditMode,
             )
 
-            Spacer(modifier = Modifier.height(MaterialTheme.spacing.small + MaterialTheme.spacing.small))
+            Spacer(
+                modifier =
+                    Modifier.height(MaterialTheme.spacing.small + MaterialTheme.spacing.small)
+            )
 
             FishTypeTextFieldWithAi(
                 value = state.fishType,
-                onValueChange = { if (isInEditMode) onEvent(CatchDetailEvent.SetFishType(it)) else Unit },
+                onValueChange = {
+                    if (isInEditMode) onEvent(CatchDetailEvent.SetFishType(it)) else Unit
+                },
                 isError = state.fishTypeError != null,
                 supportingText = state.fishTypeError,
                 onIdentifyFishType = { onEvent(CatchDetailEvent.IdentifyFishType) },
                 isIdentifying = state.isIdentifying,
                 suggestions = state.fishTypeSuggestions,
-                isInEditMode = isInEditMode
+                isInEditMode = isInEditMode,
             )
 
             FishQuantityTextField(
                 value = state.fishQuantity,
-                onValueChange = { if (isInEditMode) onEvent(CatchDetailEvent.SetFishQuantity(it)) else Unit },
+                onValueChange = {
+                    if (isInEditMode) onEvent(CatchDetailEvent.SetFishQuantity(it)) else Unit
+                },
                 isError = state.fishQuantityError != null,
                 supportingText = state.fishQuantityError,
-                isInEditMode = isInEditMode
+                isInEditMode = isInEditMode,
             )
 
             FishWeightTextField(
                 value = state.fishWeight,
                 onValueChange = { onEvent(CatchDetailEvent.SetFishWeight(it)) },
                 isError = state.fishWeightError != null,
-                supportingText = state.fishWeightError
+                supportingText = state.fishWeightError,
             )
 
             FishLengthTextField(
                 value = state.fishLength,
                 onValueChange = { onEvent(CatchDetailEvent.SetFishLength(it)) },
                 isError = state.fishLengthError != null,
-                supportingText = state.fishLengthError
+                supportingText = state.fishLengthError,
             )
 
             FishReleasedToggle(
-                modifier = Modifier.padding(
-                    top = MaterialTheme.spacing.extraSmall,
-                    bottom = MaterialTheme.spacing.small + MaterialTheme.spacing.extraSmall
-                ),
+                modifier =
+                    Modifier.padding(
+                        top = MaterialTheme.spacing.extraSmall,
+                        bottom = MaterialTheme.spacing.small + MaterialTheme.spacing.extraSmall,
+                    ),
                 isReleased = state.isReleased,
-                onValueChange = { onEvent(CatchDetailEvent.SetIsReleased(it)) }
+                onValueChange = { onEvent(CatchDetailEvent.SetIsReleased(it)) },
             )
 
             FishBaitTextField(
                 value = state.bait,
                 onValueChange = { onEvent(CatchDetailEvent.SetBait(it)) },
-                suggestions = state.baitSuggestions
+                suggestions = state.baitSuggestions,
             )
 
-            Spacer(modifier = Modifier.height(MaterialTheme.spacing.small + MaterialTheme.spacing.small))
-
+            Spacer(
+                modifier =
+                    Modifier.height(MaterialTheme.spacing.small + MaterialTheme.spacing.small)
+            )
 
             FishCaptureDateTimeTextField(
                 dateValue = state.captureDate,
-                onDateValueChange = { if (isInEditMode) onEvent(CatchDetailEvent.SetCaptureDate(it)) else Unit },
+                onDateValueChange = {
+                    if (isInEditMode) onEvent(CatchDetailEvent.SetCaptureDate(it)) else Unit
+                },
                 timeValue = state.captureTime,
-                onTimeValueChange = { if (isInEditMode) onEvent(CatchDetailEvent.SetCaptureTime(it)) else Unit },
-                isInEditMode = isInEditMode
+                onTimeValueChange = {
+                    if (isInEditMode) onEvent(CatchDetailEvent.SetCaptureTime(it)) else Unit
+                },
+                isInEditMode = isInEditMode,
             )
 
             FishCaptureLocationTextField(
                 value = state.captureLocation,
-                onValueChange = { if (isInEditMode) onEvent(CatchDetailEvent.SetCaptureLocation(it)) else Unit },
+                onValueChange = {
+                    if (isInEditMode) onEvent(CatchDetailEvent.SetCaptureLocation(it)) else Unit
+                },
                 isCurrentLocationChecked = state.isCurrentLocation,
                 onCurrentLocationChecked = {
-                    if (isInEditMode)
-                        onEvent(CatchDetailEvent.SetCurrentLocation(it, context))
+                    if (isInEditMode) onEvent(CatchDetailEvent.SetCurrentLocation(it, context))
                     else Unit
                 },
-                isInEditMode = isInEditMode
+                isInEditMode = isInEditMode,
             )
 
             FishNotesTextField(
                 value = state.notes,
-                onValueChange = { if (isInEditMode) onEvent(CatchDetailEvent.SetNotes(it)) else Unit },
-                isInEditMode = isInEditMode
+                onValueChange = {
+                    if (isInEditMode) onEvent(CatchDetailEvent.SetNotes(it)) else Unit
+                },
+                isInEditMode = isInEditMode,
             )
         }
 
         AnimatedVisibility(visible = isInEditMode) {
             FishButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = MaterialTheme.spacing.medium)
-                    .padding(
-                        top = MaterialTheme.spacing.small,
-                        bottom = MaterialTheme.spacing.medium
-                    ),
+                modifier =
+                    Modifier.fillMaxWidth()
+                        .padding(horizontal = MaterialTheme.spacing.medium)
+                        .padding(
+                            top = MaterialTheme.spacing.small,
+                            bottom = MaterialTheme.spacing.medium,
+                        ),
                 text = "Update",
                 onClick = { onEvent(CatchDetailEvent.UploadCatchData(context)) },
             )

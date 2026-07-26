@@ -76,26 +76,25 @@ fun MapScreen(
     val cameraPositionState = rememberCameraPositionState()
 
     fun hasLocationPermission() =
-        ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                ) == PackageManager.PERMISSION_GRANTED
+        ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
+            PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+            ) == PackageManager.PERMISSION_GRANTED
 
     var hasLocationPermission by rememberSaveable { mutableStateOf(hasLocationPermission()) }
 
-    val requestLocationPermissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        hasLocationPermission = (permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false) ||
-                (permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false)
-        if (hasLocationPermission) {
-            viewModel.onEvent(MapEvent.RecenterToMyLocation)
+    val requestLocationPermissionLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+            permissions ->
+            hasLocationPermission =
+                (permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false) ||
+                    (permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false)
+            if (hasLocationPermission) {
+                viewModel.onEvent(MapEvent.RecenterToMyLocation)
+            }
         }
-    }
 
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
@@ -108,15 +107,17 @@ fun MapScreen(
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
-    val properties = MapProperties(
-        mapStyleOptions = MapStyleOptions.loadRawResourceStyle(context, R.raw.map_style),
-        isMyLocationEnabled = hasLocationPermission
-    )
-    val uiSettings = MapUiSettings(
-        zoomControlsEnabled = false,
-        myLocationButtonEnabled = false,
-        mapToolbarEnabled = false
-    )
+    val properties =
+        MapProperties(
+            mapStyleOptions = MapStyleOptions.loadRawResourceStyle(context, R.raw.map_style),
+            isMyLocationEnabled = hasLocationPermission,
+        )
+    val uiSettings =
+        MapUiSettings(
+            zoomControlsEnabled = false,
+            myLocationButtonEnabled = false,
+            mapToolbarEnabled = false,
+        )
 
     LaunchedEffect(key1 = Unit) {
         viewModel.eventFlow.collectLatest { event ->
@@ -129,7 +130,7 @@ fun MapScreen(
                 is MapViewModel.UIEvent.CenterCamera -> {
                     cameraPositionState.animate(
                         update = CameraUpdateFactory.newLatLngZoom(event.latLng, MY_LOCATION_ZOOM),
-                        durationMs = 500
+                        durationMs = 500,
                     )
                 }
             }
@@ -142,22 +143,24 @@ fun MapScreen(
         if (pins.size == 1) {
             Timber.d("Camera position: ${pins.first().mapItem.latLong}")
             cameraPositionState.animate(
-                update = CameraUpdateFactory.newLatLngZoom(
-                    pins.first().mapItem.latLong!!,
-                    MY_LOCATION_ZOOM
-                ),
-                durationMs = 500
+                update =
+                    CameraUpdateFactory.newLatLngZoom(
+                        pins.first().mapItem.latLong!!,
+                        MY_LOCATION_ZOOM,
+                    ),
+                durationMs = 500,
             )
             return@LaunchedEffect
         }
 
-        val bounds = LatLngBounds.Builder().apply {
-            pins.forEach { pin -> pin.mapItem.latLong?.let { include(it) } }
-        }.build()
+        val bounds =
+            LatLngBounds.Builder()
+                .apply { pins.forEach { pin -> pin.mapItem.latLong?.let { include(it) } } }
+                .build()
 
         cameraPositionState.animate(
             update = CameraUpdateFactory.newLatLngBounds(bounds, BOUNDS_PADDING_PX),
-            durationMs = 500
+            durationMs = 500,
         )
     }
 
@@ -169,24 +172,23 @@ fun MapScreen(
             availableBaits = availableBaits,
             onApply = { filterState ->
                 viewModel.onEvent(MapEvent.FilterMaps(filterState))
-                scope.launch { filterOptionsBottomSheetState.hide() }.invokeOnCompletion {
-                    if (!filterOptionsBottomSheetState.isVisible) {
-                        showFilterOptionsBottomSheet = false
+                scope
+                    .launch { filterOptionsBottomSheetState.hide() }
+                    .invokeOnCompletion {
+                        if (!filterOptionsBottomSheetState.isVisible) {
+                            showFilterOptionsBottomSheet = false
+                        }
                     }
-                }
-            }
+            },
         )
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
             properties = properties,
-            uiSettings = uiSettings
+            uiSettings = uiSettings,
         ) {
             Clustering(
                 items = pins,
@@ -198,13 +200,13 @@ fun MapScreen(
         }
 
         FishSearchBar(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.TopCenter)
-                .padding(
-                    horizontal = MaterialTheme.spacing.medium,
-                    vertical = MaterialTheme.spacing.small
-                ),
+            modifier =
+                Modifier.fillMaxWidth()
+                    .align(Alignment.TopCenter)
+                    .padding(
+                        horizontal = MaterialTheme.spacing.medium,
+                        vertical = MaterialTheme.spacing.small,
+                    ),
             query = searchQuery,
             onQueryChange = { viewModel.onEvent(MapEvent.UpdateSearchQuery(it)) },
             onFilter = { showFilterOptionsBottomSheet = true },
@@ -212,9 +214,7 @@ fun MapScreen(
         )
 
         FloatingActionButton(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(MaterialTheme.spacing.medium),
+            modifier = Modifier.align(Alignment.BottomEnd).padding(MaterialTheme.spacing.medium),
             onClick = {
                 if (hasLocationPermission) {
                     viewModel.onEvent(MapEvent.RecenterToMyLocation)
@@ -222,7 +222,7 @@ fun MapScreen(
                     requestLocationPermissionLauncher.launch(
                         arrayOf(
                             Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION
+                            Manifest.permission.ACCESS_COARSE_LOCATION,
                         )
                     )
                 }
@@ -230,7 +230,7 @@ fun MapScreen(
         ) {
             Icon(
                 imageVector = Icons.Default.MyLocation,
-                contentDescription = "Center on my location"
+                contentDescription = "Center on my location",
             )
         }
     }

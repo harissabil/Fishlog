@@ -53,84 +53,76 @@ fun CatchesListItem(
 
     Box(
         contentAlignment = Alignment.Center,
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(MaterialTheme.shapes.large)
-            .background(color = MaterialTheme.colorScheme.secondaryContainer)
-            .clickable { onItemClick(logbook) }
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .clip(MaterialTheme.shapes.large)
+                .background(color = MaterialTheme.colorScheme.secondaryContainer)
+                .clickable { onItemClick(logbook) },
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .animateContentSize()
-                .padding(MaterialTheme.spacing.medium),
+            modifier =
+                Modifier.fillMaxWidth().animateContentSize().padding(MaterialTheme.spacing.medium),
             verticalAlignment = Alignment.Top,
-            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
+            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium),
         ) {
             SubcomposeAsyncImage(
-                model = ImageRequest.Builder(context = context)
-                    .data(data = logbook?.fotoIkan)
-                    .memoryCachePolicy(CachePolicy.ENABLED)
-                    .memoryCacheKey(logbook?.fotoIkan)
-                    .diskCachePolicy(CachePolicy.ENABLED)
-                    .diskCacheKey(logbook?.fotoIkan)
-                    .allowHardware(false)
-                    .allowRgb565(true)
-                    .crossfade(enable = true)
-                    .build(),
+                model =
+                    ImageRequest.Builder(context = context)
+                        .data(data = logbook?.fotoIkan)
+                        .memoryCachePolicy(CachePolicy.ENABLED)
+                        .memoryCacheKey(logbook?.fotoIkan)
+                        .diskCachePolicy(CachePolicy.ENABLED)
+                        .diskCacheKey(logbook?.fotoIkan)
+                        .allowHardware(false)
+                        .allowRgb565(true)
+                        .crossfade(enable = true)
+                        .build(),
                 contentScale = ContentScale.Crop,
-                colorFilter = ColorFilter.colorMatrix(
-                    colorMatrix = ColorMatrix().apply {
-                        setToSaturation(sat = 0.85F)
-                    }
-                ),
+                colorFilter =
+                    ColorFilter.colorMatrix(
+                        colorMatrix = ColorMatrix().apply { setToSaturation(sat = 0.85F) }
+                    ),
                 loading = {
                     Box(
-                        modifier = Modifier
-                            .matchParentSize()
-                            .background(Color.Gray.copy(alpha = 0.5F))
-                            .shimmerEffect()
+                        modifier =
+                            Modifier.matchParentSize()
+                                .background(Color.Gray.copy(alpha = 0.5F))
+                                .shimmerEffect()
                     )
                 },
                 filterQuality = FilterQuality.Medium,
                 alignment = Alignment.Center,
                 contentDescription = logbook?.tempatPenangkapan ?: "N/A",
-                modifier = Modifier
-                    .size(width = 100.dp, height = 100.dp)
-                    .clip(MaterialTheme.shapes.large),
+                modifier =
+                    Modifier.size(width = 100.dp, height = 100.dp).clip(MaterialTheme.shapes.large),
                 error = {
                     Box(
-                        modifier = Modifier
-                            .matchParentSize()
-                            .background(Color.Gray.copy(alpha = 0.5F))
+                        modifier =
+                            Modifier.matchParentSize().background(Color.Gray.copy(alpha = 0.5F))
                     )
-                }
+                },
             )
 
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small),
-                horizontalAlignment = Alignment.Start
+                horizontalAlignment = Alignment.Start,
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.Top
-                ) {
-                    Column(
-                        modifier = Modifier.weight(1f),
-                    ) {
+                Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Top) {
+                    Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = logbook?.waktuPenangkapan?.toDateAtTime(context) ?: "N/A",
                             style = MaterialTheme.typography.labelMedium,
                             overflow = TextOverflow.Ellipsis,
                             maxLines = 1,
-                            modifier = Modifier
-                                .alpha(0.5f)
-                                .padding(end = MaterialTheme.spacing.medium)
+                            modifier =
+                                Modifier.alpha(0.5f).padding(end = MaterialTheme.spacing.medium),
                         )
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
+                            horizontalArrangement =
+                                Arrangement.spacedBy(MaterialTheme.spacing.small),
                         ) {
                             Text(
                                 text = logbook?.jenisIkan ?: "N/A",
@@ -138,22 +130,26 @@ fun CatchesListItem(
                                 overflow = TextOverflow.Ellipsis,
                                 maxLines = 2,
                                 fontWeight = FontWeight.SemiBold,
-                                modifier = Modifier
-                                    .weight(1f, fill = false)
-                                    .padding(end = MaterialTheme.spacing.medium)
+                                modifier =
+                                    Modifier.weight(1f, fill = false)
+                                        .padding(end = MaterialTheme.spacing.medium),
                             )
                             if (logbook?.dilepaskan == true) {
                                 Text(
                                     text = "Released",
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.onSecondaryContainer,
-                                    modifier = Modifier
-                                        .clip(MaterialTheme.shapes.small)
-                                        .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f))
-                                        .padding(
-                                            horizontal = MaterialTheme.spacing.small,
-                                            vertical = 2.dp
-                                        )
+                                    modifier =
+                                        Modifier.clip(MaterialTheme.shapes.small)
+                                            .background(
+                                                MaterialTheme.colorScheme.secondary.copy(
+                                                    alpha = 0.2f
+                                                )
+                                            )
+                                            .padding(
+                                                horizontal = MaterialTheme.spacing.small,
+                                                vertical = 2.dp,
+                                            ),
                                 )
                             }
                         }
@@ -161,10 +157,10 @@ fun CatchesListItem(
                     Icon(
                         imageVector = Icons.Default.MoreHoriz,
                         contentDescription = "More options",
-                        modifier = Modifier
-                            .alpha(0.5f)
-                            .clip(RoundedCornerShape(percent = 100))
-                            .clickable { onMoreClick(logbook) },
+                        modifier =
+                            Modifier.alpha(0.5f).clip(RoundedCornerShape(percent = 100)).clickable {
+                                onMoreClick(logbook)
+                            },
                     )
                 }
 
@@ -183,7 +179,7 @@ fun CatchesListItem(
                                 style = MaterialTheme.typography.titleSmall,
                                 overflow = TextOverflow.Ellipsis,
                                 maxLines = 1,
-                                fontWeight = FontWeight.SemiBold
+                                fontWeight = FontWeight.SemiBold,
                             )
                         }
                     }
@@ -210,21 +206,23 @@ private fun CatchesListItemPreview() {
     FischTheme {
         Surface {
             CatchesListItem(
-                logbook = Logbook(
-                    id = "1",
-                    email = "tes@gmail.com",
-                    jenisIkan = "Great White Shark",
-                    jumlahIkan = 10,
-                    tempatPenangkapan = "Florida",
-                    waktuPenangkapan = null,
-                    fotoIkan = "https://www.fisheries.noaa.gov/s3//2023-06/750x500-Great-White-iStock.jpg",
-                    catatan = null,
-                    beratIkan = 100.0,
-                    panjangIkan = 200.0,
-                    dilepaskan = true
-                ),
+                logbook =
+                    Logbook(
+                        id = "1",
+                        email = "tes@gmail.com",
+                        jenisIkan = "Great White Shark",
+                        jumlahIkan = 10,
+                        tempatPenangkapan = "Florida",
+                        waktuPenangkapan = null,
+                        fotoIkan =
+                            "https://www.fisheries.noaa.gov/s3//2023-06/750x500-Great-White-iStock.jpg",
+                        catatan = null,
+                        beratIkan = 100.0,
+                        panjangIkan = 200.0,
+                        dilepaskan = true,
+                    ),
                 onItemClick = {},
-                onMoreClick = {}
+                onMoreClick = {},
             )
         }
     }

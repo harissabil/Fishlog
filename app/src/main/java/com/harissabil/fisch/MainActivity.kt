@@ -25,32 +25,27 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        installSplashScreen().apply {
-            setKeepOnScreenCondition {
-                viewModel.splashCondition
-            }
-        }
+        installSplashScreen().apply { setKeepOnScreenCondition { viewModel.splashCondition } }
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT),
-            navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
+            navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT),
         )
         setContent {
             FischTheme(
-                darkTheme = when (viewModel.themeValue) {
-                    Theme.LIGHT -> false
-                    Theme.DARK -> true
-                    else -> isSystemInDarkTheme()
-                }
+                darkTheme =
+                    when (viewModel.themeValue) {
+                        Theme.LIGHT -> false
+                        Theme.DARK -> true
+                        else -> isSystemInDarkTheme()
+                    }
             ) {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    color = MaterialTheme.colorScheme.background,
                 ) {
                     val startDestination = viewModel.startDestionation
-                    NavGraph(
-                        startDestination = startDestination
-                    )
+                    NavGraph(startDestination = startDestination)
                 }
             }
         }

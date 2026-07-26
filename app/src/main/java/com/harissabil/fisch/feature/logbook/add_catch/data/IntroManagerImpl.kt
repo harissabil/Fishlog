@@ -7,17 +7,13 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
 import com.harissabil.fisch.feature.logbook.add_catch.domain.IntroManager
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
 
-class IntroManagerImpl @Inject constructor(
-    private val context: Context,
-) : IntroManager {
+class IntroManagerImpl @Inject constructor(private val context: Context) : IntroManager {
     override suspend fun saveIntroShown() {
-        context.dataStore.edit { settings ->
-            settings[PreferenceKeys.INTRO_SHOWN] = true
-        }
+        context.dataStore.edit { settings -> settings[PreferenceKeys.INTRO_SHOWN] = true }
     }
 
     override fun readIntroShown(): Flow<Boolean> {

@@ -21,7 +21,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -35,40 +34,38 @@ fun <T> FishUploadImage(
     onImageClick: (image: T?) -> Unit,
     isInEditMode: Boolean = true,
 ) {
-    val clickableModifier = if (isInEditMode) {
-        Modifier.clickable { onImageClick(image) }
-    } else {
-        Modifier
-    }
+    val clickableModifier =
+        if (isInEditMode) {
+            Modifier.clickable { onImageClick(image) }
+        } else {
+            Modifier
+        }
 
     Box(
-        modifier = Modifier
-            .clip(MaterialTheme.shapes.large)
-            .fillMaxWidth()
-            .aspectRatio(4f / 3f)
-            .background(MaterialTheme.colorScheme.surfaceVariant)
-            .then(clickableModifier)
-            .then(modifier),
-        contentAlignment = Alignment.Center
+        modifier =
+            Modifier.clip(MaterialTheme.shapes.large)
+                .fillMaxWidth()
+                .aspectRatio(4f / 3f)
+                .background(MaterialTheme.colorScheme.surfaceVariant)
+                .then(clickableModifier)
+                .then(modifier),
+        contentAlignment = Alignment.Center,
     ) {
         AnimatedVisibility(visible = image == null) {
             Icon(
                 imageVector = Icons.Outlined.AddPhotoAlternate,
                 contentDescription = "Add a photo",
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(MaterialTheme.spacing.extraLarge)
+                modifier = Modifier.size(MaterialTheme.spacing.extraLarge),
             )
         }
         if (image != null) {
             AsyncImage(
                 model = if (image is Bitmap) image else image.toString(),
                 contentDescription = null,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .border(
-                        width = 2.dp,
-                        color = MaterialTheme.colorScheme.surfaceVariant,
-                    )
+                modifier =
+                    Modifier.fillMaxSize()
+                        .border(width = 2.dp, color = MaterialTheme.colorScheme.surfaceVariant),
             )
         }
     }
@@ -80,15 +77,8 @@ fun <T> FishUploadImage(
 private fun FishUploadImagePreview() {
     FischTheme {
         Surface {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-            ) {
-                FishUploadImage(
-                    image = null,
-                    onImageClick = {}
-                )
+            Box(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+                FishUploadImage(image = null, onImageClick = {})
             }
         }
     }

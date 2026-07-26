@@ -7,13 +7,10 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class LocationHelper @Inject constructor(
-    @ApplicationContext private val context: Context,
-) {
+class LocationHelper @Inject constructor(@ApplicationContext private val context: Context) {
 
     fun isConnected(): Boolean {
-        val locationManager =
-            context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
     }
 }

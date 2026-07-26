@@ -4,7 +4,6 @@ import com.harissabil.fisch.feature.home.data.WeatherRepositoryImpl
 import com.harissabil.fisch.feature.home.domain.repository.WeatherRepository
 import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
@@ -16,6 +15,6 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindWeatherRepository(
-        weatherRepositoryImpl: WeatherRepositoryImpl,
+        weatherRepositoryImpl: WeatherRepositoryImpl
     ): WeatherRepository
 }

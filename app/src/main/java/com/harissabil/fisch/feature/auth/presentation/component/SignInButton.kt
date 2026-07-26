@@ -40,26 +40,23 @@ fun SignInButton(
     @DrawableRes icon: Int,
 ) {
     FilledTonalButton(
-        modifier = Modifier
-            .sizeIn(minHeight = 40.dp)
-            .defaultMinSize(minWidth = 248.dp)
-            .then(modifier)
-            .clearAndSetSemantics {
-                role = Role.Button
-                contentDescription = label
-            },
+        modifier =
+            Modifier.sizeIn(minHeight = 40.dp)
+                .defaultMinSize(minWidth = 248.dp)
+                .then(modifier)
+                .clearAndSetSemantics {
+                    role = Role.Button
+                    contentDescription = label
+                },
         onClick = onClick,
         enabled = enabled,
         shape = RoundedCornerShape(size = 8.dp),
     ) {
-        Row(
-            modifier = Modifier.padding(4.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        Row(modifier = Modifier.padding(4.dp), verticalAlignment = Alignment.CenterVertically) {
             Image(
                 modifier = Modifier.size(24.dp),
                 painter = painterResource(id = icon),
-                contentDescription = null
+                contentDescription = null,
             )
             Spacer(modifier = Modifier.width(24.dp))
             Text(text = label)
@@ -73,9 +70,7 @@ fun SignInButton(
 private fun SignInButtonPreview() {
     FischTheme {
         Column(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.background)
-                .padding(16.dp),
+            modifier = Modifier.background(MaterialTheme.colorScheme.background).padding(16.dp)
         ) {
             SignInButton(
                 modifier = Modifier.fillMaxWidth(),

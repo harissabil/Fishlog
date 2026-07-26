@@ -6,11 +6,8 @@ import com.google.maps.android.clustering.ClusterItem
 
 data class MapItem(
     val id: String? = null,
-
     val logbookRef: DocumentReference? = null,
-
     val placeName: String? = null,
-
     var latLong: LatLng? = null,
 ) : ClusterItem {
     override fun getPosition(): LatLng {

@@ -21,9 +21,10 @@ object BillingModule {
     fun providesBillingManager(
         application: Application,
         updateUserPlan: UpdateUserPlan,
-    ): BillingManager = BillingManagerImpl(
-        application = application,
-        updateUserPlan = updateUserPlan,
-        auth = Firebase.auth,
-    )
+    ): BillingManager =
+        BillingManagerImpl(
+            application = application,
+            updateUserPlan = updateUserPlan,
+            auth = Firebase.auth,
+        )
 }

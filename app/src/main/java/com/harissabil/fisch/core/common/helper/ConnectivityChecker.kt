@@ -15,17 +15,15 @@ class ConnectivityChecker {
      * Check the device's connectivity status.
      *
      * @param mContext the context of the calling activity or application.
-     *
      * @return true if the device has an active Wi-Fi, cellular, Bluetooth or Ethernet connection,
-     * false otherwise.
+     *   false otherwise.
      */
     operator fun invoke(mContext: Context): Boolean {
-        val connectivityManager: ConnectivityManager = mContext
-            .getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val network: Network = connectivityManager
-            .activeNetwork ?: return false
-        val networkCapabilities: NetworkCapabilities = connectivityManager
-            .getNetworkCapabilities(network) ?: return false
+        val connectivityManager: ConnectivityManager =
+            mContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network: Network = connectivityManager.activeNetwork ?: return false
+        val networkCapabilities: NetworkCapabilities =
+            connectivityManager.getNetworkCapabilities(network) ?: return false
         return when {
             networkCapabilities.hasTransport(TRANSPORT_WIFI) -> true
             networkCapabilities.hasTransport(TRANSPORT_CELLULAR) -> true

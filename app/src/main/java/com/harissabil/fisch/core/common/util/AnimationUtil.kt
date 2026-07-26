@@ -17,74 +17,45 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 
 @Composable
-fun AnimatedNavigationIcon(
-    visible: Boolean,
-    content: @Composable () -> Unit,
-) {
+fun AnimatedNavigationIcon(visible: Boolean, content: @Composable () -> Unit) {
     AnimatedVisibility(
         visible = visible,
-        enter = slideInHorizontally(
-            animationSpec = tween(durationMillis = 500)
-        ) + fadeIn(
-            animationSpec = tween(durationMillis = 500)
-        ),
-        exit = slideOutHorizontally(
-            animationSpec = tween(durationMillis = 500)
-        ) + fadeOut(
-            animationSpec = tween(durationMillis = 500)
-        )
+        enter =
+            slideInHorizontally(animationSpec = tween(durationMillis = 500)) +
+                fadeIn(animationSpec = tween(durationMillis = 500)),
+        exit =
+            slideOutHorizontally(animationSpec = tween(durationMillis = 500)) +
+                fadeOut(animationSpec = tween(durationMillis = 500)),
     ) {
         content()
     }
 }
 
 @Composable
-fun AnimatedTrailingIcon(
-    visible: Boolean,
-    content: @Composable () -> Unit,
-) {
+fun AnimatedTrailingIcon(visible: Boolean, content: @Composable () -> Unit) {
     AnimatedVisibility(
         visible = visible,
-        enter = slideInHorizontally(
-            animationSpec = tween(durationMillis = 500)
-        ) {
-            it
-        } + fadeIn(
-            animationSpec = tween(durationMillis = 500)
-        ),
-        exit = slideOutHorizontally(
-            animationSpec = tween(durationMillis = 500)
-        ) {
-            it
-        } + fadeOut(
-            animationSpec = tween(durationMillis = 500)
-        )
+        enter =
+            slideInHorizontally(animationSpec = tween(durationMillis = 500)) { it } +
+                fadeIn(animationSpec = tween(durationMillis = 500)),
+        exit =
+            slideOutHorizontally(animationSpec = tween(durationMillis = 500)) { it } +
+                fadeOut(animationSpec = tween(durationMillis = 500)),
     ) {
         content()
     }
 }
 
 @Composable
-fun AnimatedTextFieldTrailingIcon(
-    visible: Boolean,
-    content: @Composable () -> Unit,
-) {
+fun AnimatedTextFieldTrailingIcon(visible: Boolean, content: @Composable () -> Unit) {
     AnimatedVisibility(
         visible = visible,
-        enter = slideInHorizontally(
-            animationSpec = tween(durationMillis = 500)
-        ) {
-            it / 3
-        } + fadeIn(
-            animationSpec = tween(durationMillis = 500)
-        ),
-        exit = slideOutHorizontally(
-            animationSpec = tween(durationMillis = 500)
-        ) {
-            it / 3
-        } + fadeOut(
-            animationSpec = tween(durationMillis = 500)
-        )
+        enter =
+            slideInHorizontally(animationSpec = tween(durationMillis = 500)) { it / 3 } +
+                fadeIn(animationSpec = tween(durationMillis = 500)),
+        exit =
+            slideOutHorizontally(animationSpec = tween(durationMillis = 500)) { it / 3 } +
+                fadeOut(animationSpec = tween(durationMillis = 500)),
     ) {
         content()
     }
@@ -99,27 +70,27 @@ fun NavGraphBuilder.slideContainerAnimationComposable(
         enterTransition = {
             slideIntoContainer(
                 AnimatedContentTransitionScope.SlideDirection.Up,
-                animationSpec = tween(500)
+                animationSpec = tween(500),
             ) + fadeIn(animationSpec = tween(500))
         },
         exitTransition = {
             slideOutOfContainer(
                 AnimatedContentTransitionScope.SlideDirection.Down,
-                animationSpec = tween(500)
+                animationSpec = tween(500),
             ) + fadeOut(animationSpec = tween(500))
         },
         popEnterTransition = {
             slideIntoContainer(
                 AnimatedContentTransitionScope.SlideDirection.Up,
-                animationSpec = tween(500)
+                animationSpec = tween(500),
             ) + fadeIn(animationSpec = tween(500))
         },
         popExitTransition = {
             slideOutOfContainer(
                 AnimatedContentTransitionScope.SlideDirection.Down,
-                animationSpec = tween(500)
+                animationSpec = tween(500),
             ) + fadeOut(animationSpec = tween(500))
-        }
+        },
     ) {
         content(it)
     }
@@ -132,33 +103,21 @@ fun NavGraphBuilder.slideHorizontallyAnimationComposable(
     this.composable(
         route = route,
         enterTransition = {
-            slideInHorizontally(
-                animationSpec = tween(500)
-            ) {
-                it
-            } + fadeIn(animationSpec = tween(500))
+            slideInHorizontally(animationSpec = tween(500)) { it } +
+                fadeIn(animationSpec = tween(500))
         },
         exitTransition = {
-            slideOutHorizontally(
-                animationSpec = tween(500)
-            ) {
-                it
-            } + fadeOut(animationSpec = tween(500))
+            slideOutHorizontally(animationSpec = tween(500)) { it } +
+                fadeOut(animationSpec = tween(500))
         },
         popEnterTransition = {
-            slideInHorizontally(
-                animationSpec = tween(500)
-            ) {
-                it
-            } + fadeIn(animationSpec = tween(500))
+            slideInHorizontally(animationSpec = tween(500)) { it } +
+                fadeIn(animationSpec = tween(500))
         },
         popExitTransition = {
-            slideOutHorizontally(
-                animationSpec = tween(500)
-            ) {
-                it
-            } + fadeOut(animationSpec = tween(500))
-        }
+            slideOutHorizontally(animationSpec = tween(500)) { it } +
+                fadeOut(animationSpec = tween(500))
+        },
     ) {
         content(it)
     }
@@ -171,29 +130,21 @@ fun NavGraphBuilder.scaleInAndOutAnimationComposable(
     this.composable(
         route = route,
         enterTransition = {
-            scaleIn(
-                animationSpec = tween(500),
-                transformOrigin = TransformOrigin(0.5f, 1f),
-            ) + fadeIn(animationSpec = tween(500))
+            scaleIn(animationSpec = tween(500), transformOrigin = TransformOrigin(0.5f, 1f)) +
+                fadeIn(animationSpec = tween(500))
         },
         exitTransition = {
-            scaleOut(
-                animationSpec = tween(500),
-                transformOrigin = TransformOrigin(0.5f, 1f),
-            ) + fadeOut(animationSpec = tween(500))
+            scaleOut(animationSpec = tween(500), transformOrigin = TransformOrigin(0.5f, 1f)) +
+                fadeOut(animationSpec = tween(500))
         },
         popEnterTransition = {
-            scaleIn(
-                animationSpec = tween(500),
-                transformOrigin = TransformOrigin(0.5f, 1f),
-            ) + fadeIn(animationSpec = tween(500))
+            scaleIn(animationSpec = tween(500), transformOrigin = TransformOrigin(0.5f, 1f)) +
+                fadeIn(animationSpec = tween(500))
         },
         popExitTransition = {
-            scaleOut(
-                animationSpec = tween(500),
-                transformOrigin = TransformOrigin(0.5f, 1f),
-            ) + fadeOut(animationSpec = tween(500))
-        }
+            scaleOut(animationSpec = tween(500), transformOrigin = TransformOrigin(0.5f, 1f)) +
+                fadeOut(animationSpec = tween(500))
+        },
     ) {
         content(it)
     }

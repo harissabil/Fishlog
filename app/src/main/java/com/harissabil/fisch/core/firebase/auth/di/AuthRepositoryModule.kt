@@ -17,12 +17,10 @@ import dagger.hilt.components.SingletonComponent
 object AuthRepositoryModule {
 
     @Provides
-    fun provideGoogleAuthUiClient(
-        @ApplicationContext context: Context,
-    ): AuthRepository {
+    fun provideGoogleAuthUiClient(@ApplicationContext context: Context): AuthRepository {
         return AuthRepositoryImpl(
             credentialManager = CredentialManager.create(context),
-            auth = Firebase.auth
+            auth = Firebase.auth,
         )
     }
 }

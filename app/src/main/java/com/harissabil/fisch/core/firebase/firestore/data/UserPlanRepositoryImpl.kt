@@ -9,16 +9,18 @@ import com.harissabil.fisch.core.firebase.firestore.domain.model.Constant.COUNTE
 import com.harissabil.fisch.core.firebase.firestore.domain.model.Constant.USERS
 import com.harissabil.fisch.core.firebase.firestore.domain.model.LogbookCounter
 import com.harissabil.fisch.core.firebase.firestore.domain.model.UserPlan
+import javax.inject.Inject
+import javax.inject.Named
+import javax.inject.Singleton
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
-import javax.inject.Inject
-import javax.inject.Named
-import javax.inject.Singleton
 
 @Singleton
-class UserPlanRepositoryImpl @Inject constructor(
+class UserPlanRepositoryImpl
+@Inject
+constructor(
     @Named(USERS) private val usersRef: CollectionReference,
     private val auth: FirebaseAuth,
 ) : UserPlanRepository {
@@ -47,23 +49,26 @@ class UserPlanRepositoryImpl @Inject constructor(
         val uid = auth.currentUser?.uid
         if (uid == null) {
             trySend(Resource.Error("Something went wrong!"))
-            awaitClose { }
+            awaitClose {}
             return@callbackFlow
         }
 
-        val snapshotListener = usersRef.document(uid).collection(COUNTERS)
-            .document(currentMonthId())
-            .addSnapshotListener { snapshot, e ->
-                val result = if (snapshot != null) {
-                    val counter = snapshot.toObject(LogbookCounter::class.java) ?: LogbookCounter()
-                    Resource.Success(counter.count)
-                } else {
-                    Resource.Error(e?.message ?: "Something went wrong!")
+        val snapshotListener =
+            usersRef
+                .document(uid)
+                .collection(COUNTERS)
+                .document(currentMonthId())
+                .addSnapshotListener { snapshot, e ->
+                    val result =
+                        if (snapshot != null) {
+                            val counter =
+                                snapshot.toObject(LogbookCounter::class.java) ?: LogbookCounter()
+                            Resource.Success(counter.count)
+                        } else {
+                            Resource.Error(e?.message ?: "Something went wrong!")
+                        }
+                    trySend(result)
                 }
-                trySend(result)
-            }
-        awaitClose {
-            snapshotListener.remove()
-        }
+        awaitClose { snapshotListener.remove() }
     }
 }

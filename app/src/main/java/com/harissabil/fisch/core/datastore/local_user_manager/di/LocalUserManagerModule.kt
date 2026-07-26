@@ -10,16 +10,13 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
-
 @Module
 @InstallIn(SingletonComponent::class)
 object LocalUserManagerModule {
 
     @Provides
     @Singleton
-    fun provideLocalUserManager(
-        @ApplicationContext context: Context,
-    ): LocalUserManager {
+    fun provideLocalUserManager(@ApplicationContext context: Context): LocalUserManager {
         return LocalUserManagerImpl(context)
     }
 }

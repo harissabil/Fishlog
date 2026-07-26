@@ -33,64 +33,57 @@ import com.harissabil.fisch.core.common.theme.spacing
 import com.harissabil.fisch.feature.profile.domain.model.UserData
 
 @Composable
-fun ProfileTop(
-    userData: UserData?,
-    modifier: Modifier = Modifier,
-    catches: Int?,
-    visits: Int?,
-) {
+fun ProfileTop(userData: UserData?, modifier: Modifier = Modifier, catches: Int?, visits: Int?) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .then(modifier),
+        modifier = Modifier.fillMaxWidth().then(modifier),
         shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp),
-        colors = CardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(10.dp),
-            contentColor = MaterialTheme.colorScheme.onSurface,
-            disabledContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(10.dp),
-            disabledContentColor = MaterialTheme.colorScheme.onSurface
-        )
+        colors =
+            CardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(10.dp),
+                contentColor = MaterialTheme.colorScheme.onSurface,
+                disabledContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(10.dp),
+                disabledContentColor = MaterialTheme.colorScheme.onSurface,
+            ),
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    vertical = MaterialTheme.spacing.medium,
-                    horizontal = MaterialTheme.spacing.large
-                )
+            modifier =
+                Modifier.fillMaxWidth()
+                    .padding(
+                        vertical = MaterialTheme.spacing.medium,
+                        horizontal = MaterialTheme.spacing.large,
+                    ),
         ) {
             AsyncImage(
                 model = userData?.profilePictureUrl,
                 contentDescription = "Profile Picture",
-                modifier = Modifier
-                    .size(102.dp)
-                    .clip(CircleShape), contentScale = ContentScale.Crop
+                modifier = Modifier.size(102.dp).clip(CircleShape),
+                contentScale = ContentScale.Crop,
             )
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
             Text(
                 text = userData?.userName ?: "N/A",
                 textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.SemiBold)
+                style =
+                    MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.SemiBold),
             )
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.extraSmall))
             Text(
                 text = userData?.email ?: "N/A",
                 textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
             )
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = MaterialTheme.spacing.large),
+                modifier =
+                    Modifier.fillMaxWidth().padding(horizontal = MaterialTheme.spacing.large),
                 horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 ProfileCatches(catches = catches)
                 VerticalDivider(
                     modifier = Modifier.height(32.dp),
-                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
                 )
                 ProfileVisits(visits = visits)
             }
@@ -106,14 +99,15 @@ private fun ProfileTopPreview() {
     FischTheme {
         Surface {
             ProfileTop(
-                userData = UserData(
-                    userName = "John Doe",
-                    profilePictureUrl = null,
-                    email = "johndoe@gmail.com",
-                    userId = "123",
-                ),
+                userData =
+                    UserData(
+                        userName = "John Doe",
+                        profilePictureUrl = null,
+                        email = "johndoe@gmail.com",
+                        userId = "123",
+                    ),
                 visits = 100,
-                catches = 100
+                catches = 100,
             )
         }
     }

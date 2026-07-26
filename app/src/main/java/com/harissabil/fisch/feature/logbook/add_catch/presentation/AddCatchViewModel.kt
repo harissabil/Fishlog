@@ -33,6 +33,7 @@ import com.harissabil.fisch.core.location.domain.LocationTracker
 import com.harissabil.fisch.feature.logbook.add_catch.domain.usecase.ReadIntroShown
 import com.harissabil.fisch.feature.logbook.add_catch.domain.usecase.SaveIntroShown
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -46,10 +47,11 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import javax.inject.Inject
 
 @HiltViewModel
-class AddCatchViewModel @Inject constructor(
+class AddCatchViewModel
+@Inject
+constructor(
     private val geminiClient: GeminiClient,
     private val addLogbook: AddLogbook,
     private val baitManager: BaitManager,
@@ -99,15 +101,11 @@ class AddCatchViewModel @Inject constructor(
             is AddCatchEvent.SetCaptureDate -> setCaptureDate(event.captureDate)
             is AddCatchEvent.SetCaptureTime -> setCaptureTime(event.captureTime)
             is AddCatchEvent.SetCaptureLocation -> setCaptureLocation(event.captureLocation)
-            is AddCatchEvent.SetCurrentLocation -> setCurrentLocation(
-                event.isCurrentLocation,
-                event.context
-            )
+            is AddCatchEvent.SetCurrentLocation ->
+                setCurrentLocation(event.isCurrentLocation, event.context)
 
-            is AddCatchEvent.EnableLocationRequest -> enableLocationRequest(
-                event.context,
-                event.makeRequest
-            )
+            is AddCatchEvent.EnableLocationRequest ->
+                enableLocationRequest(event.context, event.makeRequest)
 
             is AddCatchEvent.SetNotes -> setNotes(event.notes)
             is AddCatchEvent.UploadCatchData -> uploadCatchData(event.context)
@@ -117,57 +115,65 @@ class AddCatchViewModel @Inject constructor(
     }
 
     private fun getPlusPriceLabel() {
-        billingManager.planProductDetails.onEach { productDetails ->
-            val price = productDetails
-                ?.subscriptionOfferDetails
-                ?.firstOrNull()
-                ?.pricingPhases
-                ?.pricingPhaseList
-                ?.firstOrNull()
-                ?.formattedPrice
-            _state.update { it.copy(plusPriceLabel = price) }
-        }.launchIn(viewModelScope)
+        billingManager.planProductDetails
+            .onEach { productDetails ->
+                val price =
+                    productDetails
+                        ?.subscriptionOfferDetails
+                        ?.firstOrNull()
+                        ?.pricingPhases
+                        ?.pricingPhaseList
+                        ?.firstOrNull()
+                        ?.formattedPrice
+                _state.update { it.copy(plusPriceLabel = price) }
+            }
+            .launchIn(viewModelScope)
     }
 
     private fun dismissPaywallWhenSubscribed() {
-        billingManager.isPlus.onEach { isPlus ->
-            if (isPlus) {
-                _state.update { it.copy(showPaywallSheet = false) }
+        billingManager.isPlus
+            .onEach { isPlus ->
+                if (isPlus) {
+                    _state.update { it.copy(showPaywallSheet = false) }
+                }
             }
-        }.launchIn(viewModelScope)
+            .launchIn(viewModelScope)
     }
 
     private fun getAiLanguage() {
-        aiLanguageUseCase.getAiLanguage().onEach { language ->
-            _aiLanguage.value = language
-        }.launchIn(viewModelScope)
+        aiLanguageUseCase
+            .getAiLanguage()
+            .onEach { language -> _aiLanguage.value = language }
+            .launchIn(viewModelScope)
     }
 
     private fun uploadCatchData(context: Context) {
         if (validateCatchData()) {
             _state.value = _state.value.copy(isUploading = true)
             viewModelScope.launch {
-                val addLogbook = addLogbook.invoke(
-                    logbook = Logbook(
-                        id = null,
-                        email = null,
-                        jenisIkan = _state.value.fishType,
-                        jumlahIkan = _state.value.fishQuantity.toInt(),
-                        waktuPenangkapan = "${_state.value.captureDate} ${_state.value.captureTime}".toTimestamp(
-                            context
-                        ),
-                        tempatPenangkapan = _state.value.captureLocation,
-                        fotoIkan = null,
-                        beratIkan = _state.value.fishWeight.toDoubleOrNull(),
-                        panjangIkan = _state.value.fishLength.toDoubleOrNull(),
-                        umpan = _state.value.bait.ifBlank { null },
-                        dilepaskan = _state.value.isReleased,
-                        catatan = _state.value.notes,
-                    ),
-                    fishImage = _state.value.imageBitmaps,
-                    lat = _geoPoint.value?.latitude,
-                    long = _geoPoint.value?.longitude,
-                )
+                val addLogbook =
+                    addLogbook.invoke(
+                        logbook =
+                            Logbook(
+                                id = null,
+                                email = null,
+                                jenisIkan = _state.value.fishType,
+                                jumlahIkan = _state.value.fishQuantity.toInt(),
+                                waktuPenangkapan =
+                                    "${_state.value.captureDate} ${_state.value.captureTime}"
+                                        .toTimestamp(context),
+                                tempatPenangkapan = _state.value.captureLocation,
+                                fotoIkan = null,
+                                beratIkan = _state.value.fishWeight.toDoubleOrNull(),
+                                panjangIkan = _state.value.fishLength.toDoubleOrNull(),
+                                umpan = _state.value.bait.ifBlank { null },
+                                dilepaskan = _state.value.isReleased,
+                                catatan = _state.value.notes,
+                            ),
+                        fishImage = _state.value.imageBitmaps,
+                        lat = _geoPoint.value?.latitude,
+                        long = _geoPoint.value?.longitude,
+                    )
                 if (addLogbook.message == QUOTA_EXCEEDED_MESSAGE) {
                     _state.value = _state.value.copy(isUploading = false, showPaywallSheet = true)
                     return@launch
@@ -204,14 +210,16 @@ class AddCatchViewModel @Inject constructor(
             _state.value = _state.value.copy(fishQuantityError = "*Fish quantity is required")
             isValid = false
         }
-        if (_state.value.fishWeight.isNotEmpty() && _state.value.fishWeight.toDoubleOrNull()
-                .let { it == null || it <= 0.0 }
+        if (
+            _state.value.fishWeight.isNotEmpty() &&
+                _state.value.fishWeight.toDoubleOrNull().let { it == null || it <= 0.0 }
         ) {
             _state.value = _state.value.copy(fishWeightError = "*Enter a valid weight")
             isValid = false
         }
-        if (_state.value.fishLength.isNotEmpty() && _state.value.fishLength.toDoubleOrNull()
-                .let { it == null || it <= 0.0 }
+        if (
+            _state.value.fishLength.isNotEmpty() &&
+                _state.value.fishLength.toDoubleOrNull().let { it == null || it <= 0.0 }
         ) {
             _state.value = _state.value.copy(fishLengthError = "*Enter a valid length")
             isValid = false
@@ -248,15 +256,19 @@ class AddCatchViewModel @Inject constructor(
     }
 
     private fun getBaitSuggestions() {
-        baitManager.readBaits().onEach { baits ->
-            _state.value = _state.value.copy(baitSuggestions = baits.sorted())
-        }.launchIn(viewModelScope)
+        baitManager
+            .readBaits()
+            .onEach { baits -> _state.value = _state.value.copy(baitSuggestions = baits.sorted()) }
+            .launchIn(viewModelScope)
     }
 
     private fun getFishTypeSuggestions() {
-        speciesManager.readSpecies().onEach { species ->
-            _state.value = _state.value.copy(fishTypeSuggestions = species.sorted())
-        }.launchIn(viewModelScope)
+        speciesManager
+            .readSpecies()
+            .onEach { species ->
+                _state.value = _state.value.copy(fishTypeSuggestions = species.sorted())
+            }
+            .launchIn(viewModelScope)
     }
 
     private fun setCaptureDate(captureDate: String) {
@@ -297,9 +309,8 @@ class AddCatchViewModel @Inject constructor(
 
             _geoPoint.value = GeoPoint(lat, lon)
 
-            _state.value = _state.value.copy(
-                captureLocation = getReadableLocation(lat, lon, context) ?: ""
-            )
+            _state.value =
+                _state.value.copy(captureLocation = getReadableLocation(lat, lon, context) ?: "")
         }
 
     private fun setNotes(notes: String) {
@@ -353,22 +364,28 @@ class AddCatchViewModel @Inject constructor(
 
     private fun enableLocationRequest(
         context: Context,
-        makeRequest: (intentSenderRequest: IntentSenderRequest) -> Unit,//Lambda to call when locations are off.
+        makeRequest:
+            (
+                intentSenderRequest: IntentSenderRequest
+            ) -> Unit, // Lambda to call when locations are off.
     ) {
-        val locationRequest = LocationRequest.Builder(//Create a location request object
-            Priority.PRIORITY_BALANCED_POWER_ACCURACY,//Self explanatory
-            10000//Interval -> shorter the interval more frequent location updates
-        ).build()
+        val locationRequest =
+            LocationRequest.Builder( // Create a location request object
+                    Priority.PRIORITY_BALANCED_POWER_ACCURACY, // Self explanatory
+                    10000, // Interval -> shorter the interval more frequent location updates
+                )
+                .build()
 
-        val builder = LocationSettingsRequest.Builder()
-            .addLocationRequest(locationRequest)
+        val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
 
         val client: SettingsClient = LocationServices.getSettingsClient(context)
         val task: Task<LocationSettingsResponse> =
-            client.checkLocationSettings(builder.build())//Checksettings with building a request
+            client.checkLocationSettings(builder.build()) // Checksettings with building a request
         task.addOnSuccessListener { locationSettingsResponse ->
             Timber.tag("Location")
-                .d("enableLocationRequest: LocationService Already Enabled $locationSettingsResponse")
+                .d(
+                    "enableLocationRequest: LocationService Already Enabled $locationSettingsResponse"
+                )
         }
         task.addOnFailureListener { exception ->
             if (exception is ResolvableApiException) {
@@ -377,8 +394,8 @@ class AddCatchViewModel @Inject constructor(
                 try {
                     val intentSenderRequest =
                         IntentSenderRequest.Builder(exception.resolution)
-                            .build()//Create the request prompt
-                    makeRequest(intentSenderRequest)//Make the request from UI
+                            .build() // Create the request prompt
+                    makeRequest(intentSenderRequest) // Make the request from UI
                 } catch (sendEx: IntentSender.SendIntentException) {
                     // Ignore the error.
                 }
@@ -386,14 +403,13 @@ class AddCatchViewModel @Inject constructor(
         }
     }
 
-    private fun saveIntroShown() = viewModelScope.launch {
-        saveIntroShown.invoke()
-    }
+    private fun saveIntroShown() = viewModelScope.launch { saveIntroShown.invoke() }
 
     private fun readIntroShown() {
-        readIntroShown.invoke().onEach { isIntroShown ->
-            _state.update { it.copy(showIntroShowCase = !isIntroShown) }
-        }.launchIn(viewModelScope)
+        readIntroShown
+            .invoke()
+            .onEach { isIntroShown -> _state.update { it.copy(showIntroShowCase = !isIntroShown) } }
+            .launchIn(viewModelScope)
     }
 
     sealed class UIEvent {

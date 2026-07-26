@@ -4,40 +4,27 @@ import android.graphics.Bitmap
 
 data class AddCatchState(
     val showIntroShowCase: Boolean = false,
-
     val imageBitmaps: Bitmap? = null,
-
     val fishType: String = "",
     val fishTypeError: String? = null,
     val isIdentifying: Boolean = false,
     val fishTypeSuggestions: List<String> = emptyList(),
-
     val fishQuantity: String = "",
     val fishQuantityError: String? = null,
-
     val fishWeight: String = "",
     val fishWeightError: String? = null,
-
     val fishLength: String = "",
     val fishLengthError: String? = null,
-
     val bait: String = "",
     val baitSuggestions: List<String> = emptyList(),
-
     val isReleased: Boolean = false,
-
     val captureDate: String = "",
     val captureTime: String = "",
-
     val captureLocation: String = "",
     val isCurrentLocation: Boolean = false,
-
     val notes: String = "",
-
     val isUploading: Boolean = false,
-
     val isUploaded: Boolean = false,
-
     val showPaywallSheet: Boolean = false,
     val plusPriceLabel: String? = null,
 )

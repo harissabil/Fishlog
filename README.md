@@ -55,3 +55,10 @@ GEMINI_API_KEY="your key here"
 ```
 4. Add the `google-services.json` file to the `app` folder. You can download the file from the Firebase console.
 5. Sync the project with Gradle and run the app on an Android emulator or a physical Android device.
+
+## Code Style
+
+This project uses [ktfmt](https://github.com/fbtransfer/ktfmt) (via the [ktfmt-gradle](https://github.com/cortinico/ktfmt-gradle) plugin) to format Kotlin code, using the KotlinLang style.
+
+- Check formatting: `./gradlew ktfmtCheck`
+- Format code: `./gradlew ktfmtFormat`

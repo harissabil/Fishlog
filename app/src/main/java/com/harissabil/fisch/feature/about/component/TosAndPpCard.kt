@@ -19,16 +19,11 @@ import androidx.compose.ui.unit.dp
 import com.harissabil.fisch.core.common.theme.spacing
 
 @Composable
-fun TosAndPpCard(
-    modifier: Modifier = Modifier,
-    onTosClick: () -> Unit,
-    onPpClick: () -> Unit,
-) {
+fun TosAndPpCard(modifier: Modifier = Modifier, onTosClick: () -> Unit, onPpClick: () -> Unit) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .then(modifier),
-        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small + MaterialTheme.spacing.extraSmall),
+        modifier = Modifier.fillMaxWidth().then(modifier),
+        verticalArrangement =
+            Arrangement.spacedBy(MaterialTheme.spacing.small + MaterialTheme.spacing.extraSmall),
     ) {
         Text(
             text = "Source Code",
@@ -41,15 +36,17 @@ fun TosAndPpCard(
                 image = Icons.Outlined.Description,
                 imageSize = 24.dp,
                 title = "Terms of Service",
-                description = "https://github.com/harissabil/Fishlog/blob/main/docs/terms-of-service.md",
-                modifier = Modifier.clickable { onTosClick() }
+                description =
+                    "https://github.com/harissabil/Fishlog/blob/main/docs/terms-of-service.md",
+                modifier = Modifier.clickable { onTosClick() },
             )
             CardItem(
                 image = Icons.Outlined.Policy,
                 imageSize = 24.dp,
                 title = "Privacy Policy",
-                description = "https://github.com/harissabil/Fishlog/blob/main/docs/privacy-policy.md",
-                modifier = Modifier.clickable { onPpClick() }
+                description =
+                    "https://github.com/harissabil/Fishlog/blob/main/docs/privacy-policy.md",
+                modifier = Modifier.clickable { onPpClick() },
             )
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
         }

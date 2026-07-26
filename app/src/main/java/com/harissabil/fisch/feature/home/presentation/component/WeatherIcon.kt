@@ -25,30 +25,26 @@ import com.harissabil.fisch.feature.home.domain.model.WeatherCode
 import com.harissabil.fisch.feature.home.presentation.util.getWeatherIcon
 
 @Composable
-fun WeatherIcon(
-    weatherCode: WeatherCode?,
-    isDay: Boolean?,
-    modifier: Modifier = Modifier,
-) {
+fun WeatherIcon(weatherCode: WeatherCode?, isDay: Boolean?, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         if (weatherCode != null) {
             Icon(
-                painter = painterResource(
-                    id = getWeatherIcon(
-                        weatherCode = weatherCode,
-                        isDay = isDay ?: true
-                    )
-                ), contentDescription = weatherCode.description,
-                modifier = Modifier.size(42.dp)
+                painter =
+                    painterResource(
+                        id = getWeatherIcon(weatherCode = weatherCode, isDay = isDay ?: true)
+                    ),
+                contentDescription = weatherCode.description,
+                modifier = Modifier.size(42.dp),
             )
         } else {
             Text(
                 text = "N/A",
-                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.SemiBold),
+                style =
+                    MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.SemiBold),
             )
         }
         Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
@@ -57,7 +53,7 @@ fun WeatherIcon(
             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Normal),
             overflow = TextOverflow.Ellipsis,
             maxLines = 2,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
         )
     }
 }
@@ -66,9 +62,5 @@ fun WeatherIcon(
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun WeatherIconPrev() {
-    FischTheme {
-        Surface {
-            WeatherIcon(WeatherCode.CLEAR_SKY, true)
-        }
-    }
+    FischTheme { Surface { WeatherIcon(WeatherCode.CLEAR_SKY, true) } }
 }

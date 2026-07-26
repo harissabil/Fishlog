@@ -1,7 +1,6 @@
 package com.harissabil.fisch.feature.about.component
 
 import android.content.res.Configuration
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -38,50 +37,41 @@ fun <T> CardItem(
     title: String,
     description: String,
 ) {
-    val imagePaddingIfSmaller = if (imageSize < 36.dp)
-        (36.dp - imageSize).value.toInt() / 2 else 0
+    val imagePaddingIfSmaller = if (imageSize < 36.dp) (36.dp - imageSize).value.toInt() / 2 else 0
 
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(
-                horizontal = MaterialTheme.spacing.medium,
-                vertical = MaterialTheme.spacing.small
-            )
-            .then(modifier),
-        verticalAlignment = Alignment.CenterVertically
+        modifier =
+            Modifier.fillMaxWidth()
+                .padding(
+                    horizontal = MaterialTheme.spacing.medium,
+                    vertical = MaterialTheme.spacing.small,
+                )
+                .then(modifier),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Spacer(modifier = Modifier.width(imagePaddingIfSmaller.dp))
         if (image is ImageVector) {
             Icon(
                 imageVector = image,
                 contentDescription = title,
-                modifier = Modifier.size(imageSize)
+                modifier = Modifier.size(imageSize),
             )
         } else {
             AsyncImage(
                 model = image,
                 contentDescription = title,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(imageSize)
-                    .clip(CircleShape)
+                modifier = Modifier.size(imageSize).clip(CircleShape),
             )
         }
         Spacer(modifier = Modifier.width(imagePaddingIfSmaller.dp))
         Spacer(modifier = Modifier.width(MaterialTheme.spacing.medium))
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleSmall,
-            )
+        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.Center) {
+            Text(text = title, style = MaterialTheme.typography.titleSmall)
             Text(
                 text = description,
                 style = MaterialTheme.typography.titleSmall,
-                modifier = Modifier.alpha(0.5f)
+                modifier = Modifier.alpha(0.5f),
             )
         }
     }
@@ -96,7 +86,7 @@ private fun CardItemPreview() {
             CardItem(
                 image = R.drawable.ic_launcher_background,
                 title = "Title",
-                description = "Description"
+                description = "Description",
             )
         }
     }

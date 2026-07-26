@@ -9,8 +9,10 @@ import java.time.format.DateTimeFormatter
 fun getWeatherIcon(weatherCode: WeatherCode, isDay: Boolean): Int {
     return when (weatherCode) {
         WeatherCode.CLEAR_SKY -> if (isDay) R.drawable.ic_clear_day else R.drawable.ic_clear_night
-        WeatherCode.MAINLY_CLEAR -> if (isDay) R.drawable.ic_clear_day else R.drawable.ic_clear_night
-        WeatherCode.PARTLY_CLOUDY -> if (isDay) R.drawable.ic_partly_cloudy_day else R.drawable.ic_partly_cloudy_night
+        WeatherCode.MAINLY_CLEAR ->
+            if (isDay) R.drawable.ic_clear_day else R.drawable.ic_clear_night
+        WeatherCode.PARTLY_CLOUDY ->
+            if (isDay) R.drawable.ic_partly_cloudy_day else R.drawable.ic_partly_cloudy_night
         WeatherCode.OVERCAST -> R.drawable.ic_cloud
         WeatherCode.FOG -> R.drawable.ic_foggy
         WeatherCode.DEPOSITING_RIME_FOG -> R.drawable.ic_foggy

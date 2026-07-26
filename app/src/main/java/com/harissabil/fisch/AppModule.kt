@@ -9,8 +9,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import okhttp3.OkHttpClient
 import javax.inject.Singleton
+import okhttp3.OkHttpClient
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -20,20 +20,14 @@ object AppModule {
     @Singleton
     fun provideImageLoader(@ApplicationContext context: Context): ImageLoader {
         return ImageLoader.Builder(context)
-            .memoryCache {
-                MemoryCache.Builder(context)
-                    .maxSizePercent(0.25)
-                    .build()
-            }
+            .memoryCache { MemoryCache.Builder(context).maxSizePercent(0.25).build() }
             .diskCache {
                 DiskCache.Builder()
                     .directory(context.cacheDir.resolve("img_cache"))
                     .maxSizePercent(0.02)
                     .build()
             }
-            .okHttpClient {
-                OkHttpClient.Builder().build()
-            }
+            .okHttpClient { OkHttpClient.Builder().build() }
             .build()
     }
 }

@@ -41,27 +41,30 @@ fun FishLoading(
     spaceBetween: Dp = 10.dp,
     travelDistance: Dp = 20.dp,
 ) {
-    val circles = listOf(
-        remember { Animatable(initialValue = 0f) },
-        remember { Animatable(initialValue = 0f) },
-        remember { Animatable(initialValue = 0f) }
-    )
+    val circles =
+        listOf(
+            remember { Animatable(initialValue = 0f) },
+            remember { Animatable(initialValue = 0f) },
+            remember { Animatable(initialValue = 0f) },
+        )
 
     circles.forEachIndexed { index, animatable ->
         LaunchedEffect(key1 = animatable) {
             delay(index * 150L)
             animatable.animateTo(
                 targetValue = 1f,
-                animationSpec = infiniteRepeatable(
-                    animation = keyframes {
-                        durationMillis = 1200
-                        0.0f at 0 using LinearOutSlowInEasing
-                        1.0f at 300 using LinearOutSlowInEasing
-                        0.0f at 600 using LinearOutSlowInEasing
-                        0.0f at 1200 using LinearOutSlowInEasing
-                    },
-                    repeatMode = RepeatMode.Restart
-                )
+                animationSpec =
+                    infiniteRepeatable(
+                        animation =
+                            keyframes {
+                                durationMillis = 1200
+                                0.0f at 0 using LinearOutSlowInEasing
+                                1.0f at 300 using LinearOutSlowInEasing
+                                0.0f at 600 using LinearOutSlowInEasing
+                                0.0f at 1200 using LinearOutSlowInEasing
+                            },
+                        repeatMode = RepeatMode.Restart,
+                    ),
             )
         }
     }
@@ -69,21 +72,13 @@ fun FishLoading(
     val circleValues = circles.map { it.value }
     val distance = with(LocalDensity.current) { travelDistance.toPx() }
 
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(spaceBetween)
-    ) {
+    Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(spaceBetween)) {
         circleValues.forEach { value ->
             Box(
-                modifier = Modifier
-                    .size(circleSize)
-                    .graphicsLayer {
-                        translationY = -value * distance
-                    }
-                    .background(
-                        color = circleColor,
-                        shape = CircleShape
-                    )
+                modifier =
+                    Modifier.size(circleSize)
+                        .graphicsLayer { translationY = -value * distance }
+                        .background(color = circleColor, shape = CircleShape)
             )
         }
     }
@@ -91,24 +86,22 @@ fun FishLoading(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FishFullscreenLoading(
-    modifier: Modifier = Modifier,
-) {
+fun FishFullscreenLoading(modifier: Modifier = Modifier) {
     CompositionLocalProvider(
-        LocalRippleConfiguration provides RippleConfiguration(
-            color = Color.Transparent,
-            rippleAlpha = RippleAlpha(0f, 0f, 0f, 0f)
-        )
-    ) {
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Gray.copy(alpha = 0.3f))
-            .clickable(enabled = true) { }
-            .then(modifier)
-        ) {
-            FishLoading(
-                modifier = Modifier.align(Alignment.Center),
+        LocalRippleConfiguration provides
+            RippleConfiguration(
+                color = Color.Transparent,
+                rippleAlpha = RippleAlpha(0f, 0f, 0f, 0f),
             )
+    ) {
+        Box(
+            modifier =
+                Modifier.fillMaxSize()
+                    .background(Color.Gray.copy(alpha = 0.3f))
+                    .clickable(enabled = true) {}
+                    .then(modifier)
+        ) {
+            FishLoading(modifier = Modifier.align(Alignment.Center))
         }
     }
 }
@@ -116,7 +109,5 @@ fun FishFullscreenLoading(
 @Preview
 @Composable
 fun FishLoadingPreview() {
-    FischTheme {
-        FishLoading()
-    }
+    FischTheme { FishLoading() }
 }

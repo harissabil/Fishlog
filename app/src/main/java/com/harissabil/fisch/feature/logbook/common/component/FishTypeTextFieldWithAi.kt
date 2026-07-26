@@ -62,17 +62,15 @@ fun IntroShowcaseScope.FishTypeTextFieldWithAi(
     val isFocused by interactionSource.collectIsFocusedAsState()
 
     var expanded by remember { mutableStateOf(false) }
-    val filteredSuggestions = remember(value, suggestions) {
-        suggestions.filter { it.contains(value, ignoreCase = true) && it != value }
-    }
+    val filteredSuggestions =
+        remember(value, suggestions) {
+            suggestions.filter { it.contains(value, ignoreCase = true) && it != value }
+        }
     val menuVisible = expanded && filteredSuggestions.isNotEmpty() && isInEditMode
 
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .animateContentSize()
-            .then(modifier),
-        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
+        modifier = Modifier.fillMaxWidth().animateContentSize().then(modifier),
+        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small),
     ) {
         ExposedDropdownMenuBox(
             modifier = Modifier.weight(1f),
@@ -80,9 +78,9 @@ fun IntroShowcaseScope.FishTypeTextFieldWithAi(
             onExpandedChange = { if (isInEditMode) expanded = it },
         ) {
             FishTextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .menuAnchor(MenuAnchorType.PrimaryEditable, enabled = isInEditMode),
+                modifier =
+                    Modifier.fillMaxWidth()
+                        .menuAnchor(MenuAnchorType.PrimaryEditable, enabled = isInEditMode),
                 interactionSource = interactionSource,
                 value = value,
                 onValueChange = {
@@ -94,13 +92,11 @@ fun IntroShowcaseScope.FishTypeTextFieldWithAi(
                     Icon(
                         painter = painterResource(id = R.drawable.ic_fishlog),
                         contentDescription = null,
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(24.dp),
                     )
                 },
                 trailingIcon = {
-                    AnimatedTextFieldTrailingIcon(
-                        visible = value.isNotEmpty() && isFocused,
-                    ) {
+                    AnimatedTextFieldTrailingIcon(visible = value.isNotEmpty() && isFocused) {
                         IconButton(
                             onClick = {
                                 onValueChange("")
@@ -111,7 +107,7 @@ fun IntroShowcaseScope.FishTypeTextFieldWithAi(
                                     imageVector = Icons.Outlined.Cancel,
                                     contentDescription = "Clear",
                                 )
-                            }
+                            },
                         )
                     }
                 },
@@ -120,99 +116,104 @@ fun IntroShowcaseScope.FishTypeTextFieldWithAi(
                     AnimatedVisibility(visible = isError) {
                         supportingText?.let {
                             Column {
-                                Text(
-                                    text = it,
-                                    color = MaterialTheme.colorScheme.error
+                                Text(text = it, color = MaterialTheme.colorScheme.error)
+                                Spacer(
+                                    modifier =
+                                        Modifier.height(
+                                            MaterialTheme.spacing.small +
+                                                MaterialTheme.spacing.small
+                                        )
                                 )
-                                Spacer(modifier = Modifier.height(MaterialTheme.spacing.small + MaterialTheme.spacing.small))
                             }
                         }
                     }
                 },
-                keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.Words,
-                    imeAction = ImeAction.Next
-                ),
-                readOnly = !isInEditMode
+                keyboardOptions =
+                    KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Words,
+                        imeAction = ImeAction.Next,
+                    ),
+                readOnly = !isInEditMode,
             )
 
-            ExposedDropdownMenu(
-                expanded = menuVisible,
-                onDismissRequest = { expanded = false },
-            ) {
+            ExposedDropdownMenu(expanded = menuVisible, onDismissRequest = { expanded = false }) {
                 filteredSuggestions.forEach { suggestion ->
                     DropdownMenuItem(
                         text = { Text(suggestion) },
                         onClick = {
                             onValueChange(suggestion)
                             expanded = false
-                        }
+                        },
                     )
                 }
             }
         }
 
-//        if (isInEditMode) {
-//            FloatingActionButton(
-//                modifier = Modifier
-//                    .padding(top = 8.dp)
-//                    .introShowCaseTarget(
-//                        index = 0,
-//                        style = ShowcaseStyle.Default.copy(
-//                            backgroundColor = MaterialTheme.colorScheme.tertiary,
-//                            backgroundAlpha = 0.98f,
-//                            targetCircleColor = MaterialTheme.colorScheme.inverseOnSurface
-//                        ),
-//                        content = {
-//                            Column {
-//                                Text(
-//                                    text = "Identify Fish Type with AI",
-//                                    color = MaterialTheme.colorScheme.onTertiary,
-//                                    style = MaterialTheme.typography.headlineSmall,
-//                                    fontWeight = FontWeight.SemiBold
-//                                )
-//                                Spacer(modifier = Modifier.height(MaterialTheme.spacing.extraSmall))
-//                                Text(
-//                                    text = "Caught something new? Identify its type with AI powered by Gemini. It might be a new species!",
-//                                    color = MaterialTheme.colorScheme.onTertiary,
-//                                    style = MaterialTheme.typography.bodyLarge
-//                                )
-//                            }
-//                        }
-//                    ),
-//                onClick = {
-//                    keyboardController?.hide()
-//                    onIdentifyFishType()
-//                },
-//                containerColor = MaterialTheme.colorScheme.surface,
-//                elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 5.dp),
-//            ) {
-//                val rotation: Float
-//                if (isIdentifying) {
-//                    val infiniteTransition = rememberInfiniteTransition(label = "rotation")
-//                    rotation = infiniteTransition.animateValue(
-//                        0f,
-//                        1f,
-//                        Float.VectorConverter,
-//                        infiniteRepeatable(
-//                            animation = tween(
-//                                durationMillis = 2000,
-//                                easing = LinearEasing
-//                            )
-//                        ), label = "rotation"
-//                    ).value * 360
-//                } else {
-//                    rotation = 0f
-//                }
-//
-//                Icon(
-//                    painter = painterResource(id = R.drawable.ic_gemini_ai),
-//                    tint = Color.Unspecified,
-//                    contentDescription = "Identify Fish Type with AI",
-//                    modifier = Modifier.rotate(rotation)
-//                )
-//            }
-//        }
+        //        if (isInEditMode) {
+        //            FloatingActionButton(
+        //                modifier = Modifier
+        //                    .padding(top = 8.dp)
+        //                    .introShowCaseTarget(
+        //                        index = 0,
+        //                        style = ShowcaseStyle.Default.copy(
+        //                            backgroundColor = MaterialTheme.colorScheme.tertiary,
+        //                            backgroundAlpha = 0.98f,
+        //                            targetCircleColor = MaterialTheme.colorScheme.inverseOnSurface
+        //                        ),
+        //                        content = {
+        //                            Column {
+        //                                Text(
+        //                                    text = "Identify Fish Type with AI",
+        //                                    color = MaterialTheme.colorScheme.onTertiary,
+        //                                    style = MaterialTheme.typography.headlineSmall,
+        //                                    fontWeight = FontWeight.SemiBold
+        //                                )
+        //                                Spacer(modifier =
+        // Modifier.height(MaterialTheme.spacing.extraSmall))
+        //                                Text(
+        //                                    text = "Caught something new? Identify its type with
+        // AI powered by Gemini. It might be a new species!",
+        //                                    color = MaterialTheme.colorScheme.onTertiary,
+        //                                    style = MaterialTheme.typography.bodyLarge
+        //                                )
+        //                            }
+        //                        }
+        //                    ),
+        //                onClick = {
+        //                    keyboardController?.hide()
+        //                    onIdentifyFishType()
+        //                },
+        //                containerColor = MaterialTheme.colorScheme.surface,
+        //                elevation = FloatingActionButtonDefaults.elevation(defaultElevation =
+        // 5.dp),
+        //            ) {
+        //                val rotation: Float
+        //                if (isIdentifying) {
+        //                    val infiniteTransition = rememberInfiniteTransition(label =
+        // "rotation")
+        //                    rotation = infiniteTransition.animateValue(
+        //                        0f,
+        //                        1f,
+        //                        Float.VectorConverter,
+        //                        infiniteRepeatable(
+        //                            animation = tween(
+        //                                durationMillis = 2000,
+        //                                easing = LinearEasing
+        //                            )
+        //                        ), label = "rotation"
+        //                    ).value * 360
+        //                } else {
+        //                    rotation = 0f
+        //                }
+        //
+        //                Icon(
+        //                    painter = painterResource(id = R.drawable.ic_gemini_ai),
+        //                    tint = Color.Unspecified,
+        //                    contentDescription = "Identify Fish Type with AI",
+        //                    modifier = Modifier.rotate(rotation)
+        //                )
+        //            }
+        //        }
     }
 }
 
@@ -234,17 +235,15 @@ fun FishTypeTextFieldWithAi(
     val isFocused by interactionSource.collectIsFocusedAsState()
 
     var expanded by remember { mutableStateOf(false) }
-    val filteredSuggestions = remember(value, suggestions) {
-        suggestions.filter { it.contains(value, ignoreCase = true) && it != value }
-    }
+    val filteredSuggestions =
+        remember(value, suggestions) {
+            suggestions.filter { it.contains(value, ignoreCase = true) && it != value }
+        }
     val menuVisible = expanded && filteredSuggestions.isNotEmpty() && isInEditMode
 
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .animateContentSize()
-            .then(modifier),
-        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
+        modifier = Modifier.fillMaxWidth().animateContentSize().then(modifier),
+        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small),
     ) {
         ExposedDropdownMenuBox(
             modifier = Modifier.weight(1f),
@@ -252,9 +251,9 @@ fun FishTypeTextFieldWithAi(
             onExpandedChange = { if (isInEditMode) expanded = it },
         ) {
             FishTextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .menuAnchor(MenuAnchorType.PrimaryEditable, enabled = isInEditMode),
+                modifier =
+                    Modifier.fillMaxWidth()
+                        .menuAnchor(MenuAnchorType.PrimaryEditable, enabled = isInEditMode),
                 interactionSource = interactionSource,
                 value = value,
                 onValueChange = {
@@ -266,13 +265,11 @@ fun FishTypeTextFieldWithAi(
                     Icon(
                         painter = painterResource(id = R.drawable.ic_fishlog),
                         contentDescription = null,
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(24.dp),
                     )
                 },
                 trailingIcon = {
-                    AnimatedTextFieldTrailingIcon(
-                        visible = value.isNotEmpty() && isFocused,
-                    ) {
+                    AnimatedTextFieldTrailingIcon(visible = value.isNotEmpty() && isFocused) {
                         IconButton(
                             onClick = {
                                 onValueChange("")
@@ -283,7 +280,7 @@ fun FishTypeTextFieldWithAi(
                                     imageVector = Icons.Outlined.Cancel,
                                     contentDescription = "Clear",
                                 )
-                            }
+                            },
                         )
                     }
                 },
@@ -292,75 +289,78 @@ fun FishTypeTextFieldWithAi(
                     AnimatedVisibility(visible = isError) {
                         supportingText?.let {
                             Column {
-                                Text(
-                                    text = it,
-                                    color = MaterialTheme.colorScheme.error
+                                Text(text = it, color = MaterialTheme.colorScheme.error)
+                                Spacer(
+                                    modifier =
+                                        Modifier.height(
+                                            MaterialTheme.spacing.small +
+                                                MaterialTheme.spacing.small
+                                        )
                                 )
-                                Spacer(modifier = Modifier.height(MaterialTheme.spacing.small + MaterialTheme.spacing.small))
                             }
                         }
                     }
                 },
-                keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.Words,
-                    imeAction = ImeAction.Next
-                ),
-                readOnly = !isInEditMode
+                keyboardOptions =
+                    KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Words,
+                        imeAction = ImeAction.Next,
+                    ),
+                readOnly = !isInEditMode,
             )
 
-            ExposedDropdownMenu(
-                expanded = menuVisible,
-                onDismissRequest = { expanded = false },
-            ) {
+            ExposedDropdownMenu(expanded = menuVisible, onDismissRequest = { expanded = false }) {
                 filteredSuggestions.forEach { suggestion ->
                     DropdownMenuItem(
                         text = { Text(suggestion) },
                         onClick = {
                             onValueChange(suggestion)
                             expanded = false
-                        }
+                        },
                     )
                 }
             }
         }
 
-//        if (isInEditMode) {
-//            FloatingActionButton(
-//                modifier = Modifier
-//                    .padding(top = 8.dp),
-//                onClick = {
-//                    keyboardController?.hide()
-//                    onIdentifyFishType()
-//                },
-//                containerColor = MaterialTheme.colorScheme.surface,
-//                elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 5.dp),
-//            ) {
-//                val rotation: Float
-//                if (isIdentifying) {
-//                    val infiniteTransition = rememberInfiniteTransition(label = "rotation")
-//                    rotation = infiniteTransition.animateValue(
-//                        0f,
-//                        1f,
-//                        Float.VectorConverter,
-//                        infiniteRepeatable(
-//                            animation = tween(
-//                                durationMillis = 2000,
-//                                easing = LinearEasing
-//                            )
-//                        ), label = "rotation"
-//                    ).value * 360
-//                } else {
-//                    rotation = 0f
-//                }
-//
-//                Icon(
-//                    painter = painterResource(id = R.drawable.ic_gemini_ai),
-//                    tint = Color.Unspecified,
-//                    contentDescription = "Identify Fish Type with AI",
-//                    modifier = Modifier.rotate(rotation)
-//                )
-//            }
-//        }
+        //        if (isInEditMode) {
+        //            FloatingActionButton(
+        //                modifier = Modifier
+        //                    .padding(top = 8.dp),
+        //                onClick = {
+        //                    keyboardController?.hide()
+        //                    onIdentifyFishType()
+        //                },
+        //                containerColor = MaterialTheme.colorScheme.surface,
+        //                elevation = FloatingActionButtonDefaults.elevation(defaultElevation =
+        // 5.dp),
+        //            ) {
+        //                val rotation: Float
+        //                if (isIdentifying) {
+        //                    val infiniteTransition = rememberInfiniteTransition(label =
+        // "rotation")
+        //                    rotation = infiniteTransition.animateValue(
+        //                        0f,
+        //                        1f,
+        //                        Float.VectorConverter,
+        //                        infiniteRepeatable(
+        //                            animation = tween(
+        //                                durationMillis = 2000,
+        //                                easing = LinearEasing
+        //                            )
+        //                        ), label = "rotation"
+        //                    ).value * 360
+        //                } else {
+        //                    rotation = 0f
+        //                }
+        //
+        //                Icon(
+        //                    painter = painterResource(id = R.drawable.ic_gemini_ai),
+        //                    tint = Color.Unspecified,
+        //                    contentDescription = "Identify Fish Type with AI",
+        //                    modifier = Modifier.rotate(rotation)
+        //                )
+        //            }
+        //        }
     }
 }
 
@@ -369,9 +369,7 @@ fun FishTypeTextFieldWithAi(
 @Composable
 private fun FishTypeTextFieldWithAiPreview() {
     FischTheme {
-        Surface(
-            color = MaterialTheme.colorScheme.surface
-        ) {
+        Surface(color = MaterialTheme.colorScheme.surface) {
             IntroShowcase(showIntroShowCase = false, onShowCaseCompleted = { /*TODO*/ }) {
                 FishTypeTextFieldWithAi(
                     value = "",
@@ -381,7 +379,7 @@ private fun FishTypeTextFieldWithAiPreview() {
                     onIdentifyFishType = {},
                     isIdentifying = false,
                     suggestions = listOf("Nila", "Mujair", "Lele"),
-                    isInEditMode = false
+                    isInEditMode = false,
                 )
             }
         }

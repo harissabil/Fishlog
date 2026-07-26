@@ -6,12 +6,10 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreHoriz
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -46,15 +44,14 @@ fun FishTopAppBar(
     containerColor: Color? = null,
 ) {
     TopAppBar(
-        modifier = Modifier
-            .fillMaxWidth()
-            .animateContentSize(),
-        colors = TopAppBarDefaults.mediumTopAppBarColors(
-            containerColor = containerColor ?: MaterialTheme.colorScheme.surface,
-            actionIconContentColor = MaterialTheme.colorScheme.onSurface,
-            navigationIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            scrolledContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(10.dp)
-        ),
+        modifier = Modifier.fillMaxWidth().animateContentSize(),
+        colors =
+            TopAppBarDefaults.mediumTopAppBarColors(
+                containerColor = containerColor ?: MaterialTheme.colorScheme.surface,
+                actionIconContentColor = MaterialTheme.colorScheme.onSurface,
+                navigationIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                scrolledContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(10.dp),
+            ),
         title = {
             Text(
                 text = title.toString(),
@@ -65,9 +62,7 @@ fun FishTopAppBar(
             )
         },
         navigationIcon = {
-            Box(
-                contentAlignment = Alignment.CenterStart
-            ) {
+            Box(contentAlignment = Alignment.CenterStart) {
                 AnimatedNavigationIcon(visible = onBackClick != null) {
                     IconButton(onClick = onBackClick ?: {}) {
                         Icon(
@@ -78,25 +73,21 @@ fun FishTopAppBar(
                 }
                 AnimatedNavigationIcon(visible = navigationIcon != null) {
                     Icon(
-                        painter = painterResource(
-                            id = navigationIcon ?: R.drawable.ic_launcher_foreground
-                        ),
+                        painter =
+                            painterResource(
+                                id = navigationIcon ?: R.drawable.ic_launcher_foreground
+                            ),
                         contentDescription = null,
-                        modifier = Modifier.size(69.dp)
+                        modifier = Modifier.size(69.dp),
                     )
                 }
             }
         },
         actions = {
-            Box(
-                contentAlignment = Alignment.CenterEnd
-            ) {
+            Box(contentAlignment = Alignment.CenterEnd) {
                 AnimatedTrailingIcon(visible = onActionClick != null) {
                     IconButton(onClick = onActionClick ?: {}) {
-                        Icon(
-                            imageVector = Icons.Default.MoreHoriz,
-                            contentDescription = null,
-                        )
+                        Icon(imageVector = Icons.Default.MoreHoriz, contentDescription = null)
                     }
                 }
             }
@@ -104,7 +95,6 @@ fun FishTopAppBar(
         scrollBehavior = scrollBehavior,
     )
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)

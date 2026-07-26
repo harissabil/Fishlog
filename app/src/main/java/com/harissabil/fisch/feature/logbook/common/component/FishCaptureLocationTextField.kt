@@ -49,10 +49,7 @@ fun FishCaptureLocationTextField(
     val isFocused by interactionSource.collectIsFocusedAsState()
 
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .animateContentSize()
-            .then(modifier),
+        modifier = Modifier.fillMaxWidth().animateContentSize().then(modifier),
         horizontalAlignment = Alignment.Start,
     ) {
         FishTextField(
@@ -61,64 +58,51 @@ fun FishCaptureLocationTextField(
             value = value,
             onValueChange = onValueChange,
             label = "Capture Location",
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Outlined.PinDrop,
-                    contentDescription = null,
-                )
-            },
+            leadingIcon = { Icon(imageVector = Icons.Outlined.PinDrop, contentDescription = null) },
             trailingIcon = {
-                AnimatedTextFieldTrailingIcon(
-                    visible = value.isNotEmpty() && isFocused,
-                ) {
+                AnimatedTextFieldTrailingIcon(visible = value.isNotEmpty() && isFocused) {
                     IconButton(
                         onClick = {
                             onValueChange("")
                             keyboardController?.hide()
                         },
                         content = {
-                            Icon(
-                                imageVector = Icons.Outlined.Cancel,
-                                contentDescription = "Clear",
-                            )
-                        }
+                            Icon(imageVector = Icons.Outlined.Cancel, contentDescription = "Clear")
+                        },
                     )
                 }
             },
-            keyboardOptions = KeyboardOptions(
-                capitalization = KeyboardCapitalization.Words,
-                imeAction = ImeAction.Next,
-                keyboardType = KeyboardType.Text
-            ),
-            readOnly = !isInEditMode
+            keyboardOptions =
+                KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Words,
+                    imeAction = ImeAction.Next,
+                    keyboardType = KeyboardType.Text,
+                ),
+            readOnly = !isInEditMode,
         )
 
         if (isInEditMode) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
-                        onClick = {
-                            onCurrentLocationChecked(!isCurrentLocationChecked)
-                        }
-                    ),
-                verticalAlignment = Alignment.CenterVertically
+                modifier =
+                    Modifier.fillMaxWidth()
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null,
+                            onClick = { onCurrentLocationChecked(!isCurrentLocationChecked) },
+                        ),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Checkbox(
                     checked = isCurrentLocationChecked,
-                    onCheckedChange = {
-                        onCurrentLocationChecked(it)
-                    }
+                    onCheckedChange = { onCurrentLocationChecked(it) },
                 )
-                Text(
-                    text = "Current location",
-                    style = MaterialTheme.typography.bodySmall
-                )
+                Text(text = "Current location", style = MaterialTheme.typography.bodySmall)
             }
         } else {
-            Spacer(modifier = Modifier.height(MaterialTheme.spacing.small + MaterialTheme.spacing.small))
+            Spacer(
+                modifier =
+                    Modifier.height(MaterialTheme.spacing.small + MaterialTheme.spacing.small)
+            )
         }
     }
 }
@@ -133,7 +117,7 @@ private fun FishCaptureLocationTextFieldPreview() {
                 value = "",
                 onValueChange = {},
                 isCurrentLocationChecked = false,
-                onCurrentLocationChecked = {}
+                onCurrentLocationChecked = {},
             )
         }
     }

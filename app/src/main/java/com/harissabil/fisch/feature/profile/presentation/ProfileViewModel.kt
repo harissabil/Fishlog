@@ -18,6 +18,7 @@ import com.harissabil.fisch.feature.profile.domain.usecase.DeleteUserSignedIn
 import com.harissabil.fisch.feature.profile.domain.usecase.ExportUserDataToZip
 import com.harissabil.fisch.feature.profile.domain.usecase.SignOutUser
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -31,10 +32,11 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
-class ProfileViewModel @Inject constructor(
+class ProfileViewModel
+@Inject
+constructor(
     private val deleteUserSignedIn: DeleteUserSignedIn,
     private val getSignedInUser: GetSignedInUser,
     private val signOutUser: SignOutUser,
@@ -65,7 +67,8 @@ class ProfileViewModel @Inject constructor(
             is ProfileEvent.SetAiLanguage -> setAiLanguage(event.aiLanguage)
             ProfileEvent.GetSignedInUser -> getSignedInUser()
             ProfileEvent.SignOut -> onSignOut()
-            is ProfileEvent.ShowPaywall -> _state.update { it.copy(showPaywallSheet = event.isShow) }
+            is ProfileEvent.ShowPaywall ->
+                _state.update { it.copy(showPaywallSheet = event.isShow) }
             is ProfileEvent.SubscribeToPlus -> billingManager.launchPurchaseFlow(event.activity)
             is ProfileEvent.ExportData -> exportData(event.context, event.uri)
         }
@@ -74,13 +77,14 @@ class ProfileViewModel @Inject constructor(
     private fun exportData(context: Context, uri: Uri) {
         _state.update { it.copy(isExporting = true) }
         viewModelScope.launch(Dispatchers.IO) {
-            val result = try {
-                context.contentResolver.openOutputStream(uri)?.use { outputStream ->
-                    exportUserDataToZip(outputStream)
-                } ?: Resource.Error("Unable to open the selected file")
-            } catch (e: Exception) {
-                Resource.Error(e.message ?: "Something went wrong!")
-            }
+            val result =
+                try {
+                    context.contentResolver.openOutputStream(uri)?.use { outputStream ->
+                        exportUserDataToZip(outputStream)
+                    } ?: Resource.Error("Unable to open the selected file")
+                } catch (e: Exception) {
+                    Resource.Error(e.message ?: "Something went wrong!")
+                }
             _state.update { it.copy(isExporting = false) }
             _eventFlow.emit(
                 UIEvent.ShowSnackbar(
@@ -92,49 +96,62 @@ class ProfileViewModel @Inject constructor(
     }
 
     private fun getPlanStatus() {
-        billingManager.isPlus.onEach { isPlus ->
-            _state.update {
-                it.copy(
-                    isPlus = isPlus,
-                    showPaywallSheet = if (isPlus) false else it.showPaywallSheet
-                )
+        billingManager.isPlus
+            .onEach { isPlus ->
+                _state.update {
+                    it.copy(
+                        isPlus = isPlus,
+                        showPaywallSheet = if (isPlus) false else it.showPaywallSheet,
+                    )
+                }
             }
-        }.launchIn(viewModelScope)
+            .launchIn(viewModelScope)
 
-        billingManager.planProductDetails.onEach { productDetails ->
-            val price = productDetails
-                ?.subscriptionOfferDetails
-                ?.firstOrNull()
-                ?.pricingPhases
-                ?.pricingPhaseList
-                ?.firstOrNull()
-                ?.formattedPrice
-            _state.update { it.copy(plusPriceLabel = price) }
-        }.launchIn(viewModelScope)
+        billingManager.planProductDetails
+            .onEach { productDetails ->
+                val price =
+                    productDetails
+                        ?.subscriptionOfferDetails
+                        ?.firstOrNull()
+                        ?.pricingPhases
+                        ?.pricingPhaseList
+                        ?.firstOrNull()
+                        ?.formattedPrice
+                _state.update { it.copy(plusPriceLabel = price) }
+            }
+            .launchIn(viewModelScope)
 
-        getLogbookCountThisMonth().onEach { result ->
-            _state.update { it.copy(logbookCountThisMonth = result.data ?: 0) }
-        }.launchIn(viewModelScope)
+        getLogbookCountThisMonth()
+            .onEach { result ->
+                _state.update { it.copy(logbookCountThisMonth = result.data ?: 0) }
+            }
+            .launchIn(viewModelScope)
     }
 
     private fun getCatchesAndVisits() {
         viewModelScope.launch {
-            getLogbooks.invoke().onEach { logbooks ->
-                val catches = logbooks.data?.sumOf { it.jumlahIkan ?: 0 } ?: 0
-                val visits = logbooks.data?.mapNotNull { it.tempatPenangkapan }?.distinct()?.count()
-                _state.update { it.copy(catches = catches, visits = visits) }
-            }.stateIn(viewModelScope)
+            getLogbooks
+                .invoke()
+                .onEach { logbooks ->
+                    val catches = logbooks.data?.sumOf { it.jumlahIkan ?: 0 } ?: 0
+                    val visits =
+                        logbooks.data?.mapNotNull { it.tempatPenangkapan }?.distinct()?.count()
+                    _state.update { it.copy(catches = catches, visits = visits) }
+                }
+                .stateIn(viewModelScope)
         }
     }
 
     private fun getPreferences() = viewModelScope.launch {
-        themeUseCase.getTheme().onEach { theme ->
-            _state.update { it.copy(themeValue = theme.value) }
-        }.stateIn(viewModelScope)
+        themeUseCase
+            .getTheme()
+            .onEach { theme -> _state.update { it.copy(themeValue = theme.value) } }
+            .stateIn(viewModelScope)
 
-        aiLanguageUseCase.getAiLanguage().onEach { aiLanguage ->
-            _state.update { it.copy(aiLanguageValue = aiLanguage.value) }
-        }.stateIn(viewModelScope)
+        aiLanguageUseCase
+            .getAiLanguage()
+            .onEach { aiLanguage -> _state.update { it.copy(aiLanguageValue = aiLanguage.value) } }
+            .stateIn(viewModelScope)
     }
 
     private fun showMoreOption(isShow: Boolean) {
@@ -142,15 +159,11 @@ class ProfileViewModel @Inject constructor(
     }
 
     private fun setTheme(theme: Theme) {
-        viewModelScope.launch {
-            themeUseCase.setTheme(theme)
-        }
+        viewModelScope.launch { themeUseCase.setTheme(theme) }
     }
 
     private fun setAiLanguage(aiLanguage: AiLanguage) {
-        viewModelScope.launch {
-            aiLanguageUseCase.setAiLanguage(aiLanguage)
-        }
+        viewModelScope.launch { aiLanguageUseCase.setAiLanguage(aiLanguage) }
     }
 
     private fun getSignedInUser() {
@@ -163,15 +176,12 @@ class ProfileViewModel @Inject constructor(
                 }
 
                 is Resource.Loading -> {
-                    _state.value =
-                        _state.value.copy(isLoading = true)
+                    _state.value = _state.value.copy(isLoading = true)
                 }
 
                 is Resource.Success -> {
-                    _state.value = _state.value.copy(
-                        isLoading = false,
-                        userData = user.data?.toUserData()
-                    )
+                    _state.value =
+                        _state.value.copy(isLoading = false, userData = user.data?.toUserData())
                 }
             }
         }

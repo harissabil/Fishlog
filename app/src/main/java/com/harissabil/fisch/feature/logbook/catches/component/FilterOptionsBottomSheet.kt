@@ -44,30 +44,27 @@ fun FilterOptionsBottomSheet(
 ) {
     var localState by remember(filterState) { mutableStateOf(filterState) }
 
-    ModalBottomSheet(
-        onDismissRequest = onDismissRequest,
-        sheetState = sheetState,
-    ) {
+    ModalBottomSheet(onDismissRequest = onDismissRequest, sheetState = sheetState) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = MaterialTheme.spacing.medium)
-                .padding(bottom = MaterialTheme.spacing.medium + MaterialTheme.spacing.small)
-                .then(modifier),
+            modifier =
+                Modifier.fillMaxWidth()
+                    .padding(horizontal = MaterialTheme.spacing.medium)
+                    .padding(bottom = MaterialTheme.spacing.medium + MaterialTheme.spacing.small)
+                    .then(modifier)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = "Filter",
                     style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.SemiBold,
                 )
                 TextButton(
                     onClick = { localState = FilterState() },
-                    enabled = localState.isActive
+                    enabled = localState.isActive,
                 ) {
                     Text(text = "Reset")
                 }
@@ -78,7 +75,7 @@ fun FilterOptionsBottomSheet(
             Text(
                 text = "Status",
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
             )
 
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
@@ -86,13 +83,14 @@ fun FilterOptionsBottomSheet(
             SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
                 ReleaseFilter.entries.forEachIndexed { index, option ->
                     SegmentedButton(
-                        shape = SegmentedButtonDefaults.itemShape(
-                            index = index,
-                            count = ReleaseFilter.entries.size
-                        ),
+                        shape =
+                            SegmentedButtonDefaults.itemShape(
+                                index = index,
+                                count = ReleaseFilter.entries.size,
+                            ),
                         selected = localState.releaseFilter == option,
                         onClick = { localState = localState.copy(releaseFilter = option) },
-                        label = { Text(text = option.value) }
+                        label = { Text(text = option.value) },
                     )
                 }
             }
@@ -103,7 +101,7 @@ fun FilterOptionsBottomSheet(
                 Text(
                     text = "Bait",
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.SemiBold,
                 )
 
                 Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
@@ -117,15 +115,17 @@ fun FilterOptionsBottomSheet(
                         FilterChip(
                             selected = selected,
                             onClick = {
-                                localState = localState.copy(
-                                    selectedBaits = if (selected) {
-                                        localState.selectedBaits - bait
-                                    } else {
-                                        localState.selectedBaits + bait
-                                    }
-                                )
+                                localState =
+                                    localState.copy(
+                                        selectedBaits =
+                                            if (selected) {
+                                                localState.selectedBaits - bait
+                                            } else {
+                                                localState.selectedBaits + bait
+                                            }
+                                    )
                             },
-                            label = { Text(text = bait) }
+                            label = { Text(text = bait) },
                         )
                     }
                 }
@@ -136,7 +136,7 @@ fun FilterOptionsBottomSheet(
             FishButton(
                 modifier = Modifier.fillMaxWidth(),
                 text = "Apply",
-                onClick = { onApply(localState) }
+                onClick = { onApply(localState) },
             )
         }
     }

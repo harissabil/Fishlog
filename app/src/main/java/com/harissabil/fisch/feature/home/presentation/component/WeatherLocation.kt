@@ -2,7 +2,6 @@ package com.harissabil.fisch.feature.home.presentation.component
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
@@ -24,19 +23,16 @@ import com.harissabil.fisch.core.common.theme.FischTheme
 import com.harissabil.fisch.core.common.theme.spacing
 
 @Composable
-fun WeatherLocation(
-    modifier: Modifier = Modifier,
-    city: String?,
-) {
+fun WeatherLocation(modifier: Modifier = Modifier, city: String?) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
-        modifier = modifier
+        modifier = modifier,
     ) {
         Icon(
             imageVector = Icons.Default.LocationOn,
             contentDescription = null,
-            modifier = Modifier.size(16.dp)
+            modifier = Modifier.size(16.dp),
         )
         Spacer(modifier = Modifier.width(MaterialTheme.spacing.extraSmall))
         Text(
@@ -52,9 +48,5 @@ fun WeatherLocation(
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun WeatherLocationPreview() {
-    FischTheme {
-        Surface {
-            WeatherLocation(city = null)
-        }
-    }
+    FischTheme { Surface { WeatherLocation(city = null) } }
 }

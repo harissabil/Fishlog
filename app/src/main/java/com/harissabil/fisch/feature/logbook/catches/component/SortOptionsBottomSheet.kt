@@ -31,36 +31,31 @@ fun SortOptionsBottomSheet(
 ) {
     val sortOptions: List<SortBy> = SortBy.entries
 
-    ModalBottomSheet(
-        onDismissRequest = onDismissRequest,
-        sheetState = sheetState,
-    ) {
+    ModalBottomSheet(onDismissRequest = onDismissRequest, sheetState = sheetState) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = MaterialTheme.spacing.medium + MaterialTheme.spacing.small)
-                .then(modifier),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier =
+                Modifier.fillMaxWidth()
+                    .padding(bottom = MaterialTheme.spacing.medium + MaterialTheme.spacing.small)
+                    .then(modifier),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             sortOptions.forEach { sortOption ->
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { onSortOptionClick(sortOption) }
-                        .padding(
-                            horizontal = MaterialTheme.spacing.medium,
-                        ),
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier =
+                        Modifier.fillMaxWidth()
+                            .clickable { onSortOptionClick(sortOption) }
+                            .padding(horizontal = MaterialTheme.spacing.medium),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     RadioButton(
                         selected = selectedSortOption == sortOption,
-                        onClick = { onSortOptionClick(sortOption) }
+                        onClick = { onSortOptionClick(sortOption) },
                     )
                     Spacer(modifier = Modifier.width(MaterialTheme.spacing.small))
                     Text(
                         text = sortOption.value,
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
                     )
                 }
             }

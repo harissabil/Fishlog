@@ -53,27 +53,17 @@ fun FishQuantityTextField(
             }
         },
         label = "Quantity",
-        leadingIcon = {
-            Icon(
-                imageVector = Icons.Outlined.Phishing,
-                contentDescription = null,
-            )
-        },
+        leadingIcon = { Icon(imageVector = Icons.Outlined.Phishing, contentDescription = null) },
         trailingIcon = {
-            AnimatedTextFieldTrailingIcon(
-                visible = value.isNotEmpty() && isFocused,
-            ) {
+            AnimatedTextFieldTrailingIcon(visible = value.isNotEmpty() && isFocused) {
                 IconButton(
                     onClick = {
                         onValueChange("")
                         keyboardController?.hide()
                     },
                     content = {
-                        Icon(
-                            imageVector = Icons.Outlined.Cancel,
-                            contentDescription = "Clear",
-                        )
-                    }
+                        Icon(imageVector = Icons.Outlined.Cancel, contentDescription = "Clear")
+                    },
                 )
             }
         },
@@ -82,20 +72,20 @@ fun FishQuantityTextField(
             AnimatedVisibility(visible = isError) {
                 supportingText?.let {
                     Column {
-                        Text(
-                            text = it,
-                            color = MaterialTheme.colorScheme.error
+                        Text(text = it, color = MaterialTheme.colorScheme.error)
+                        Spacer(
+                            modifier =
+                                Modifier.height(
+                                    MaterialTheme.spacing.small + MaterialTheme.spacing.small
+                                )
                         )
-                        Spacer(modifier = Modifier.height(MaterialTheme.spacing.small + MaterialTheme.spacing.small))
                     }
                 }
             }
         },
-        keyboardOptions = KeyboardOptions(
-            imeAction = ImeAction.Next,
-            keyboardType = KeyboardType.Number
-        ),
-        readOnly = !isInEditMode
+        keyboardOptions =
+            KeyboardOptions(imeAction = ImeAction.Next, keyboardType = KeyboardType.Number),
+        readOnly = !isInEditMode,
     )
 }
 
@@ -109,7 +99,7 @@ private fun FishQuantityTextFieldPreview() {
                 value = "1",
                 onValueChange = {},
                 isError = true,
-                supportingText = "Please enter a valid quantity"
+                supportingText = "Please enter a valid quantity",
             )
         }
     }

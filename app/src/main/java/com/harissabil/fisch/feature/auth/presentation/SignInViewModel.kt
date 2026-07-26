@@ -9,6 +9,7 @@ import com.harissabil.fisch.feature.auth.domain.SaveUserSignedIn
 import com.harissabil.fisch.feature.auth.domain.SignInWithFacebook
 import com.harissabil.fisch.feature.auth.domain.SignInWithGoogle
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -18,10 +19,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import javax.inject.Inject
 
 @HiltViewModel
-class SignInViewModel @Inject constructor(
+class SignInViewModel
+@Inject
+constructor(
     private val saveUserSignedIn: SaveUserSignedIn,
     private val signInWithFacebook: SignInWithFacebook,
     private val signInWithGoogle: SignInWithGoogle,
@@ -39,17 +41,14 @@ class SignInViewModel @Inject constructor(
         viewModelScope.launch {
             when (result) {
                 is Resource.Error -> {
-                    _state.value = _state.value.copy(
-                        isSignInSuccessful = false,
-                        signInError = result.message,
-                        isLoading = false,
-                        isInSignInProcess = false
-                    )
-                    _eventFlow.emit(
-                        UIEvent.ShowSnackbar(
-                            result.message ?: "Something went wrong!"
+                    _state.value =
+                        _state.value.copy(
+                            isSignInSuccessful = false,
+                            signInError = result.message,
+                            isLoading = false,
+                            isInSignInProcess = false,
                         )
-                    )
+                    _eventFlow.emit(UIEvent.ShowSnackbar(result.message ?: "Something went wrong!"))
                 }
 
                 is Resource.Loading -> {
@@ -57,11 +56,12 @@ class SignInViewModel @Inject constructor(
                 }
 
                 is Resource.Success -> {
-                    _state.value = _state.value.copy(
-                        isSignInSuccessful = result.data != null,
-                        isLoading = false,
-                        isInSignInProcess = false
-                    )
+                    _state.value =
+                        _state.value.copy(
+                            isSignInSuccessful = result.data != null,
+                            isLoading = false,
+                            isInSignInProcess = false,
+                        )
                     if (result.data != null) {
                         billingManager.refreshEntitlement()
                     }
@@ -91,15 +91,11 @@ class SignInViewModel @Inject constructor(
     }
 
     fun saveUserSignedIn() {
-        viewModelScope.launch {
-            saveUserSignedIn.invoke()
-        }
+        viewModelScope.launch { saveUserSignedIn.invoke() }
     }
 
     fun onError(message: String) {
-        viewModelScope.launch {
-            _eventFlow.emit(UIEvent.ShowSnackbar(message))
-        }
+        viewModelScope.launch { _eventFlow.emit(UIEvent.ShowSnackbar(message)) }
     }
 
     sealed class UIEvent {

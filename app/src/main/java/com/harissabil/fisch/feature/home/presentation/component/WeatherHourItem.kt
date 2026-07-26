@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -41,26 +40,17 @@ fun WeatherHourItem(
     Column(
         modifier = modifier.width(76.dp),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text(
-            text = date ?: "N/A",
-            style = MaterialTheme.typography.bodySmall
-        )
-        Text(
-            text = "${hour ?: "N/A"}:00",
-            style = MaterialTheme.typography.bodyMedium
-        )
+        Text(text = date ?: "N/A", style = MaterialTheme.typography.bodySmall)
+        Text(text = "${hour ?: "N/A"}:00", style = MaterialTheme.typography.bodyMedium)
         Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
         if (weatherCode != null) {
             Icon(
-                painter = painterResource(
-                    id = getWeatherIcon(
-                        weatherCode = weatherCode,
-                        isDay = true
-                    )
-                ), contentDescription = weatherCode.description,
-                modifier = Modifier.size(32.dp)
+                painter =
+                    painterResource(id = getWeatherIcon(weatherCode = weatherCode, isDay = true)),
+                contentDescription = weatherCode.description,
+                modifier = Modifier.size(32.dp),
             )
         } else {
             Text(
@@ -74,7 +64,7 @@ fun WeatherHourItem(
             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Normal),
             overflow = TextOverflow.Ellipsis,
             maxLines = 1,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
         )
         Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
         Text(
@@ -82,7 +72,7 @@ fun WeatherHourItem(
             style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
             overflow = TextOverflow.Ellipsis,
             maxLines = 1,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
         )
     }
 }
@@ -98,7 +88,7 @@ private fun WeatherHourItemPreview() {
                 date = getDateFromDateAndTime("2024-04-07T00:00"),
                 hour = getHour("2024-04-07T00:00"),
                 temperature = 29.9,
-                temperatureUnit = "°C"
+                temperatureUnit = "°C",
             )
         }
     }

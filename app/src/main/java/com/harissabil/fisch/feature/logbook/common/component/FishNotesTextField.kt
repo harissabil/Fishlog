@@ -38,50 +38,41 @@ fun FishNotesTextField(
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
 
-    val isNotInEditModePadding = if (!isInEditMode) Modifier.padding(
-        bottom = MaterialTheme.spacing.small + MaterialTheme.spacing.small
-    ) else Modifier
+    val isNotInEditModePadding =
+        if (!isInEditMode)
+            Modifier.padding(bottom = MaterialTheme.spacing.small + MaterialTheme.spacing.small)
+        else Modifier
 
     FishTextField(
-        modifier = Modifier
-            .fillMaxWidth()
-            .then(isNotInEditModePadding)
-            .then(modifier),
+        modifier = Modifier.fillMaxWidth().then(isNotInEditModePadding).then(modifier),
         interactionSource = interactionSource,
         value = value,
         onValueChange = onValueChange,
         label = "Notes",
         leadingIcon = {
-            Icon(
-                imageVector = Icons.AutoMirrored.Outlined.Notes,
-                contentDescription = null,
-            )
+            Icon(imageVector = Icons.AutoMirrored.Outlined.Notes, contentDescription = null)
         },
         trailingIcon = {
-            AnimatedTextFieldTrailingIcon(
-                visible = value.isNotEmpty() && isFocused,
-            ) {
+            AnimatedTextFieldTrailingIcon(visible = value.isNotEmpty() && isFocused) {
                 IconButton(
                     onClick = {
                         onValueChange("")
                         keyboardController?.hide()
                     },
                     content = {
-                        Icon(
-                            imageVector = Icons.Outlined.Cancel,
-                            contentDescription = "Clear",
-                        )
-                    }
+                        Icon(imageVector = Icons.Outlined.Cancel, contentDescription = "Clear")
+                    },
                 )
             }
         },
-        keyboardOptions = KeyboardOptions(
-            capitalization = KeyboardCapitalization.Sentences,
-            imeAction = ImeAction.Done,
-            keyboardType = KeyboardType.Text
-        ),
+        keyboardOptions =
+            KeyboardOptions(
+                capitalization = KeyboardCapitalization.Sentences,
+                imeAction = ImeAction.Done,
+                keyboardType = KeyboardType.Text,
+            ),
         singleLine = false,
-        readOnly = !isInEditMode
+        readOnly = !isInEditMode,
     )
 }
 
@@ -89,12 +80,5 @@ fun FishNotesTextField(
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun FishNotesTextFieldPreview() {
-    FischTheme {
-        Surface {
-            FishNotesTextField(
-                value = "",
-                onValueChange = {}
-            )
-        }
-    }
+    FischTheme { Surface { FishNotesTextField(value = "", onValueChange = {}) } }
 }

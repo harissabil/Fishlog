@@ -53,13 +53,9 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun OnBoardingScreen(
-    viewModel: OnBoardingViewModel = hiltViewModel(),
-) {
+fun OnBoardingScreen(viewModel: OnBoardingViewModel = hiltViewModel()) {
     val context = LocalContext.current
-    val pagerState = rememberPagerState(initialPage = 0) {
-        pages.size
-    }
+    val pagerState = rememberPagerState(initialPage = 0) { pages.size }
 
     val buttonText by remember {
         derivedStateOf {
@@ -72,22 +68,15 @@ fun OnBoardingScreen(
     }
 
     fun checkPermission(permission: String): Boolean {
-        return ContextCompat.checkSelfPermission(
-            context,
-            permission
-        ) == PackageManager.PERMISSION_GRANTED
+        return ContextCompat.checkSelfPermission(context, permission) ==
+            PackageManager.PERMISSION_GRANTED
     }
 
-    val buttonStates = remember {
-        List(pages.size) {
-            mutableStateOf(true)
-        }
-    }
+    val buttonStates = remember { List(pages.size) { mutableStateOf(true) } }
 
     val requestLocationPermissionLauncher =
-        rememberLauncherForActivityResult(
-            ActivityResultContracts.RequestMultiplePermissions()
-        ) { permissions ->
+        rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+            permissions ->
             val fineLocationPermission =
                 permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false
             val coarseLocationPermission =
@@ -104,7 +93,6 @@ fun OnBoardingScreen(
         }
     }
 
-
     OnBoardingContent(
         pagerState = pagerState,
         buttonText = buttonText,
@@ -114,10 +102,10 @@ fun OnBoardingScreen(
             requestLocationPermissionLauncher.launch(
                 arrayOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
                 )
             )
-        }
+        },
     )
 }
 
@@ -131,66 +119,62 @@ fun OnBoardingContent(
     onRequestLocationPermission: () -> Unit = {},
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
-
-        HorizontalPager(state = pagerState) { index ->
-            OnBoardingImage(page = pages[index])
-        }
+        HorizontalPager(state = pagerState) { index -> OnBoardingImage(page = pages[index]) }
 
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             OnBoardingCard(pagerState = pagerState)
 
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.background)
-                    .animateContentSize(),
-                horizontalAlignment = Alignment.CenterHorizontally
+                modifier =
+                    Modifier.fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.background)
+                        .animateContentSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-
                 if (pagerState.currentPage == pages.size - 1) {
                     Spacer(modifier = Modifier.height(MaterialTheme.spacing.large))
                     FishPermissionButton(
                         text = "Set location permission",
-                        onClick = onRequestLocationPermission
+                        onClick = onRequestLocationPermission,
                     )
                 }
 
                 Spacer(modifier = Modifier.height(MaterialTheme.spacing.large))
-
             }
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = MaterialTheme.spacing.large)
-                    .navigationBarsPadding(),
+                modifier =
+                    Modifier.fillMaxWidth()
+                        .padding(horizontal = MaterialTheme.spacing.large)
+                        .navigationBarsPadding(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 PagerIndicator(
                     modifier = Modifier.width(44.dp),
                     pagesSize = pages.size,
-                    selectedPage = pagerState.currentPage
+                    selectedPage = pagerState.currentPage,
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Row(verticalAlignment = Alignment.CenterVertically) {
-
                     val scope = rememberCoroutineScope()
 
                     AnimatedVisibility(
                         visible = buttonText[0].isNotEmpty(),
-                        enter = fadeIn(), exit = fadeOut()
+                        enter = fadeIn(),
+                        exit = fadeOut(),
                     ) {
-                        FishTextButton(text = buttonText[0],
+                        FishTextButton(
+                            text = buttonText[0],
                             onClick = {
                                 scope.launch {
-                                    pagerState.animateScrollToPage(page = pagerState.currentPage - 1)
+                                    pagerState.animateScrollToPage(
+                                        page = pagerState.currentPage - 1
+                                    )
                                 }
-                            }
+                            },
                         )
                     }
                     Spacer(modifier = Modifier.width(MaterialTheme.spacing.small))
@@ -201,7 +185,9 @@ fun OnBoardingContent(
                                 if (pagerState.currentPage == pages.size - 1) {
                                     onGetStartedClick()
                                 } else {
-                                    pagerState.animateScrollToPage(page = pagerState.currentPage + 1)
+                                    pagerState.animateScrollToPage(
+                                        page = pagerState.currentPage + 1
+                                    )
                                 }
                             }
                         },
@@ -225,7 +211,7 @@ private fun OnBoardingContentPreview() {
                 pagerState = rememberPagerState(pageCount = { 3 }),
                 buttonText = listOf("Back", "Next"),
                 buttonState = true,
-                onGetStartedClick = {}
+                onGetStartedClick = {},
             )
         }
     }

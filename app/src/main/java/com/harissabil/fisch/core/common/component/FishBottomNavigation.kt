@@ -63,29 +63,28 @@ fun FishBottomNavigation(
             }
             if (index == (items.size / 2)) return@forEachIndexed
             CompositionLocalProvider(
-                LocalRippleConfiguration provides RippleConfiguration(
-                    color = Color.Transparent,
-                    rippleAlpha = RippleAlpha(0f, 0f, 0f, 0f)
-                )
+                LocalRippleConfiguration provides
+                    RippleConfiguration(
+                        color = Color.Transparent,
+                        rippleAlpha = RippleAlpha(0f, 0f, 0f, 0f),
+                    )
             ) {
                 NavigationBarItem(
                     selected = index == selected,
                     onClick = { onItemClick(index) },
                     icon = {
                         (if (index == selected) item.selectedIcon else item.unselectedIcon)?.let {
-                            Icon(
-                                imageVector = it,
-                                contentDescription = item.text,
-                            )
+                            Icon(imageVector = it, contentDescription = item.text)
                         }
                     },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = MaterialTheme.colorScheme.primary,
-                        selectedTextColor = MaterialTheme.colorScheme.primary,
-                        unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        indicatorColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.0f)
-                    ),
+                    colors =
+                        NavigationBarItemDefaults.colors(
+                            selectedIconColor = MaterialTheme.colorScheme.primary,
+                            selectedTextColor = MaterialTheme.colorScheme.primary,
+                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            indicatorColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.0f),
+                        ),
                     alwaysShowLabel = true,
                     label = { item.text?.let { Text(it) } },
                 )
@@ -105,39 +104,35 @@ data class BottomNavigationItem(
 @Composable
 private fun FishBottomNavigationPreview() {
     FischTheme {
-
         var selectedItem by remember { mutableIntStateOf(0) }
 
         FishBottomNavigation(
-            items = listOf(
-                BottomNavigationItem(
-                    selectedIcon = Icons.Filled.Home,
-                    unselectedIcon = Icons.Outlined.Home,
-                    text = "Home"
+            items =
+                listOf(
+                    BottomNavigationItem(
+                        selectedIcon = Icons.Filled.Home,
+                        unselectedIcon = Icons.Outlined.Home,
+                        text = "Home",
+                    ),
+                    BottomNavigationItem(
+                        selectedIcon = Icons.Filled.Phishing,
+                        unselectedIcon = Icons.Outlined.Phishing,
+                        text = "Catches",
+                    ),
+                    BottomNavigationItem(selectedIcon = null, unselectedIcon = null, text = null),
+                    BottomNavigationItem(
+                        selectedIcon = Icons.Filled.Map,
+                        unselectedIcon = Icons.Outlined.Map,
+                        text = "Map",
+                    ),
+                    BottomNavigationItem(
+                        selectedIcon = Icons.Filled.Person,
+                        unselectedIcon = Icons.Outlined.Person,
+                        text = "Profile",
+                    ),
                 ),
-                BottomNavigationItem(
-                    selectedIcon = Icons.Filled.Phishing,
-                    unselectedIcon = Icons.Outlined.Phishing,
-                    text = "Catches"
-                ),
-                BottomNavigationItem(
-                    selectedIcon = null,
-                    unselectedIcon = null,
-                    text = null
-                ),
-                BottomNavigationItem(
-                    selectedIcon = Icons.Filled.Map,
-                    unselectedIcon = Icons.Outlined.Map,
-                    text = "Map"
-                ),
-                BottomNavigationItem(
-                    selectedIcon = Icons.Filled.Person,
-                    unselectedIcon = Icons.Outlined.Person,
-                    text = "Profile"
-                ),
-            ),
             selected = selectedItem,
-            onItemClick = { selectedItem = it }
+            onItemClick = { selectedItem = it },
         ) {}
     }
 }

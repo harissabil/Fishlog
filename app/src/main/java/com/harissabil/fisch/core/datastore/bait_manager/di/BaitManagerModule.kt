@@ -16,9 +16,7 @@ object BaitManagerModule {
 
     @Provides
     @Singleton
-    fun provideBaitManager(
-        @ApplicationContext context: Context,
-    ): BaitManager {
+    fun provideBaitManager(@ApplicationContext context: Context): BaitManager {
         return BaitManagerImpl(context = context)
     }
 }
