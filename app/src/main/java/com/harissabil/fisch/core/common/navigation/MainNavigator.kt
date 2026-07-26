@@ -249,7 +249,15 @@ fun MainNavigator() {
                         onBackClick = null
                     )
                 }
-                MapScreen()
+                MapScreen(
+                    snackbarHostState = snackbarHostState,
+                    onNavigateToDetail = { toDetailState ->
+                        navigateToDetail(
+                            navController,
+                            toDetailState
+                        )
+                    }
+                )
             }
             slideContainerAnimationComposable(route = Route.ProfileScreen.route) {
                 val viewModel = hiltViewModel<ProfileViewModel>()
