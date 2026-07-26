@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -193,25 +194,30 @@ fun HomeStats(
     )
 
     Column(
-        modifier = modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(gap)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .horizontalScroll(rememberScrollState()),
-            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
         ) {
             TimeRange.entries.forEach { range ->
+                if (range == TimeRange.entries.first()) {
+                    Spacer(modifier = Modifier.width(MaterialTheme.spacing.medium))
+                } else {
+                    Spacer(modifier = Modifier.width(MaterialTheme.spacing.small))
+                }
                 FilterChip(
                     selected = selectedRange == range,
                     onClick = { selectedRange = range },
                     label = { Text(text = range.label) }
                 )
             }
+            Spacer(modifier = Modifier.width(MaterialTheme.spacing.medium))
         }
 
-        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+        BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
             val columns = if (maxWidth < 360.dp) 2 else 4
             val tileWidth = (maxWidth - gap * (columns - 1)) / columns
 
