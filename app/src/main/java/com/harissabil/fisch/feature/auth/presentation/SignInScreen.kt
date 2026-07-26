@@ -3,7 +3,6 @@ package com.harissabil.fisch.feature.auth.presentation
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
@@ -36,6 +35,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.CreateCredentialCancellationException
@@ -51,7 +51,6 @@ import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.harissabil.fisch.R
 import com.harissabil.fisch.core.common.component.FishFullscreenLoading
-import com.harissabil.fisch.core.common.component.FishTextButton
 import com.harissabil.fisch.core.common.theme.FischTheme
 import com.harissabil.fisch.core.common.theme.spacing
 import com.harissabil.fisch.core.common.util.Constant.WEB_CLIENT_ID
@@ -294,9 +293,9 @@ private fun onLinkClick(context: Context, colorPrimary: Int, url: String) {
         .build()
     customTabsIntent.intent.putExtra(
         Intent.EXTRA_REFERRER,
-        Uri.parse("android-app://" + context.packageName)
+        ("android-app://" + context.packageName).toUri()
     )
-    customTabsIntent.launchUrl(context, Uri.parse(url))
+    customTabsIntent.launchUrl(context, url.toUri())
 }
 
 @Preview(showBackground = true)
