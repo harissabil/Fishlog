@@ -19,25 +19,21 @@ import com.harissabil.fisch.core.common.theme.FischTheme
 import com.harissabil.fisch.core.common.theme.spacing
 
 @Composable
-fun ProfileVisits(
-    visits: Int?,
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+fun ProfileVisits(visits: Int?) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
             text = visits?.toString() ?: "N/A",
             style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
             textAlign = TextAlign.Center,
             overflow = TextOverflow.Ellipsis,
-            maxLines = 1
+            maxLines = 1,
         )
         Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
         Text(
             text = "Visits",
             style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
             textAlign = TextAlign.Center,
-            modifier = Modifier.alpha(0.5f)
+            modifier = Modifier.alpha(0.5f),
         )
     }
 }
@@ -46,9 +42,5 @@ fun ProfileVisits(
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun ProfileVisitsPreview() {
-    FischTheme {
-        Surface {
-            ProfileVisits(visits = 100)
-        }
-    }
+    FischTheme { Surface { ProfileVisits(visits = 100) } }
 }

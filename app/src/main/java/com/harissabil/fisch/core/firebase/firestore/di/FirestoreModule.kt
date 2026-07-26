@@ -28,15 +28,9 @@ object FirestoreModule {
     @Named(LOGBOOKS)
     fun provideLogbooksRef() = Firebase.firestore.collection(LOGBOOKS)
 
-    @Provides
-    @Singleton
-    @Named(MAPS)
-    fun provideMapsRef() = Firebase.firestore.collection(MAPS)
+    @Provides @Singleton @Named(MAPS) fun provideMapsRef() = Firebase.firestore.collection(MAPS)
 
-    @Provides
-    @Singleton
-    @Named(USERS)
-    fun provideUsersRef() = Firebase.firestore.collection(USERS)
+    @Provides @Singleton @Named(USERS) fun provideUsersRef() = Firebase.firestore.collection(USERS)
 
     @Provides
     @Singleton
@@ -51,16 +45,11 @@ object FirestoreModule {
             mapsRef = mapsRef,
             usersRef = usersRef,
             auth = Firebase.auth,
-            storageRepository = storageRepository
+            storageRepository = storageRepository,
         )
 
     @Provides
     @Singleton
-    fun provideUserPlanRepository(
-        @Named(USERS) usersRef: CollectionReference,
-    ): UserPlanRepository =
-        UserPlanRepositoryImpl(
-            usersRef = usersRef,
-            auth = Firebase.auth,
-        )
+    fun provideUserPlanRepository(@Named(USERS) usersRef: CollectionReference): UserPlanRepository =
+        UserPlanRepositoryImpl(usersRef = usersRef, auth = Firebase.auth)
 }

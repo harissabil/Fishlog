@@ -20,6 +20,7 @@ import com.harissabil.fisch.core.firebase.firestore.domain.usecase.GetLogbooks
 import com.harissabil.fisch.core.location.domain.LocationTracker
 import com.harissabil.fisch.feature.home.domain.usecase.GetWeather
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -32,10 +33,11 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(
+class HomeViewModel
+@Inject
+constructor(
     private val getWeather: GetWeather,
     private val locationTracker: LocationTracker,
     private val locationHelper: LocationHelper,
@@ -67,10 +69,8 @@ class HomeViewModel @Inject constructor(
     fun onEvent(event: HomeEvent) {
         when (event) {
             is HomeEvent.PullToRefresh -> pullToRefresh()
-            is HomeEvent.EnableLocationRequest -> enableLocationRequest(
-                event.context,
-                event.makeRequest
-            )
+            is HomeEvent.EnableLocationRequest ->
+                enableLocationRequest(event.context, event.makeRequest)
 
             is HomeEvent.GetWeather -> getWeather()
             is HomeEvent.GetLogbooks -> getLogbooks()
@@ -84,9 +84,7 @@ class HomeViewModel @Inject constructor(
                 is Resource.Error -> {
                     Timber.e("Error: ${response.message}")
                     _eventFlow.emit(
-                        UIEvent.ShowSnackbar(
-                            response.message ?: "Something went wrong"
-                        )
+                        UIEvent.ShowSnackbar(response.message ?: "Something went wrong")
                     )
                 }
 
@@ -96,14 +94,15 @@ class HomeViewModel @Inject constructor(
                     _logbooksState.value =
                         _logbooksState.value.copy(
                             isLoading = false,
-                            logbooks = response.data?.map { it.toLogbook() }
+                            logbooks = response.data?.map { it.toLogbook() },
                         )
                 }
             }
         }
-//        delay(2000)
-//        _logbooksState.value =
-//            _logbooksState.value.copy(isLoading = false, logbooks = provideDummyLogbooks())
+        //        delay(2000)
+        //        _logbooksState.value =
+        //            _logbooksState.value.copy(isLoading = false, logbooks =
+        // provideDummyLogbooks())
     }
 
     private fun getWeather() = viewModelScope.launch {
@@ -116,34 +115,39 @@ class HomeViewModel @Inject constructor(
             return@launch
         }
 
-        if ((lat == _weatherState.value.lat && lon == _weatherState.value.lon) && _weatherState.value.weather != null) {
+        if (
+            (lat == _weatherState.value.lat && lon == _weatherState.value.lon) &&
+                _weatherState.value.weather != null
+        ) {
             Timber.tag("HomeViewModel").d("Weather already fetched and same location. Skipping...")
             return@launch
         }
 
         _weatherState.value = _weatherState.value.copy(lat = lat, lon = lon)
 
-        getWeather.invoke(lat, lon).onEach {
-            when (it) {
-                is Resource.Loading -> {
-                    _weatherState.value = _weatherState.value.copy(isLoading = true)
-                }
+        getWeather
+            .invoke(lat, lon)
+            .onEach {
+                when (it) {
+                    is Resource.Loading -> {
+                        _weatherState.value = _weatherState.value.copy(isLoading = true)
+                    }
 
-                is Resource.Error -> {
-                    _weatherState.value = _weatherState.value.copy(isLoading = false)
-                    _state.value =
-                        _state.value.copy(isLoading = false)
-                    _eventFlow.emit(UIEvent.ShowSnackbar(it.message ?: "Something went wrong"))
-                }
+                    is Resource.Error -> {
+                        _weatherState.value = _weatherState.value.copy(isLoading = false)
+                        _state.value = _state.value.copy(isLoading = false)
+                        _eventFlow.emit(UIEvent.ShowSnackbar(it.message ?: "Something went wrong"))
+                    }
 
-                is Resource.Success -> {
-                    Timber.tag("HomeViewModel").d("Weather: ${it.data}")
-                    _weatherState.value =
-                        _weatherState.value.copy(weather = it.data, isLoading = false)
-                    _state.value = _state.value.copy(isLoading = false)
+                    is Resource.Success -> {
+                        Timber.tag("HomeViewModel").d("Weather: ${it.data}")
+                        _weatherState.value =
+                            _weatherState.value.copy(weather = it.data, isLoading = false)
+                        _state.value = _state.value.copy(isLoading = false)
+                    }
                 }
             }
-        }.launchIn(viewModelScope)
+            .launchIn(viewModelScope)
     }
 
     private fun pullToRefresh() {
@@ -162,22 +166,28 @@ class HomeViewModel @Inject constructor(
 
     private fun enableLocationRequest(
         context: Context,
-        makeRequest: (intentSenderRequest: IntentSenderRequest) -> Unit,//Lambda to call when locations are off.
+        makeRequest:
+            (
+                intentSenderRequest: IntentSenderRequest
+            ) -> Unit, // Lambda to call when locations are off.
     ) {
-        val locationRequest = LocationRequest.Builder( //Create a location request object
-            Priority.PRIORITY_BALANCED_POWER_ACCURACY, //Self explanatory
-            10000 //Interval -> shorter the interval more frequent location updates
-        ).build()
+        val locationRequest =
+            LocationRequest.Builder( // Create a location request object
+                    Priority.PRIORITY_BALANCED_POWER_ACCURACY, // Self explanatory
+                    10000, // Interval -> shorter the interval more frequent location updates
+                )
+                .build()
 
-        val builder = LocationSettingsRequest.Builder()
-            .addLocationRequest(locationRequest)
+        val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
 
         val client: SettingsClient = LocationServices.getSettingsClient(context)
         val task: Task<LocationSettingsResponse> =
-            client.checkLocationSettings(builder.build())//Checksettings with building a request
+            client.checkLocationSettings(builder.build()) // Checksettings with building a request
         task.addOnSuccessListener { locationSettingsResponse ->
             Timber.tag("Location")
-                .d("enableLocationRequest: LocationService Already Enabled $locationSettingsResponse")
+                .d(
+                    "enableLocationRequest: LocationService Already Enabled $locationSettingsResponse"
+                )
         }
         task.addOnFailureListener { exception ->
             if (exception is ResolvableApiException) {
@@ -186,8 +196,8 @@ class HomeViewModel @Inject constructor(
                 try {
                     val intentSenderRequest =
                         IntentSenderRequest.Builder(exception.resolution)
-                            .build()//Create the request prompt
-                    makeRequest(intentSenderRequest)//Make the request from UI
+                            .build() // Create the request prompt
+                    makeRequest(intentSenderRequest) // Make the request from UI
                 } catch (sendEx: IntentSender.SendIntentException) {
                     // Ignore the error.
                 }

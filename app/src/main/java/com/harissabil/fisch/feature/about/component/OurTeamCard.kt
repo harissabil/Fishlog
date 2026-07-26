@@ -19,14 +19,11 @@ import com.harissabil.fisch.core.common.theme.FischTheme
 import com.harissabil.fisch.core.common.theme.spacing
 
 @Composable
-fun OurTeamCard(
-    modifier: Modifier = Modifier,
-) {
+fun OurTeamCard(modifier: Modifier = Modifier) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .then(modifier),
-        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small + MaterialTheme.spacing.extraSmall)
+        modifier = Modifier.fillMaxWidth().then(modifier),
+        verticalArrangement =
+            Arrangement.spacedBy(MaterialTheme.spacing.small + MaterialTheme.spacing.extraSmall),
     ) {
         Text(
             text = "Our Team",
@@ -35,21 +32,9 @@ fun OurTeamCard(
         )
         Card {
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
-            CardItem(
-                image = R.drawable.pfp_hokulele,
-                title = "Hokulele",
-                description = "KOM 59"
-            )
-            CardItem(
-                image = R.drawable.pfp_lyx,
-                title = "Lyx",
-                description = "KOM 59"
-            )
-            CardItem(
-                image = R.drawable.pfp_burhanez,
-                title = "Burhanez",
-                description = "KOM 59"
-            )
+            CardItem(image = R.drawable.pfp_hokulele, title = "Hokulele", description = "KOM 59")
+            CardItem(image = R.drawable.pfp_lyx, title = "Lyx", description = "KOM 59")
+            CardItem(image = R.drawable.pfp_burhanez, title = "Burhanez", description = "KOM 59")
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
         }
     }
@@ -59,9 +44,5 @@ fun OurTeamCard(
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun OurTeamCardPreview() {
-    FischTheme {
-        Surface {
-            OurTeamCard()
-        }
-    }
+    FischTheme { Surface { OurTeamCard() } }
 }

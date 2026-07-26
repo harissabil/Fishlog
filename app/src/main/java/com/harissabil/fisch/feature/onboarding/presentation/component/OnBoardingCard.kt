@@ -26,38 +26,34 @@ import com.harissabil.fisch.feature.onboarding.domain.model.pages
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun OnBoardingCard(
-    pagerState: PagerState,
-) {
+fun OnBoardingCard(pagerState: PagerState) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
-        colors = CardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            contentColor = MaterialTheme.colorScheme.onSurface,
-            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-            disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        colors =
+            CardColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.onSurface,
+                disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            ),
     ) {
         Column {
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.large))
             Text(
-                modifier = Modifier
-                    .animateContentSize()
-                    .padding(horizontal = MaterialTheme.spacing.large),
+                modifier =
+                    Modifier.animateContentSize().padding(horizontal = MaterialTheme.spacing.large),
                 text = pages[pagerState.currentPage].title,
                 style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
                 color = MaterialTheme.colorScheme.onSurface,
             )
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
             Text(
-                modifier = Modifier
-                    .animateContentSize()
-                    .padding(horizontal = MaterialTheme.spacing.large),
+                modifier =
+                    Modifier.animateContentSize().padding(horizontal = MaterialTheme.spacing.large),
                 text = pages[pagerState.currentPage].description,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }
@@ -68,11 +64,5 @@ fun OnBoardingCard(
 @Preview(uiMode = UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
 private fun OnBoardingCardPreview() {
-    FischTheme {
-        OnBoardingCard(
-            pagerState = rememberPagerState {
-                pages.size
-            }
-        )
-    }
+    FischTheme { OnBoardingCard(pagerState = rememberPagerState { pages.size }) }
 }

@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -64,19 +63,22 @@ enum class TimeRange(val label: String) {
 private fun List<Logbook?>?.filterByRange(range: TimeRange): List<Logbook?>? {
     if (range == TimeRange.ALL_TIME) return this
 
-    val cutoff = Calendar.getInstance().apply {
-        set(Calendar.HOUR_OF_DAY, 0)
-        set(Calendar.MINUTE, 0)
-        set(Calendar.SECOND, 0)
-        set(Calendar.MILLISECOND, 0)
-        if (range == TimeRange.THIS_WEEK) {
-            set(Calendar.DAY_OF_WEEK, firstDayOfWeek)
-        } else if (range == TimeRange.THIS_MONTH) {
-            set(Calendar.DAY_OF_MONTH, 1)
-        } else if (range == TimeRange.THIS_YEAR) {
-            set(Calendar.DAY_OF_YEAR, 1)
-        }
-    }.time
+    val cutoff =
+        Calendar.getInstance()
+            .apply {
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+                if (range == TimeRange.THIS_WEEK) {
+                    set(Calendar.DAY_OF_WEEK, firstDayOfWeek)
+                } else if (range == TimeRange.THIS_MONTH) {
+                    set(Calendar.DAY_OF_MONTH, 1)
+                } else if (range == TimeRange.THIS_YEAR) {
+                    set(Calendar.DAY_OF_YEAR, 1)
+                }
+            }
+            .time
 
     return this?.filter { logbook ->
         val caughtAt = logbook?.waktuPenangkapan?.toDate()
@@ -104,24 +106,30 @@ data class LogbookStats(
 }
 
 /**
- * Each tile takes on one of the theme's accent hues so the row reads like a set of
- * distinct tackle-box compartments rather than one flat panel.
+ * Each tile takes on one of the theme's accent hues so the row reads like a set of distinct
+ * tackle-box compartments rather than one flat panel.
  */
-private enum class StatAccent { PRIMARY, SECONDARY, TERTIARY }
-
-@Composable
-private fun StatAccent.containerColor(): Color = when (this) {
-    StatAccent.PRIMARY -> MaterialTheme.colorScheme.primaryContainer
-    StatAccent.SECONDARY -> MaterialTheme.colorScheme.secondaryContainer
-    StatAccent.TERTIARY -> MaterialTheme.colorScheme.tertiaryContainer
+private enum class StatAccent {
+    PRIMARY,
+    SECONDARY,
+    TERTIARY,
 }
 
 @Composable
-private fun StatAccent.onContainerColor(): Color = when (this) {
-    StatAccent.PRIMARY -> MaterialTheme.colorScheme.onPrimaryContainer
-    StatAccent.SECONDARY -> MaterialTheme.colorScheme.onSecondaryContainer
-    StatAccent.TERTIARY -> MaterialTheme.colorScheme.onTertiaryContainer
-}
+private fun StatAccent.containerColor(): Color =
+    when (this) {
+        StatAccent.PRIMARY -> MaterialTheme.colorScheme.primaryContainer
+        StatAccent.SECONDARY -> MaterialTheme.colorScheme.secondaryContainer
+        StatAccent.TERTIARY -> MaterialTheme.colorScheme.tertiaryContainer
+    }
+
+@Composable
+private fun StatAccent.onContainerColor(): Color =
+    when (this) {
+        StatAccent.PRIMARY -> MaterialTheme.colorScheme.onPrimaryContainer
+        StatAccent.SECONDARY -> MaterialTheme.colorScheme.onSecondaryContainer
+        StatAccent.TERTIARY -> MaterialTheme.colorScheme.onTertiaryContainer
+    }
 
 private data class StatSpec(
     val icon: @Composable () -> Unit,
@@ -142,66 +150,60 @@ fun HomeStats(
     val stats = LogbookStats.from(logbooks.filterByRange(selectedRange))
     val gap = MaterialTheme.spacing.small
 
-    val specs = listOf(
-        StatSpec(
-            icon = {
-                Icon(
-                    imageVector = Icons.Outlined.SetMeal,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp)
-                )
-            },
-            value = stats.totalCatches.toString(),
-            label = "Catches",
-            accent = StatAccent.PRIMARY
-        ),
-        StatSpec(
-            icon = {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_fishlog),
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp)
-                )
-            },
-            value = stats.speciesCount.toString(),
-            label = "Species",
-            accent = StatAccent.TERTIARY
-        ),
-        StatSpec(
-            icon = {
-                Icon(
-                    imageVector = Icons.Outlined.Recycling,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp)
-                )
-            },
-            value = stats.releasedCount.toString(),
-            label = "Released",
-            accent = StatAccent.SECONDARY
-        ),
-        StatSpec(
-            icon = {
-                Icon(
-                    imageVector = Icons.Outlined.MonitorWeight,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp)
-                )
-            },
-            value = stats.bestWeight?.let { "${roundToDisplay(it)} kg" } ?: "–",
-            label = "Best catch",
-            accent = StatAccent.PRIMARY
-        ),
-    )
+    val specs =
+        listOf(
+            StatSpec(
+                icon = {
+                    Icon(
+                        imageVector = Icons.Outlined.SetMeal,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                    )
+                },
+                value = stats.totalCatches.toString(),
+                label = "Catches",
+                accent = StatAccent.PRIMARY,
+            ),
+            StatSpec(
+                icon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_fishlog),
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                    )
+                },
+                value = stats.speciesCount.toString(),
+                label = "Species",
+                accent = StatAccent.TERTIARY,
+            ),
+            StatSpec(
+                icon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Recycling,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                    )
+                },
+                value = stats.releasedCount.toString(),
+                label = "Released",
+                accent = StatAccent.SECONDARY,
+            ),
+            StatSpec(
+                icon = {
+                    Icon(
+                        imageVector = Icons.Outlined.MonitorWeight,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                    )
+                },
+                value = stats.bestWeight?.let { "${roundToDisplay(it)} kg" } ?: "–",
+                label = "Best catch",
+                accent = StatAccent.PRIMARY,
+            ),
+        )
 
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(gap)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .horizontalScroll(rememberScrollState()),
-        ) {
+    Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(gap)) {
+        Row(modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState())) {
             TimeRange.entries.forEach { range ->
                 if (range == TimeRange.entries.first()) {
                     Spacer(modifier = Modifier.width(MaterialTheme.spacing.medium))
@@ -211,7 +213,7 @@ fun HomeStats(
                 FilterChip(
                     selected = selectedRange == range,
                     onClick = { selectedRange = range },
-                    label = { Text(text = range.label) }
+                    label = { Text(text = range.label) },
                 )
             }
             Spacer(modifier = Modifier.width(MaterialTheme.spacing.medium))
@@ -241,17 +243,13 @@ fun HomeStats(
 
                 if (isLoading) {
                     Box(
-                        modifier = Modifier
-                            .matchParentSize()
-                            .clip(MaterialTheme.shapes.medium)
-                            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.6f)),
-                        contentAlignment = Alignment.Center
+                        modifier =
+                            Modifier.matchParentSize()
+                                .clip(MaterialTheme.shapes.medium)
+                                .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.6f)),
+                        contentAlignment = Alignment.Center,
                     ) {
-                        FishLoading(
-                            circleSize = 8.dp,
-                            spaceBetween = 6.dp,
-                            travelDistance = 16.dp,
-                        )
+                        FishLoading(circleSize = 8.dp, spaceBetween = 6.dp, travelDistance = 16.dp)
                     }
                 }
             }
@@ -281,21 +279,20 @@ private fun StatTile(
         color = MaterialTheme.colorScheme.surfaceContainerHigh,
     ) {
         Column(
-            modifier = Modifier.padding(
-                PaddingValues(
-                    horizontal = MaterialTheme.spacing.extraSmall,
-                    vertical = MaterialTheme.spacing.small,
-                )
-            ),
+            modifier =
+                Modifier.padding(
+                    PaddingValues(
+                        horizontal = MaterialTheme.spacing.extraSmall,
+                        vertical = MaterialTheme.spacing.small,
+                    )
+                ),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall)
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall),
         ) {
             Box(
-                modifier = Modifier
-                    .size(32.dp)
-                    .clip(CircleShape)
-                    .background(accent.containerColor()),
-                contentAlignment = Alignment.Center
+                modifier =
+                    Modifier.size(32.dp).clip(CircleShape).background(accent.containerColor()),
+                contentAlignment = Alignment.Center,
             ) {
                 CompositionLocalProvider(LocalContentColor provides accent.onContainerColor()) {
                     icon()
@@ -306,14 +303,14 @@ private fun StatTile(
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                 color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center,
-                maxLines = 1
+                maxLines = 1,
             )
             Text(
                 text = label,
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
-                maxLines = 1
+                maxLines = 1,
             )
         }
     }
@@ -327,33 +324,34 @@ private fun HomeStatsPreview() {
         Surface {
             Box(modifier = Modifier.padding(MaterialTheme.spacing.medium)) {
                 HomeStats(
-                    logbooks = listOf(
-                        Logbook(
-                            id = "1",
-                            email = "tes@gmail.com",
-                            jenisIkan = "Ikan Hiu",
-                            jumlahIkan = 1000,
-                            tempatPenangkapan = "Florida",
-                            waktuPenangkapan = null,
-                            fotoIkan = null,
-                            catatan = null,
-                            beratIkan = 12.5,
-                            dilepaskan = true
+                    logbooks =
+                        listOf(
+                            Logbook(
+                                id = "1",
+                                email = "tes@gmail.com",
+                                jenisIkan = "Ikan Hiu",
+                                jumlahIkan = 1000,
+                                tempatPenangkapan = "Florida",
+                                waktuPenangkapan = null,
+                                fotoIkan = null,
+                                catatan = null,
+                                beratIkan = 12.5,
+                                dilepaskan = true,
+                            ),
+                            Logbook(
+                                id = "2",
+                                email = "tes@gmail.com",
+                                jenisIkan = "Gurita",
+                                jumlahIkan = 5,
+                                tempatPenangkapan = "Laut Pasifik",
+                                waktuPenangkapan = null,
+                                fotoIkan = null,
+                                catatan = null,
+                                beratIkan = 10003.2,
+                                dilepaskan = false,
+                            ),
                         ),
-                        Logbook(
-                            id = "2",
-                            email = "tes@gmail.com",
-                            jenisIkan = "Gurita",
-                            jumlahIkan = 5,
-                            tempatPenangkapan = "Laut Pasifik",
-                            waktuPenangkapan = null,
-                            fotoIkan = null,
-                            catatan = null,
-                            beratIkan = 10003.2,
-                            dilepaskan = false
-                        ),
-                    ),
-                    isLoading = false
+                    isLoading = false,
                 )
             }
         }
@@ -367,21 +365,22 @@ private fun HomeStatsNarrowPreview() {
         Surface {
             Box(modifier = Modifier.padding(MaterialTheme.spacing.medium)) {
                 HomeStats(
-                    logbooks = listOf(
-                        Logbook(
-                            id = "1",
-                            email = "tes@gmail.com",
-                            jenisIkan = "Ikan Hiu",
-                            jumlahIkan = 10,
-                            tempatPenangkapan = "Florida",
-                            waktuPenangkapan = null,
-                            fotoIkan = null,
-                            catatan = null,
-                            beratIkan = 12.5,
-                            dilepaskan = true
+                    logbooks =
+                        listOf(
+                            Logbook(
+                                id = "1",
+                                email = "tes@gmail.com",
+                                jenisIkan = "Ikan Hiu",
+                                jumlahIkan = 10,
+                                tempatPenangkapan = "Florida",
+                                waktuPenangkapan = null,
+                                fotoIkan = null,
+                                catatan = null,
+                                beratIkan = 12.5,
+                                dilepaskan = true,
+                            )
                         ),
-                    ),
-                    isLoading = false
+                    isLoading = false,
                 )
             }
         }

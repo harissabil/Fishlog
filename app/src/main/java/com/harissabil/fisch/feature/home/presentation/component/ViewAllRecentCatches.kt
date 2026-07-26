@@ -42,19 +42,19 @@ fun ViewAllRecentCatches(
 ) {
     val lazyGridState = rememberLazyGridState()
 
-    ModalBottomSheet(
-        onDismissRequest = onDismissRequest,
-        sheetState = sheetState,
-    ) {
+    ModalBottomSheet(onDismissRequest = onDismissRequest, sheetState = sheetState) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = MaterialTheme.spacing.medium + MaterialTheme.spacing.small)
-                .then(modifier),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier =
+                Modifier.fillMaxWidth()
+                    .padding(bottom = MaterialTheme.spacing.medium + MaterialTheme.spacing.small)
+                    .then(modifier),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             LazyVerticalGrid(
-                modifier = Modifier.padding(horizontal = MaterialTheme.spacing.medium + MaterialTheme.spacing.small),
+                modifier =
+                    Modifier.padding(
+                        horizontal = MaterialTheme.spacing.medium + MaterialTheme.spacing.small
+                    ),
                 state = lazyGridState,
                 columns = GridCells.Adaptive(140.dp),
                 horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium),
@@ -81,7 +81,7 @@ fun ViewAllRecentCatches(
                         CatchItem(
                             logbook = uniqueRecentCatchList[index],
                             onClick = onItemClick,
-                            modifier = Modifier.animateItemPlacement()
+                            modifier = Modifier.animateItemPlacement(),
                         )
                     }
                 } else {
@@ -89,21 +89,24 @@ fun ViewAllRecentCatches(
                         Column(
                             modifier = modifier,
                             verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
+                            horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
                             Icon(
                                 imageVector = Icons.Outlined.Sailing,
                                 contentDescription = null,
                                 modifier = Modifier.size(50.dp),
-                                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                             )
                             Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
                             Text(
                                 text = "No recent catches",
-                                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
+                                style =
+                                    MaterialTheme.typography.titleSmall.copy(
+                                        fontWeight = FontWeight.SemiBold
+                                    ),
                                 modifier = Modifier.fillMaxWidth(),
                                 textAlign = TextAlign.Center,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                             )
                         }
                     }

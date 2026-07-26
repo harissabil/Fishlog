@@ -16,9 +16,7 @@ object IntroManagerModule {
 
     @Provides
     @Singleton
-    fun provideIntroManager(
-        @ApplicationContext context: Context,
-    ): IntroManager {
+    fun provideIntroManager(@ApplicationContext context: Context): IntroManager {
         return IntroManagerImpl(context = context)
     }
 }

@@ -4,16 +4,16 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
 import com.harissabil.fisch.core.common.util.Resource
 import com.harissabil.fisch.core.firebase.storage.domain.StorageRepository
-import kotlinx.coroutines.tasks.await
-import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.tasks.await
+import timber.log.Timber
 
 @Singleton
-class StorageRepositoryImpl @Inject constructor(
-    private val storage: FirebaseStorage,
-    private val auth: FirebaseAuth,
-) : StorageRepository {
+class StorageRepositoryImpl
+@Inject
+constructor(private val storage: FirebaseStorage, private val auth: FirebaseAuth) :
+    StorageRepository {
 
     override suspend fun uploadImage(image: ByteArray, fileName: String): Resource<String> {
         val currentUser = auth.currentUser ?: return Resource.Error("Something went wrong!")

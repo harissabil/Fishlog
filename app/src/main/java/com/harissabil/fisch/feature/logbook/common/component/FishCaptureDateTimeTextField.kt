@@ -60,7 +60,7 @@ fun FishCaptureDateTimeTextField(
     onDateValueChange: (String) -> Unit,
     timeValue: String,
     onTimeValueChange: (String) -> Unit,
-    isInEditMode: Boolean = true
+    isInEditMode: Boolean = true,
 ) {
     val context = LocalContext.current
     val is24Hour = DateFormat.is24HourFormat(context)
@@ -68,17 +68,17 @@ fun FishCaptureDateTimeTextField(
 
     val dateTextFieldInteractionSource = remember { MutableInteractionSource() }
     var isDatePickerVisible by remember { mutableStateOf(false) }
-    val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = Instant.now().toEpochMilli(),
-    )
+    val datePickerState =
+        rememberDatePickerState(initialSelectedDateMillis = Instant.now().toEpochMilli())
 
     val timeTextFieldInteractionSource = remember { MutableInteractionSource() }
     var isTimePickerVisible by remember { mutableStateOf(false) }
-    val timePickerState = rememberTimePickerState(
-        initialHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY),
-        initialMinute = Calendar.getInstance().get(Calendar.MINUTE),
-        is24Hour = is24Hour
-    )
+    val timePickerState =
+        rememberTimePickerState(
+            initialHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY),
+            initialMinute = Calendar.getInstance().get(Calendar.MINUTE),
+            is24Hour = is24Hour,
+        )
 
     var isCurrentDateTimeChecked by rememberSaveable { mutableStateOf(false) }
 
@@ -96,18 +96,10 @@ fun FishCaptureDateTimeTextField(
                 }
             },
             dismissButton = {
-                TextButton(
-                    onClick = {
-                        isDatePickerVisible = false
-                    }
-                ) {
-                    Text("Cancel")
-                }
+                TextButton(onClick = { isDatePickerVisible = false }) { Text("Cancel") }
             },
         ) {
-            DatePicker(
-                state = datePickerState,
-            )
+            DatePicker(state = datePickerState)
         }
     }
 
@@ -121,16 +113,20 @@ fun FishCaptureDateTimeTextField(
                         onTimeValueChange(
                             if (is24Hour) {
                                 timePickerState.hour.toString().padStart(2, '0') +
-                                        ":" +
-                                        timePickerState.minute.toString().padStart(2, '0')
+                                    ":" +
+                                    timePickerState.minute.toString().padStart(2, '0')
                             } else {
                                 val hour12 =
-                                    if (timePickerState.hour == 0) 12 else if (timePickerState.hour <= 12) timePickerState.hour else timePickerState.hour - 12
+                                    if (timePickerState.hour == 0) 12
+                                    else if (timePickerState.hour <= 12) timePickerState.hour
+                                    else timePickerState.hour - 12
                                 val period = if (timePickerState.hour < 12) "AM" else "PM"
 
-                                hour12.toString()
-                                    .padStart(2, '0') + ":" + timePickerState.minute.toString()
-                                    .padStart(2, '0') + " " + period
+                                hour12.toString().padStart(2, '0') +
+                                    ":" +
+                                    timePickerState.minute.toString().padStart(2, '0') +
+                                    " " +
+                                    period
                             }
                         )
                     }
@@ -139,13 +135,7 @@ fun FishCaptureDateTimeTextField(
                 }
             },
             dismissButton = {
-                TextButton(
-                    onClick = {
-                        isTimePickerVisible = false
-                    }
-                ) {
-                    Text("Cancel")
-                }
+                TextButton(onClick = { isTimePickerVisible = false }) { Text("Cancel") }
             },
         ) {
             TimePicker(state = timePickerState)
@@ -153,94 +143,102 @@ fun FishCaptureDateTimeTextField(
     }
 
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .animateContentSize()
-            .then(modifier),
+        modifier = Modifier.fillMaxWidth().animateContentSize().then(modifier),
         horizontalAlignment = Alignment.Start,
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
+            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small),
         ) {
             FishTextField(
-                modifier = Modifier
-                    .weight(1f)
-                    .onFocusChanged {
+                modifier =
+                    Modifier.weight(1f).onFocusChanged {
                         if (it.isFocused) {
                             isDatePickerVisible = false
                             keyboardController?.hide()
                         }
                     },
-                interactionSource = dateTextFieldInteractionSource.also { interactionSource ->
-                    LaunchedEffect(interactionSource) {
-                        interactionSource.interactions.collect {
-                            if (it is PressInteraction.Release) {
-                                isDatePickerVisible = true
+                interactionSource =
+                    dateTextFieldInteractionSource.also { interactionSource ->
+                        LaunchedEffect(interactionSource) {
+                            interactionSource.interactions.collect {
+                                if (it is PressInteraction.Release) {
+                                    isDatePickerVisible = true
+                                }
                             }
                         }
-                    }
-                },
+                    },
                 value = dateValue,
                 onValueChange = {},
                 label = "Capture Date",
                 leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Outlined.CalendarMonth,
-                        contentDescription = null,
-                    )
+                    Icon(imageVector = Icons.Outlined.CalendarMonth, contentDescription = null)
                 },
-                keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Next,
-                    keyboardType = KeyboardType.Number
-                ),
-                readOnly = !isInEditMode
+                keyboardOptions =
+                    KeyboardOptions(imeAction = ImeAction.Next, keyboardType = KeyboardType.Number),
+                readOnly = !isInEditMode,
             )
 
             FishTextField(
-                modifier = Modifier
-                    .weight(1f)
-                    .onFocusChanged {
+                modifier =
+                    Modifier.weight(1f).onFocusChanged {
                         if (it.isFocused) {
                             isTimePickerVisible = true
                             keyboardController?.hide()
                         }
                     },
-                interactionSource = timeTextFieldInteractionSource.also { interactionSource ->
-                    LaunchedEffect(interactionSource) {
-                        interactionSource.interactions.collect {
-                            if (it is PressInteraction.Release) {
-                                isTimePickerVisible = true
+                interactionSource =
+                    timeTextFieldInteractionSource.also { interactionSource ->
+                        LaunchedEffect(interactionSource) {
+                            interactionSource.interactions.collect {
+                                if (it is PressInteraction.Release) {
+                                    isTimePickerVisible = true
+                                }
                             }
                         }
-                    }
-                },
+                    },
                 value = timeValue,
                 onValueChange = {},
                 label = "Capture Time",
                 leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Outlined.Schedule,
-                        contentDescription = null,
-                    )
+                    Icon(imageVector = Icons.Outlined.Schedule, contentDescription = null)
                 },
-                keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Next,
-                    keyboardType = KeyboardType.Number
-                ),
-                readOnly = !isInEditMode
+                keyboardOptions =
+                    KeyboardOptions(imeAction = ImeAction.Next, keyboardType = KeyboardType.Number),
+                readOnly = !isInEditMode,
             )
         }
 
         if (isInEditMode) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
-                        onClick = {
-                            isCurrentDateTimeChecked = if (!isCurrentDateTimeChecked) {
+                modifier =
+                    Modifier.fillMaxWidth()
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null,
+                            onClick = {
+                                isCurrentDateTimeChecked =
+                                    if (!isCurrentDateTimeChecked) {
+                                        val currentTimeStamp = Timestamp.now()
+                                        val currentDate = currentTimeStamp.toDateYyyyMmDd()
+                                        val currentTime = currentTimeStamp.toTime(context)
+
+                                        onDateValueChange(currentDate)
+                                        onTimeValueChange(currentTime)
+
+                                        true
+                                    } else {
+                                        false
+                                    }
+                            },
+                        ),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Checkbox(
+                    checked = isCurrentDateTimeChecked,
+                    onCheckedChange = {
+                        isCurrentDateTimeChecked =
+                            if (!isCurrentDateTimeChecked) {
                                 val currentTimeStamp = Timestamp.now()
                                 val currentDate = currentTimeStamp.toDateYyyyMmDd()
                                 val currentTime = currentTimeStamp.toTime(context)
@@ -252,35 +250,15 @@ fun FishCaptureDateTimeTextField(
                             } else {
                                 false
                             }
-                        }
-                    ),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Checkbox(
-
-                    checked = isCurrentDateTimeChecked,
-                    onCheckedChange = {
-                        isCurrentDateTimeChecked = if (!isCurrentDateTimeChecked) {
-                            val currentTimeStamp = Timestamp.now()
-                            val currentDate = currentTimeStamp.toDateYyyyMmDd()
-                            val currentTime = currentTimeStamp.toTime(context)
-
-                            onDateValueChange(currentDate)
-                            onTimeValueChange(currentTime)
-
-                            true
-                        } else {
-                            false
-                        }
-                    }
+                    },
                 )
-                Text(
-                    text = "Current date and time",
-                    style = MaterialTheme.typography.bodySmall
-                )
+                Text(text = "Current date and time", style = MaterialTheme.typography.bodySmall)
             }
         } else {
-            Spacer(modifier = Modifier.height(MaterialTheme.spacing.small + MaterialTheme.spacing.small))
+            Spacer(
+                modifier =
+                    Modifier.height(MaterialTheme.spacing.small + MaterialTheme.spacing.small)
+            )
         }
     }
 }

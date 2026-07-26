@@ -53,27 +53,17 @@ fun FishLengthTextField(
             }
         },
         label = "Length (cm)",
-        leadingIcon = {
-            Icon(
-                imageVector = Icons.Outlined.Straighten,
-                contentDescription = null,
-            )
-        },
+        leadingIcon = { Icon(imageVector = Icons.Outlined.Straighten, contentDescription = null) },
         trailingIcon = {
-            AnimatedTextFieldTrailingIcon(
-                visible = value.isNotEmpty() && isFocused,
-            ) {
+            AnimatedTextFieldTrailingIcon(visible = value.isNotEmpty() && isFocused) {
                 IconButton(
                     onClick = {
                         onValueChange("")
                         keyboardController?.hide()
                     },
                     content = {
-                        Icon(
-                            imageVector = Icons.Outlined.Cancel,
-                            contentDescription = "Clear",
-                        )
-                    }
+                        Icon(imageVector = Icons.Outlined.Cancel, contentDescription = "Clear")
+                    },
                 )
             }
         },
@@ -82,20 +72,20 @@ fun FishLengthTextField(
             AnimatedVisibility(visible = isError) {
                 supportingText?.let {
                     Column {
-                        Text(
-                            text = it,
-                            color = MaterialTheme.colorScheme.error
+                        Text(text = it, color = MaterialTheme.colorScheme.error)
+                        Spacer(
+                            modifier =
+                                Modifier.height(
+                                    MaterialTheme.spacing.small + MaterialTheme.spacing.small
+                                )
                         )
-                        Spacer(modifier = Modifier.height(MaterialTheme.spacing.small + MaterialTheme.spacing.small))
                     }
                 }
             }
         },
-        keyboardOptions = KeyboardOptions(
-            imeAction = ImeAction.Next,
-            keyboardType = KeyboardType.Decimal
-        ),
-        readOnly = !isInEditMode
+        keyboardOptions =
+            KeyboardOptions(imeAction = ImeAction.Next, keyboardType = KeyboardType.Decimal),
+        readOnly = !isInEditMode,
     )
 }
 
@@ -109,7 +99,7 @@ private fun FishLengthTextFieldPreview() {
                 value = "35",
                 onValueChange = {},
                 isError = false,
-                supportingText = null
+                supportingText = null,
             )
         }
     }

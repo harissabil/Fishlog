@@ -40,43 +40,39 @@ fun CatchItem(
     logbook: Logbook?,
     onClick: (logbook: Logbook?) -> Unit,
 ) {
-    val gradient = Brush.verticalGradient(
-        colors = listOf(
-            Color.Black.copy(alpha = 0.7F),
-            Color.Black
-        )
-    )
+    val gradient =
+        Brush.verticalGradient(colors = listOf(Color.Black.copy(alpha = 0.7F), Color.Black))
 
     Box(
-        modifier = Modifier
-            .size(width = 140.dp, height = 140.dp)
-            .clip(MaterialTheme.shapes.large)
-            .clickable { onClick(logbook) }
-            .then(modifier),
+        modifier =
+            Modifier.size(width = 140.dp, height = 140.dp)
+                .clip(MaterialTheme.shapes.large)
+                .clickable { onClick(logbook) }
+                .then(modifier)
     ) {
         SubcomposeAsyncImage(
-            model = ImageRequest.Builder(context = LocalContext.current)
-                .data(data = logbook?.fotoIkan)
-                .memoryCachePolicy(CachePolicy.ENABLED)
-                .memoryCacheKey(logbook?.fotoIkan)
-                .diskCachePolicy(CachePolicy.ENABLED)
-                .diskCacheKey(logbook?.fotoIkan)
-                .allowHardware(false)
-                .allowRgb565(true)
-                .crossfade(enable = true)
-                .build(),
+            model =
+                ImageRequest.Builder(context = LocalContext.current)
+                    .data(data = logbook?.fotoIkan)
+                    .memoryCachePolicy(CachePolicy.ENABLED)
+                    .memoryCacheKey(logbook?.fotoIkan)
+                    .diskCachePolicy(CachePolicy.ENABLED)
+                    .diskCacheKey(logbook?.fotoIkan)
+                    .allowHardware(false)
+                    .allowRgb565(true)
+                    .crossfade(enable = true)
+                    .build(),
             contentScale = ContentScale.Crop,
-            colorFilter = ColorFilter.colorMatrix(
-                colorMatrix = ColorMatrix().apply {
-                    setToSaturation(sat = 0.85F)
-                }
-            ),
+            colorFilter =
+                ColorFilter.colorMatrix(
+                    colorMatrix = ColorMatrix().apply { setToSaturation(sat = 0.85F) }
+                ),
             loading = {
                 Box(
-                    modifier = Modifier
-                        .matchParentSize()
-                        .background(Color.Gray.copy(alpha = 0.5F))
-                        .shimmerEffect()
+                    modifier =
+                        Modifier.matchParentSize()
+                            .background(Color.Gray.copy(alpha = 0.5F))
+                            .shimmerEffect()
                 )
             },
             filterQuality = FilterQuality.Medium,
@@ -84,38 +80,24 @@ fun CatchItem(
             contentDescription = logbook?.jenisIkan ?: "N/A",
             modifier = Modifier.matchParentSize(),
             error = {
-                Box(
-                    modifier = Modifier
-                        .matchParentSize()
-                        .background(Color.Gray.copy(alpha = 0.5F))
-                )
-            }
+                Box(modifier = Modifier.matchParentSize().background(Color.Gray.copy(alpha = 0.5F)))
+            },
         )
 
-        Box(
-            Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomStart)
-        ) {
-            Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .background(gradient)
-            )
+        Box(Modifier.fillMaxWidth().align(Alignment.BottomStart)) {
+            Box(modifier = Modifier.matchParentSize().background(gradient))
             Text(
                 text = logbook?.jenisIkan ?: "N/A",
-                style = MaterialTheme.typography.titleSmall.copy(
-                    fontWeight = FontWeight.SemiBold
-                ),
+                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
                 color = onSurfaceDark,
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(
-                        vertical = MaterialTheme.spacing.small,
-                        horizontal = MaterialTheme.spacing.medium
-                    )
+                modifier =
+                    Modifier.align(Alignment.BottomStart)
+                        .padding(
+                            vertical = MaterialTheme.spacing.small,
+                            horizontal = MaterialTheme.spacing.medium,
+                        ),
             )
         }
     }
@@ -128,17 +110,18 @@ private fun CatchItemPreview() {
     FischTheme {
         Surface {
             CatchItem(
-                logbook = Logbook(
-                    id = "1",
-                    email = "tes@gmail.com",
-                    jenisIkan = "Ikan Mas",
-                    jumlahIkan = 10,
-                    tempatPenangkapan = null,
-                    waktuPenangkapan = null,
-                    fotoIkan = null,
-                    catatan = null
-                ),
-                onClick = {}
+                logbook =
+                    Logbook(
+                        id = "1",
+                        email = "tes@gmail.com",
+                        jenisIkan = "Ikan Mas",
+                        jumlahIkan = 10,
+                        tempatPenangkapan = null,
+                        waktuPenangkapan = null,
+                        fotoIkan = null,
+                        catatan = null,
+                    ),
+                onClick = {},
             )
         }
     }

@@ -17,6 +17,9 @@ import com.harissabil.fisch.feature.map.data.toMapItem
 import com.harissabil.fisch.feature.map.domain.MapItem
 import com.harissabil.fisch.feature.map.domain.MapPin
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.util.Date
+import javax.inject.Inject
+import kotlin.random.Random
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,14 +34,13 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.Date
-import javax.inject.Inject
-import kotlin.random.Random
 
 private const val USE_DUMMY_DATA = false
 
 @HiltViewModel
-class MapViewModel @Inject constructor(
+class MapViewModel
+@Inject
+constructor(
     private val getMaps: GetMaps,
     private val getLogbooks: GetLogbooks,
     private val locationTracker: LocationTracker,
@@ -56,65 +58,64 @@ class MapViewModel @Inject constructor(
     private val _filterState = MutableStateFlow(FilterState())
     val filterState: StateFlow<FilterState> = _filterState.asStateFlow()
 
-    private val pins: Flow<List<MapPin>> = combine(
-        _mapItems,
-        _logbooks,
-        _dummyPins,
-    ) { mapItems, logbooks, dummyPins ->
-        if (dummyPins != null) return@combine dummyPins
+    private val pins: Flow<List<MapPin>> =
+        combine(_mapItems, _logbooks, _dummyPins) { mapItems, logbooks, dummyPins ->
+            if (dummyPins != null) return@combine dummyPins
 
-        val logbooksById = logbooks?.associateBy { it.id } ?: emptyMap()
+            val logbooksById = logbooks?.associateBy { it.id } ?: emptyMap()
 
-        mapItems
-            ?.mapNotNull { mapItem ->
+            mapItems?.mapNotNull { mapItem ->
                 val logbook = mapItem.logbookRef?.id?.let { logbooksById[it] }
                 if (logbook == null) null else MapPin(mapItem = mapItem, logbook = logbook)
-            }
-            ?: emptyList()
-    }
+            } ?: emptyList()
+        }
 
-    val availableBaits = pins.map { pins ->
+    val availableBaits =
         pins
-            .mapNotNull { it.logbook.umpan?.trim()?.takeIf { bait -> bait.isNotEmpty() } }
-            .distinct()
-            .sorted()
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.Lazily,
-        initialValue = emptyList()
-    )
-
-    val filteredPins: StateFlow<List<MapPin>> = combine(
-        pins,
-        _searchQuery,
-        _filterState,
-    ) { pins, query, filterState ->
-        val queriedPins = if (query.isEmpty()) {
-            pins
-        } else {
-            pins.filter { pin ->
-                query in (pin.logbook.jenisIkan?.lowercase().orEmpty()) ||
-                        query in (pin.logbook.tempatPenangkapan?.lowercase().orEmpty()) ||
-                        query in (pin.logbook.umpan?.lowercase().orEmpty())
+            .map { pins ->
+                pins
+                    .mapNotNull { it.logbook.umpan?.trim()?.takeIf { bait -> bait.isNotEmpty() } }
+                    .distinct()
+                    .sorted()
             }
-        }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.Lazily,
+                initialValue = emptyList(),
+            )
 
-        queriedPins.filter { pin ->
-            val matchesRelease = when (filterState.releaseFilter) {
-                ReleaseFilter.ALL -> true
-                ReleaseFilter.RELEASED -> pin.logbook.dilepaskan == true
-                ReleaseFilter.KEPT -> pin.logbook.dilepaskan != true
+    val filteredPins: StateFlow<List<MapPin>> =
+        combine(pins, _searchQuery, _filterState) { pins, query, filterState ->
+                val queriedPins =
+                    if (query.isEmpty()) {
+                        pins
+                    } else {
+                        pins.filter { pin ->
+                            query in (pin.logbook.jenisIkan?.lowercase().orEmpty()) ||
+                                query in (pin.logbook.tempatPenangkapan?.lowercase().orEmpty()) ||
+                                query in (pin.logbook.umpan?.lowercase().orEmpty())
+                        }
+                    }
+
+                queriedPins.filter { pin ->
+                    val matchesRelease =
+                        when (filterState.releaseFilter) {
+                            ReleaseFilter.ALL -> true
+                            ReleaseFilter.RELEASED -> pin.logbook.dilepaskan == true
+                            ReleaseFilter.KEPT -> pin.logbook.dilepaskan != true
+                        }
+                    val matchesBait =
+                        filterState.selectedBaits.isEmpty() ||
+                            pin.logbook.umpan in filterState.selectedBaits
+
+                    matchesRelease && matchesBait
+                }
             }
-            val matchesBait = filterState.selectedBaits.isEmpty() ||
-                    pin.logbook.umpan in filterState.selectedBaits
-
-            matchesRelease && matchesBait
-        }
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.Lazily,
-        initialValue = emptyList()
-    )
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.Lazily,
+                initialValue = emptyList(),
+            )
 
     private val _eventFlow = MutableSharedFlow<UIEvent>()
     val eventFlow: SharedFlow<UIEvent> = _eventFlow.asSharedFlow()
@@ -159,9 +160,7 @@ class MapViewModel @Inject constructor(
             when (response) {
                 is Resource.Error -> {
                     _eventFlow.emit(
-                        UIEvent.ShowSnackbar(
-                            response.message ?: "Something went wrong!"
-                        )
+                        UIEvent.ShowSnackbar(response.message ?: "Something went wrong!")
                     )
                 }
 
@@ -181,45 +180,58 @@ class MapViewModel @Inject constructor(
     private fun generateDummyPins() {
         val random = Random(seed = 0)
 
-        val species = listOf(
-            "Barramundi", "Grouper", "Snapper", "Threadfin", "Queenfish",
-            "Trevally", "Catfish", "Tilapia", "Mangrove Jack", "Milkfish",
-        )
+        val species =
+            listOf(
+                "Barramundi",
+                "Grouper",
+                "Snapper",
+                "Threadfin",
+                "Queenfish",
+                "Trevally",
+                "Catfish",
+                "Tilapia",
+                "Mangrove Jack",
+                "Milkfish",
+            )
         val baits = listOf("Shrimp", "Squid", "Lure", "Worm", "Prawn", "Live Bait")
 
-        val pins = (0..69).map { i ->
-            val placeName = "Place $i"
-            val latLong = LatLng(
-                1.35 + random.nextDouble(),
-                103.87 + random.nextDouble(),
-            )
-            val caughtAt = Timestamp(
-                Date(System.currentTimeMillis() - random.nextLong(0, 90L * 24 * 60 * 60 * 1000))
-            )
+        val pins =
+            (0..69).map { i ->
+                val placeName = "Place $i"
+                val latLong = LatLng(1.35 + random.nextDouble(), 103.87 + random.nextDouble())
+                val caughtAt =
+                    Timestamp(
+                        Date(
+                            System.currentTimeMillis() -
+                                random.nextLong(0, 90L * 24 * 60 * 60 * 1000)
+                        )
+                    )
 
-            MapPin(
-                mapItem = MapItem(
-                    id = i.toString(),
-                    logbookRef = null,
-                    placeName = placeName,
-                    latLong = latLong,
-                ),
-                logbook = Logbook(
-                    id = "dummy-$i",
-                    email = null,
-                    jenisIkan = species[i % species.size],
-                    jumlahIkan = random.nextInt(1, 6),
-                    waktuPenangkapan = caughtAt,
-                    tempatPenangkapan = placeName,
-                    fotoIkan = null,
-                    beratIkan = random.nextDouble(0.2, 8.0),
-                    panjangIkan = random.nextDouble(10.0, 90.0),
-                    umpan = baits[i % baits.size],
-                    dilepaskan = i % 3 == 0,
-                    catatan = "Dummy catch #$i",
-                ),
-            )
-        }
+                MapPin(
+                    mapItem =
+                        MapItem(
+                            id = i.toString(),
+                            logbookRef = null,
+                            placeName = placeName,
+                            latLong = latLong,
+                        ),
+                    logbook =
+                        Logbook(
+                            id = "dummy-$i",
+                            email = null,
+                            jenisIkan = species[i % species.size],
+                            jumlahIkan = random.nextInt(1, 6),
+                            waktuPenangkapan = caughtAt,
+                            tempatPenangkapan = placeName,
+                            fotoIkan = null,
+                            beratIkan = random.nextDouble(0.2, 8.0),
+                            panjangIkan = random.nextDouble(10.0, 90.0),
+                            umpan = baits[i % baits.size],
+                            dilepaskan = i % 3 == 0,
+                            catatan = "Dummy catch #$i",
+                        ),
+                )
+            }
 
         _dummyPins.update { pins }
     }
@@ -229,9 +241,7 @@ class MapViewModel @Inject constructor(
             when (response) {
                 is Resource.Error -> {
                     _eventFlow.emit(
-                        UIEvent.ShowSnackbar(
-                            response.message ?: "Something went wrong!"
-                        )
+                        UIEvent.ShowSnackbar(response.message ?: "Something went wrong!")
                     )
                 }
 
@@ -245,6 +255,7 @@ class MapViewModel @Inject constructor(
 
     sealed class UIEvent {
         data class ShowSnackbar(val message: String) : UIEvent()
+
         data class CenterCamera(val latLng: LatLng) : UIEvent()
     }
 }

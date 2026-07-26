@@ -4,17 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.harissabil.fisch.feature.onboarding.domain.usecase.SaveAppEntry
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlinx.coroutines.launch
 
 @HiltViewModel
-class OnBoardingViewModel @Inject constructor(
-    private val saveAppEntry: SaveAppEntry
-) : ViewModel() {
+class OnBoardingViewModel @Inject constructor(private val saveAppEntry: SaveAppEntry) :
+    ViewModel() {
 
     fun saveAppEntry() {
-        viewModelScope.launch {
-            saveAppEntry.invoke()
-        }
+        viewModelScope.launch { saveAppEntry.invoke() }
     }
 }

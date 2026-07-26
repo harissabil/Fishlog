@@ -29,11 +29,7 @@ fun FishReleasedToggle(
 ) {
     val options = listOf("Kept", "Released")
 
-    SingleChoiceSegmentedButtonRow(
-        modifier = Modifier
-            .fillMaxWidth()
-            .then(modifier)
-    ) {
+    SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth().then(modifier)) {
         options.forEachIndexed { index, label ->
             val selected = if (index == 0) !isReleased else isReleased
             SegmentedButton(
@@ -46,11 +42,11 @@ fun FishReleasedToggle(
                         Icon(
                             imageVector = Icons.Filled.Check,
                             contentDescription = null,
-                            modifier = Modifier
+                            modifier = Modifier,
                         )
                     }
                 },
-                label = { Text(label) }
+                label = { Text(label) },
             )
         }
     }
@@ -65,7 +61,7 @@ private fun FishReleasedTogglePreview() {
             FishReleasedToggle(
                 modifier = Modifier.padding(MaterialTheme.spacing.medium),
                 isReleased = false,
-                onValueChange = {}
+                onValueChange = {},
             )
         }
     }

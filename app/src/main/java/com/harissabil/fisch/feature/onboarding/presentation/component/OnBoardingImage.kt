@@ -15,18 +15,13 @@ import com.harissabil.fisch.core.common.theme.FischTheme
 import com.harissabil.fisch.feature.onboarding.domain.model.Page
 
 @Composable
-fun OnBoardingImage(
-    modifier: Modifier = Modifier,
-    page: Page,
-) {
+fun OnBoardingImage(modifier: Modifier = Modifier, page: Page) {
     Box(modifier = modifier) {
         Image(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(fraction = 0.8f),
+            modifier = Modifier.fillMaxWidth().fillMaxHeight(fraction = 0.8f),
             painter = painterResource(id = page.image),
             contentDescription = null,
-            contentScale = ContentScale.Crop
+            contentScale = ContentScale.Crop,
         )
     }
 }
@@ -37,23 +32,13 @@ fun OnBoardingImage(
 fun OnBoardingImagePreview() {
     FischTheme {
         OnBoardingImage(
-            page = Page(
-                title = "Lorem Ipsum is simply dummy",
-                description = "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-                image = R.drawable.onboarding1
-            )
+            page =
+                Page(
+                    title = "Lorem Ipsum is simply dummy",
+                    description =
+                        "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+                    image = R.drawable.onboarding1,
+                )
         )
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-

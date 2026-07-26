@@ -28,9 +28,9 @@ import com.harissabil.fisch.core.common.theme.FischTheme
 import com.harissabil.fisch.core.common.util.AnimatedTextFieldTrailingIcon
 
 /**
- * Free-text bait/lure field with an autocomplete dropdown suggesting values the user has
- * already logged before, so common baits (e.g. "Cacing", "Umpan Jitu", "Soft Plastic") don't
- * need to be retyped and stay consistent for later filtering.
+ * Free-text bait/lure field with an autocomplete dropdown suggesting values the user has already
+ * logged before, so common baits (e.g. "Cacing", "Umpan Jitu", "Soft Plastic") don't need to be
+ * retyped and stay consistent for later filtering.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,9 +45,10 @@ fun FishBaitTextField(
     val isFocused by interactionSource.collectIsFocusedAsState()
 
     var expanded by remember { mutableStateOf(false) }
-    val filteredSuggestions = remember(value, suggestions) {
-        suggestions.filter { it.contains(value, ignoreCase = true) && it != value }
-    }
+    val filteredSuggestions =
+        remember(value, suggestions) {
+            suggestions.filter { it.contains(value, ignoreCase = true) && it != value }
+        }
     val menuVisible = expanded && filteredSuggestions.isNotEmpty() && isInEditMode
 
     ExposedDropdownMenuBox(
@@ -55,9 +56,9 @@ fun FishBaitTextField(
         onExpandedChange = { if (isInEditMode) expanded = it },
     ) {
         FishTextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .menuAnchor(MenuAnchorType.PrimaryEditable, enabled = isInEditMode),
+            modifier =
+                Modifier.fillMaxWidth()
+                    .menuAnchor(MenuAnchorType.PrimaryEditable, enabled = isInEditMode),
             interactionSource = interactionSource,
             value = value,
             onValueChange = {
@@ -65,44 +66,31 @@ fun FishBaitTextField(
                 expanded = true
             },
             label = "Bait / Lure",
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Outlined.SetMeal,
-                    contentDescription = null,
-                )
-            },
+            leadingIcon = { Icon(imageVector = Icons.Outlined.SetMeal, contentDescription = null) },
             trailingIcon = {
-                AnimatedTextFieldTrailingIcon(
-                    visible = value.isNotEmpty() && isFocused,
-                ) {
+                AnimatedTextFieldTrailingIcon(visible = value.isNotEmpty() && isFocused) {
                     IconButton(
                         onClick = {
                             onValueChange("")
                             keyboardController?.hide()
                         },
                         content = {
-                            Icon(
-                                imageVector = Icons.Outlined.Cancel,
-                                contentDescription = "Clear",
-                            )
-                        }
+                            Icon(imageVector = Icons.Outlined.Cancel, contentDescription = "Clear")
+                        },
                     )
                 }
             },
-            readOnly = !isInEditMode
+            readOnly = !isInEditMode,
         )
 
-        ExposedDropdownMenu(
-            expanded = menuVisible,
-            onDismissRequest = { expanded = false },
-        ) {
+        ExposedDropdownMenu(expanded = menuVisible, onDismissRequest = { expanded = false }) {
             filteredSuggestions.forEach { suggestion ->
                 DropdownMenuItem(
                     text = { Text(suggestion) },
                     onClick = {
                         onValueChange(suggestion)
                         expanded = false
-                    }
+                    },
                 )
             }
         }
@@ -118,7 +106,7 @@ private fun FishBaitTextFieldPreview() {
             FishBaitTextField(
                 value = "Cac",
                 onValueChange = {},
-                suggestions = listOf("Cacing", "Udang", "Soft Plastic")
+                suggestions = listOf("Cacing", "Udang", "Soft Plastic"),
             )
         }
     }

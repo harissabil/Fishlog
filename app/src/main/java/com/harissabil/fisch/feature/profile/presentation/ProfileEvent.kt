@@ -14,9 +14,11 @@ sealed class ProfileEvent {
     data class SetAiLanguage(val aiLanguage: AiLanguage) : ProfileEvent()
 
     data object GetSignedInUser : ProfileEvent()
+
     data object SignOut : ProfileEvent()
 
     data class ShowPaywall(val isShow: Boolean) : ProfileEvent()
+
     data class SubscribeToPlus(val activity: Activity) : ProfileEvent()
 
     data class ExportData(val context: Context, val uri: Uri) : ProfileEvent()

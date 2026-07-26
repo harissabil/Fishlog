@@ -25,12 +25,12 @@ fun FishButton(
         modifier = modifier,
         onClick = onClick,
         shape = RoundedCornerShape(size = 8.dp),
-        enabled = enabled
+        enabled = enabled,
     ) {
         Text(
             text = text,
             style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold),
-            modifier = Modifier.animateContentSize()
+            modifier = Modifier.animateContentSize(),
         )
     }
 }
@@ -46,12 +46,9 @@ fun FishPermissionButton(
         modifier = modifier,
         onClick = onClick,
         shape = RoundedCornerShape(size = 8.dp),
-        enabled = enabled
+        enabled = enabled,
     ) {
-        Text(
-            text = text,
-            modifier = Modifier.animateContentSize()
-        )
+        Text(text = text, modifier = Modifier.animateContentSize())
     }
 }
 
@@ -66,11 +63,8 @@ fun FishTextButton(
         modifier = Modifier.then(modifier),
         onClick = onClick,
         shape = RoundedCornerShape(size = 8.dp),
-        colors = color ?: ButtonDefaults.textButtonColors()
+        colors = color ?: ButtonDefaults.textButtonColors(),
     ) {
-        Text(
-            text = text,
-            modifier = Modifier.animateContentSize()
-        )
+        Text(text = text, modifier = Modifier.animateContentSize())
     }
 }

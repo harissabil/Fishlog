@@ -1,14 +1,10 @@
 package com.harissabil.fisch.feature.home.presentation
 
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.Stable
 import com.harissabil.fisch.core.firebase.firestore.domain.model.Logbook
 import com.harissabil.fisch.feature.home.domain.model.Weather
 
-data class HomeState(
-    val isLoading: Boolean = false,
-)
-
+data class HomeState(val isLoading: Boolean = false)
 
 data class WeatherState(
     val isLoading: Boolean = false,

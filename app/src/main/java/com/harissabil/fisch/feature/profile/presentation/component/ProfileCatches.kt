@@ -19,25 +19,21 @@ import com.harissabil.fisch.core.common.theme.FischTheme
 import com.harissabil.fisch.core.common.theme.spacing
 
 @Composable
-fun ProfileCatches(
-    catches: Int?,
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+fun ProfileCatches(catches: Int?) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
             text = catches?.toString() ?: "N/A",
             style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
             textAlign = TextAlign.Center,
             overflow = TextOverflow.Ellipsis,
-            maxLines = 1
+            maxLines = 1,
         )
         Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
         Text(
             text = "Catches",
             style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
             textAlign = TextAlign.Center,
-            modifier = Modifier.alpha(0.5f)
+            modifier = Modifier.alpha(0.5f),
         )
     }
 }
@@ -46,9 +42,5 @@ fun ProfileCatches(
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun ProfileCatchesPreview() {
-    FischTheme {
-        Surface {
-            ProfileCatches(catches = 100)
-        }
-    }
+    FischTheme { Surface { ProfileCatches(catches = 100) } }
 }

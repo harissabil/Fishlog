@@ -4,31 +4,39 @@ import com.google.firebase.storage.FirebaseStorage
 import com.harissabil.fisch.core.common.util.Resource
 import com.harissabil.fisch.core.firebase.firestore.data.dto.LogbookResponse
 import com.harissabil.fisch.core.firebase.firestore.domain.usecase.GetLogbooks
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.tasks.await
-import timber.log.Timber
 import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 import javax.inject.Inject
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.tasks.await
+import timber.log.Timber
 
 private const val MAX_PHOTO_DOWNLOAD_BYTES = 10L * 1024 * 1024
 
-private val CSV_HEADER = listOf(
-    "Date", "Species", "Count", "Location", "Weight (kg)", "Length (cm)", "Bait", "Released",
-    "Notes", "Photo",
-)
+private val CSV_HEADER =
+    listOf(
+        "Date",
+        "Species",
+        "Count",
+        "Location",
+        "Weight (kg)",
+        "Length (cm)",
+        "Bait",
+        "Released",
+        "Notes",
+        "Photo",
+    )
 
-class ExportUserDataToZip @Inject constructor(
-    private val getLogbooks: GetLogbooks,
-) {
+class ExportUserDataToZip @Inject constructor(private val getLogbooks: GetLogbooks) {
     suspend operator fun invoke(outputStream: OutputStream): Resource<Boolean> {
         return try {
             val logbooksResult = getLogbooks().first { it !is Resource.Loading<*> }
-            val logbooks = (logbooksResult as? Resource.Success)?.data
-                ?: return Resource.Error(logbooksResult.message ?: "Something went wrong!")
+            val logbooks =
+                (logbooksResult as? Resource.Success)?.data
+                    ?: return Resource.Error(logbooksResult.message ?: "Something went wrong!")
 
             ZipOutputStream(outputStream).use { zip ->
                 zip.putNextEntry(ZipEntry("catches.csv"))
@@ -39,10 +47,11 @@ class ExportUserDataToZip @Inject constructor(
                     val url = logbook.fotoIkan ?: return@forEach
                     val id = logbook.id ?: return@forEach
                     try {
-                        val bytes = FirebaseStorage.getInstance()
-                            .getReferenceFromUrl(url)
-                            .getBytes(MAX_PHOTO_DOWNLOAD_BYTES)
-                            .await()
+                        val bytes =
+                            FirebaseStorage.getInstance()
+                                .getReferenceFromUrl(url)
+                                .getBytes(MAX_PHOTO_DOWNLOAD_BYTES)
+                                .await()
                         zip.putNextEntry(ZipEntry("photos/$id.jpg"))
                         zip.write(bytes)
                         zip.closeEntry()

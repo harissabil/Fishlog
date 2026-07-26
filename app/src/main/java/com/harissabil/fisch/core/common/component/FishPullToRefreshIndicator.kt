@@ -22,10 +22,7 @@ import com.github.fengdai.compose.pulltorefresh.PullToRefreshState
 import com.harissabil.fisch.R
 
 @Composable
-fun FishPullToRefreshIndicator(
-    refreshTriggerDistance: Dp,
-    state: PullToRefreshState,
-) {
+fun FishPullToRefreshIndicator(refreshTriggerDistance: Dp, state: PullToRefreshState) {
     val refreshTriggerPx = with(LocalDensity.current) { refreshTriggerDistance.toPx() }
     val indicatorSize = 36.dp
     val indicatorHeightPx = with(LocalDensity.current) { indicatorSize.toPx() }
@@ -33,24 +30,28 @@ fun FishPullToRefreshIndicator(
     val scaleFraction: Float
     val alphaFraction: Float
     if (!state.isRefreshing) {
-        val progress = (state.contentOffset / refreshTriggerPx.coerceAtLeast(1f))
-            .coerceIn(0f, 1f)
+        val progress = (state.contentOffset / refreshTriggerPx.coerceAtLeast(1f)).coerceIn(0f, 1f)
         rotation = progress * 180
         scaleFraction = LinearOutSlowInEasing.transform(progress)
         alphaFraction = progress
     } else {
         val transition = rememberInfiniteTransition(label = "rotation")
-        rotation = transition.animateValue(
-            0f,
-            1f,
-            Float.VectorConverter,
-            infiniteRepeatable(
-                animation = tween(
-                    durationMillis = 1332, // 1 and 1/3 second
-                    easing = LinearEasing
+        rotation =
+            transition
+                .animateValue(
+                    0f,
+                    1f,
+                    Float.VectorConverter,
+                    infiniteRepeatable(
+                        animation =
+                            tween(
+                                durationMillis = 1332, // 1 and 1/3 second
+                                easing = LinearEasing,
+                            )
+                    ),
+                    label = "rotation",
                 )
-            ), label = "rotation"
-        ).value * 360
+                .value * 360
         scaleFraction = 1f
         alphaFraction = 1f
     }
@@ -58,14 +59,14 @@ fun FishPullToRefreshIndicator(
         painter = painterResource(id = R.drawable.fish_loading),
         tint = MaterialTheme.colorScheme.primary,
         contentDescription = "refreshing",
-        modifier = Modifier
-            .graphicsLayer {
-                translationY = (state.contentOffset - indicatorHeightPx) / 2f
-                scaleX = scaleFraction
-                scaleY = scaleFraction
-                alpha = alphaFraction
-            }
-            .size(indicatorSize)
-            .rotate(rotation)
+        modifier =
+            Modifier.graphicsLayer {
+                    translationY = (state.contentOffset - indicatorHeightPx) / 2f
+                    scaleX = scaleFraction
+                    scaleY = scaleFraction
+                    alpha = alphaFraction
+                }
+                .size(indicatorSize)
+                .rotate(rotation),
     )
 }

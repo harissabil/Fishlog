@@ -17,6 +17,6 @@ internal fun Logbook.toToDetailState(isInEditMode: Boolean): ToDetailState {
         panjangIkan = panjangIkan,
         umpan = umpan,
         dilepaskan = dilepaskan,
-        catatan = catatan
+        catatan = catatan,
     )
 }

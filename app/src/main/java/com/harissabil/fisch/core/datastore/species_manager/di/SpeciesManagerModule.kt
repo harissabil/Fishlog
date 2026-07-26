@@ -16,9 +16,7 @@ object SpeciesManagerModule {
 
     @Provides
     @Singleton
-    fun provideSpeciesManager(
-        @ApplicationContext context: Context,
-    ): SpeciesManager {
+    fun provideSpeciesManager(@ApplicationContext context: Context): SpeciesManager {
         return SpeciesManagerImpl(context = context)
     }
 }

@@ -78,9 +78,7 @@ fun AddCatchScreen(
             when (event) {
                 is AddCatchViewModel.UIEvent.ShowSnackbar -> {
                     snackbarHostState.currentSnackbarData?.dismiss()
-                    snackbarHostState.showSnackbar(
-                        message = event.message
-                    )
+                    snackbarHostState.showSnackbar(message = event.message)
                 }
             }
         }
@@ -89,13 +87,14 @@ fun AddCatchScreen(
     val photoPicker =
         rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
             uri?.let {
-                val bitmap = if (Build.VERSION.SDK_INT < 28) {
-                    @Suppress("DEPRECATION")
-                    MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
-                } else {
-                    val source = ImageDecoder.createSource(context.contentResolver, uri)
-                    ImageDecoder.decodeBitmap(source)
-                }
+                val bitmap =
+                    if (Build.VERSION.SDK_INT < 28) {
+                        @Suppress("DEPRECATION")
+                        MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+                    } else {
+                        val source = ImageDecoder.createSource(context.contentResolver, uri)
+                        ImageDecoder.decodeBitmap(source)
+                    }
                 viewModel.onEvent(AddCatchEvent.SetFishImage(bitmap))
             }
         }
@@ -103,7 +102,9 @@ fun AddCatchScreen(
     val isLocationEnabled by viewModel.isLocationEnabled.collectAsState()
 
     val locationRequestLauncher =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.StartIntentSenderForResult()) { activityResult ->
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.StartIntentSenderForResult()
+        ) { activityResult ->
             if (activityResult.resultCode == Activity.RESULT_OK) {
                 // User has enabled location
                 viewModel.onEvent(AddCatchEvent.SetCurrentLocation(true, context))
@@ -116,9 +117,11 @@ fun AddCatchScreen(
 
     LaunchedEffect(key1 = state.isCurrentLocation) {
         if (!isLocationEnabled && state.isCurrentLocation) {
-            viewModel.onEvent(AddCatchEvent.EnableLocationRequest(context = context) {
-                locationRequestLauncher.launch(it)
-            })
+            viewModel.onEvent(
+                AddCatchEvent.EnableLocationRequest(context = context) {
+                    locationRequestLauncher.launch(it)
+                }
+            )
         } else {
             if (state.isCurrentLocation) {
                 viewModel.onEvent(AddCatchEvent.SetCurrentLocation(true, context))
@@ -140,7 +143,7 @@ fun AddCatchScreen(
                 else -> Unit
             }
             viewModel.onEvent(event)
-        }
+        },
     )
 
     if (state.showPaywallSheet) {
@@ -153,7 +156,7 @@ fun AddCatchScreen(
                 context.findActivity()?.let { activity ->
                     viewModel.onEvent(AddCatchEvent.SubscribeToPlus(activity))
                 }
-            }
+            },
         )
     }
 }
@@ -168,32 +171,34 @@ fun AddCatchContent(
     IntroShowcase(
         showIntroShowCase = state.showIntroShowCase,
         dismissOnClickOutside = true,
-        onShowCaseCompleted = {
-            onEvent(AddCatchEvent.SaveIntroShown)
-        },
+        onShowCaseCompleted = { onEvent(AddCatchEvent.SaveIntroShown) },
         state = rememberIntroShowcaseState(),
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Column(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .verticalScroll(rememberScrollState())
-                    .padding(
-                        horizontal = MaterialTheme.spacing.medium,
-                        vertical = MaterialTheme.spacing.small
-                    ),
-                horizontalAlignment = Alignment.CenterHorizontally
+                modifier =
+                    modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState())
+                        .padding(
+                            horizontal = MaterialTheme.spacing.medium,
+                            vertical = MaterialTheme.spacing.small,
+                        ),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 FishUploadImage(
                     image = state.imageBitmaps,
-                    onImageClick = { onEvent(AddCatchEvent.SetFishImage(it)) }
+                    onImageClick = { onEvent(AddCatchEvent.SetFishImage(it)) },
                 )
 
-                Spacer(modifier = Modifier.height(MaterialTheme.spacing.small + MaterialTheme.spacing.small))
+                Spacer(
+                    modifier =
+                        Modifier.height(MaterialTheme.spacing.small + MaterialTheme.spacing.small)
+                )
 
                 FishTypeTextFieldWithAi(
                     value = state.fishType,
@@ -202,46 +207,50 @@ fun AddCatchContent(
                     supportingText = state.fishTypeError,
                     onIdentifyFishType = { onEvent(AddCatchEvent.IdentifyFishType) },
                     isIdentifying = state.isIdentifying,
-                    suggestions = state.fishTypeSuggestions
+                    suggestions = state.fishTypeSuggestions,
                 )
 
                 FishQuantityTextField(
                     value = state.fishQuantity,
                     onValueChange = { onEvent(AddCatchEvent.SetFishQuantity(it)) },
                     isError = state.fishQuantityError != null,
-                    supportingText = state.fishQuantityError
+                    supportingText = state.fishQuantityError,
                 )
 
                 FishWeightTextField(
                     value = state.fishWeight,
                     onValueChange = { onEvent(AddCatchEvent.SetFishWeight(it)) },
                     isError = state.fishWeightError != null,
-                    supportingText = state.fishWeightError
+                    supportingText = state.fishWeightError,
                 )
 
                 FishLengthTextField(
                     value = state.fishLength,
                     onValueChange = { onEvent(AddCatchEvent.SetFishLength(it)) },
                     isError = state.fishLengthError != null,
-                    supportingText = state.fishLengthError
+                    supportingText = state.fishLengthError,
                 )
 
                 FishReleasedToggle(
-                    modifier = Modifier.padding(
-                        top = MaterialTheme.spacing.extraSmall,
-                        bottom = MaterialTheme.spacing.small + MaterialTheme.spacing.extraSmall
-                    ),
+                    modifier =
+                        Modifier.padding(
+                            top = MaterialTheme.spacing.extraSmall,
+                            bottom = MaterialTheme.spacing.small + MaterialTheme.spacing.extraSmall,
+                        ),
                     isReleased = state.isReleased,
-                    onValueChange = { onEvent(AddCatchEvent.SetIsReleased(it)) }
+                    onValueChange = { onEvent(AddCatchEvent.SetIsReleased(it)) },
                 )
 
                 FishBaitTextField(
                     value = state.bait,
                     onValueChange = { onEvent(AddCatchEvent.SetBait(it)) },
-                    suggestions = state.baitSuggestions
+                    suggestions = state.baitSuggestions,
                 )
 
-                Spacer(modifier = Modifier.height(MaterialTheme.spacing.small + MaterialTheme.spacing.small))
+                Spacer(
+                    modifier =
+                        Modifier.height(MaterialTheme.spacing.small + MaterialTheme.spacing.small)
+                )
 
                 FishCaptureDateTimeTextField(
                     dateValue = state.captureDate,
@@ -255,29 +264,24 @@ fun AddCatchContent(
                     onValueChange = { onEvent(AddCatchEvent.SetCaptureLocation(it)) },
                     isCurrentLocationChecked = state.isCurrentLocation,
                     onCurrentLocationChecked = {
-                        onEvent(
-                            AddCatchEvent.SetCurrentLocation(
-                                it,
-                                context
-                            )
-                        )
-                    }
+                        onEvent(AddCatchEvent.SetCurrentLocation(it, context))
+                    },
                 )
 
                 FishNotesTextField(
                     value = state.notes,
-                    onValueChange = { onEvent(AddCatchEvent.SetNotes(it)) }
+                    onValueChange = { onEvent(AddCatchEvent.SetNotes(it)) },
                 )
             }
 
             FishButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = MaterialTheme.spacing.medium)
-                    .padding(
-                        top = MaterialTheme.spacing.small,
-                        bottom = MaterialTheme.spacing.medium
-                    ),
+                modifier =
+                    Modifier.fillMaxWidth()
+                        .padding(horizontal = MaterialTheme.spacing.medium)
+                        .padding(
+                            top = MaterialTheme.spacing.small,
+                            bottom = MaterialTheme.spacing.medium,
+                        ),
                 text = "Save",
                 onClick = { onEvent(AddCatchEvent.UploadCatchData(context)) },
             )
@@ -295,11 +299,7 @@ fun AddCatchContent(
 private fun AddCatchContentPreview() {
     FischTheme {
         Surface {
-            AddCatchContent(
-                state = AddCatchState(),
-                onEvent = { },
-                context = LocalContext.current
-            )
+            AddCatchContent(state = AddCatchState(), onEvent = {}, context = LocalContext.current)
         }
     }
 }

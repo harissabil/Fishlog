@@ -7,18 +7,16 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.harissabil.fisch.core.datastore.bait_manager.domain.BaitManager
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
 
 /**
- * Stores previously logged bait/lure names on-device so add/edit-catch screens can suggest
- * them without querying Firestore (avoids opening yet another realtime listener just for
- * autocomplete, on top of the one the catches list already keeps open).
+ * Stores previously logged bait/lure names on-device so add/edit-catch screens can suggest them
+ * without querying Firestore (avoids opening yet another realtime listener just for autocomplete,
+ * on top of the one the catches list already keeps open).
  */
-class BaitManagerImpl @Inject constructor(
-    private val context: Context,
-) : BaitManager {
+class BaitManagerImpl @Inject constructor(private val context: Context) : BaitManager {
 
     override suspend fun addBait(bait: String) {
         val trimmed = bait.trim()

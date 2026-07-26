@@ -17,32 +17,26 @@ import coil.compose.AsyncImage
 import com.harissabil.fisch.core.common.theme.spacing
 
 @Composable
-fun LogoInfo(
-    modifier: Modifier = Modifier,
-    appIcon: Drawable,
-    appVersion: String,
-) {
+fun LogoInfo(modifier: Modifier = Modifier, appIcon: Drawable, appVersion: String) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .then(modifier),
+        modifier = Modifier.fillMaxWidth().then(modifier),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small),
     ) {
         AsyncImage(
             model = appIcon,
             contentDescription = "App Icon",
-            modifier = Modifier.size(98.dp)
+            modifier = Modifier.size(98.dp),
         )
         Text(
             text = "Fishlog",
             style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.SemiBold
+            fontWeight = FontWeight.SemiBold,
         )
         Text(
             text = appVersion,
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.alpha(0.75f)
+            modifier = Modifier.alpha(0.75f),
         )
     }
 }

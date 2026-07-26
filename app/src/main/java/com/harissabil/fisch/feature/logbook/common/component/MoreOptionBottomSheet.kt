@@ -36,51 +36,48 @@ fun MoreOptionBottomSheet(
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit,
 ) {
-    ModalBottomSheet(
-        onDismissRequest = onDismissRequest,
-        sheetState = sheetState,
-    ) {
+    ModalBottomSheet(onDismissRequest = onDismissRequest, sheetState = sheetState) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = MaterialTheme.spacing.medium + MaterialTheme.spacing.small)
-                .then(modifier),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier =
+                Modifier.fillMaxWidth()
+                    .padding(bottom = MaterialTheme.spacing.medium + MaterialTheme.spacing.small)
+                    .then(modifier),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onEditClick() }
-                    .padding(
-                        horizontal = MaterialTheme.spacing.medium + MaterialTheme.spacing.small,
-                        vertical = MaterialTheme.spacing.small
-                    ),
-                verticalAlignment = Alignment.CenterVertically
+                modifier =
+                    Modifier.fillMaxWidth()
+                        .clickable { onEditClick() }
+                        .padding(
+                            horizontal = MaterialTheme.spacing.medium + MaterialTheme.spacing.small,
+                            vertical = MaterialTheme.spacing.small,
+                        ),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(imageVector = Icons.Outlined.Edit, contentDescription = null)
                 Spacer(modifier = Modifier.width(MaterialTheme.spacing.medium))
                 Text(
                     text = "Edit catch",
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.SemiBold,
                 )
             }
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onDeleteClick() }
-                    .padding(
-                        horizontal = MaterialTheme.spacing.medium + MaterialTheme.spacing.small,
-                        vertical = MaterialTheme.spacing.small
-                    ),
-                verticalAlignment = Alignment.CenterVertically
+                modifier =
+                    Modifier.fillMaxWidth()
+                        .clickable { onDeleteClick() }
+                        .padding(
+                            horizontal = MaterialTheme.spacing.medium + MaterialTheme.spacing.small,
+                            vertical = MaterialTheme.spacing.small,
+                        ),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(imageVector = Icons.Outlined.Delete, contentDescription = null)
                 Spacer(modifier = Modifier.width(MaterialTheme.spacing.medium))
                 Text(
                     text = "Delete catch",
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.SemiBold,
                 )
             }
         }
@@ -98,7 +95,7 @@ private fun MoreOptionBottomSheetPreview() {
                 onDismissRequest = {},
                 sheetState = rememberModalBottomSheetState(),
                 onEditClick = {},
-                onDeleteClick = {}
+                onDeleteClick = {},
             )
         }
     }

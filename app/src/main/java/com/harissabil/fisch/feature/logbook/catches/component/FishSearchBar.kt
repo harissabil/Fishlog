@@ -47,41 +47,29 @@ fun FishSearchBar(
     val keyboardController = LocalSoftwareKeyboardController.current
 
     DockedSearchBar(
-        modifier = Modifier
-            .fillMaxWidth()
-            .then(modifier),
-        colors = SearchBarDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
-        ),
+        modifier = Modifier.fillMaxWidth().then(modifier),
+        colors =
+            SearchBarDefaults.colors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+            ),
         query = query,
         onQueryChange = onQueryChange,
-        onSearch = {
-            keyboardController?.hide()
-        },
+        onSearch = { keyboardController?.hide() },
         active = false,
-        onActiveChange = { },
-        leadingIcon = {
-            Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = null
-            )
-        },
+        onActiveChange = {},
+        leadingIcon = { Icon(imageVector = Icons.Default.Search, contentDescription = null) },
         placeholder = {
             Text(
                 text = "Search catches or visits",
                 style = MaterialTheme.typography.bodyLarge,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
-                modifier = Modifier.alpha(0.75f)
+                modifier = Modifier.alpha(0.75f),
             )
         },
         trailingIcon = {
-            Box(
-                contentAlignment = Alignment.CenterStart
-            ) {
-                AnimatedTrailingIcon(
-                    visible = query.isNotEmpty(),
-                ) {
+            Box(contentAlignment = Alignment.CenterStart) {
+                AnimatedTrailingIcon(visible = query.isNotEmpty()) {
                     IconButton(
                         onClick = {
                             onQueryChange("")
@@ -90,14 +78,12 @@ fun FishSearchBar(
                         content = {
                             Icon(
                                 imageVector = Icons.Default.Clear,
-                                contentDescription = "Clear search query"
+                                contentDescription = "Clear search query",
                             )
-                        }
+                        },
                     )
                 }
-                AnimatedTrailingIcon(
-                    visible = query.isEmpty()
-                ) {
+                AnimatedTrailingIcon(visible = query.isEmpty()) {
                     Row {
                         IconButton(
                             onClick = onFilter,
@@ -105,9 +91,7 @@ fun FishSearchBar(
                                 BadgedBox(
                                     badge = {
                                         if (isFilterActive) {
-                                            Badge(
-                                                modifier = Modifier.size(16.dp)
-                                            ) {
+                                            Badge(modifier = Modifier.size(16.dp)) {
                                                 Icon(
                                                     imageVector = Icons.Default.Check,
                                                     contentDescription = null,
@@ -118,10 +102,10 @@ fun FishSearchBar(
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.FilterList,
-                                        contentDescription = "Filter by"
+                                        contentDescription = "Filter by",
                                     )
                                 }
-                            }
+                            },
                         )
                         if (onSort != null) {
                             IconButton(
@@ -129,9 +113,9 @@ fun FishSearchBar(
                                 content = {
                                     Icon(
                                         imageVector = Icons.AutoMirrored.Filled.Sort,
-                                        contentDescription = "Sort by"
+                                        contentDescription = "Sort by",
                                     )
-                                }
+                                },
                             )
                         }
                     }

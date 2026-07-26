@@ -2,9 +2,9 @@ package com.harissabil.fisch.core.common.util
 
 import android.content.Context
 import android.location.Geocoder
-import timber.log.Timber
 import java.io.IOException
 import java.util.Locale
+import timber.log.Timber
 
 fun getReadableLocation(latitude: Double?, longitude: Double?, context: Context): String? {
     var addressText: String? = null
@@ -24,7 +24,6 @@ fun getReadableLocation(latitude: Double?, longitude: Double?, context: Context)
             // Use the addressText in your app
             Timber.tag("geolocation").d(addressText)
         }
-
     } catch (e: IOException) {
         Timber.tag("geolocation").d(e.message.toString())
     }

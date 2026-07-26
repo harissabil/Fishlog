@@ -41,16 +41,13 @@ fun PaywallBottomSheet(
     priceLabel: String?,
     onSubscribeClick: () -> Unit,
 ) {
-    ModalBottomSheet(
-        onDismissRequest = onDismissRequest,
-        sheetState = sheetState,
-    ) {
+    ModalBottomSheet(onDismissRequest = onDismissRequest, sheetState = sheetState) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = MaterialTheme.spacing.medium)
-                .padding(bottom = MaterialTheme.spacing.medium + MaterialTheme.spacing.small)
-                .then(modifier),
+            modifier =
+                Modifier.fillMaxWidth()
+                    .padding(horizontal = MaterialTheme.spacing.medium)
+                    .padding(bottom = MaterialTheme.spacing.medium + MaterialTheme.spacing.small)
+                    .then(modifier),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Icon(
@@ -63,10 +60,11 @@ fun PaywallBottomSheet(
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
 
             Text(
-                text = when (trigger) {
-                    PaywallTrigger.QUOTA_EXCEEDED -> "You've reached your free monthly limit"
-                    PaywallTrigger.GENERAL -> "Upgrade to Fishlog Plus"
-                },
+                text =
+                    when (trigger) {
+                        PaywallTrigger.QUOTA_EXCEEDED -> "You've reached your free monthly limit"
+                        PaywallTrigger.GENERAL -> "Upgrade to Fishlog Plus"
+                    },
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Center,
@@ -75,10 +73,13 @@ fun PaywallBottomSheet(
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
 
             Text(
-                text = when (trigger) {
-                    PaywallTrigger.QUOTA_EXCEEDED -> "Free accounts can log 5 catches a month. Upgrade to Fishlog Plus for unlimited logging."
-                    PaywallTrigger.GENERAL -> "Free accounts can log up to 5 catches a month. Go unlimited with Fishlog Plus."
-                },
+                text =
+                    when (trigger) {
+                        PaywallTrigger.QUOTA_EXCEEDED ->
+                            "Free accounts can log 5 catches a month. Upgrade to Fishlog Plus for unlimited logging."
+                        PaywallTrigger.GENERAL ->
+                            "Free accounts can log up to 5 catches a month. Go unlimited with Fishlog Plus."
+                    },
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(horizontal = MaterialTheme.spacing.small),
@@ -87,40 +88,40 @@ fun PaywallBottomSheet(
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
 
             listOf(
-                "Unlimited catch logging",
-                "No monthly limits, ever",
-                "Support ongoing app development",
-            ).forEach { benefit ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = MaterialTheme.spacing.extraSmall),
-                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.CheckCircle,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                    )
-                    Text(text = benefit, style = MaterialTheme.typography.bodyMedium)
+                    "Unlimited catch logging",
+                    "No monthly limits, ever",
+                    "Support ongoing app development",
+                )
+                .forEach { benefit ->
+                    Row(
+                        modifier =
+                            Modifier.fillMaxWidth()
+                                .padding(vertical = MaterialTheme.spacing.extraSmall),
+                        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.CheckCircle,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+                        Text(text = benefit, style = MaterialTheme.typography.bodyMedium)
+                    }
                 }
-            }
 
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
 
             FishButton(
                 modifier = Modifier.fillMaxWidth(),
-                text = if (priceLabel != null) "Upgrade for $priceLabel" else "Upgrade to Fishlog Plus",
+                text =
+                    if (priceLabel != null) "Upgrade for $priceLabel"
+                    else "Upgrade to Fishlog Plus",
                 onClick = onSubscribeClick,
             )
 
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.extraSmall))
 
-            FishTextButton(
-                text = "Not now",
-                onClick = onDismissRequest,
-            )
+            FishTextButton(text = "Not now", onClick = onDismissRequest)
         }
     }
 }

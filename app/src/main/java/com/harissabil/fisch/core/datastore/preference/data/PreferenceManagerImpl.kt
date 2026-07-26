@@ -10,17 +10,13 @@ import com.harissabil.fisch.core.common.util.Constant
 import com.harissabil.fisch.core.datastore.preference.domain.AiLanguage
 import com.harissabil.fisch.core.datastore.preference.domain.PreferenceManager
 import com.harissabil.fisch.core.datastore.preference.domain.Theme
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
 
-class PreferenceManagerImpl @Inject constructor(
-    private val context: Context,
-) : PreferenceManager {
+class PreferenceManagerImpl @Inject constructor(private val context: Context) : PreferenceManager {
     override suspend fun setTheme(theme: Theme) {
-        context.dataStore.edit { settings ->
-            settings[PreferenceKeys.THEME] = theme.value
-        }
+        context.dataStore.edit { settings -> settings[PreferenceKeys.THEME] = theme.value }
     }
 
     override fun getTheme(): Flow<Theme> {

@@ -12,26 +12,29 @@ fun Timestamp.toDateAtTime(context: Context): String {
 
     val date = this.toDate()
 
-    val dateString: String = try {
-        val dateFormatter = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.getDefault())
-        val timeFormatter = if (is24HourFormat) {
-            SimpleDateFormat("HH:mm", Locale.getDefault())
-        } else {
-            SimpleDateFormat("hh:mm a", Locale.getDefault())
-        }
+    val dateString: String =
+        try {
+            val dateFormatter = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.getDefault())
+            val timeFormatter =
+                if (is24HourFormat) {
+                    SimpleDateFormat("HH:mm", Locale.getDefault())
+                } else {
+                    SimpleDateFormat("hh:mm a", Locale.getDefault())
+                }
 
-        val dateString = dateFormatter.format(date)
-        val timeString = timeFormatter.format(date)
+            val dateString = dateFormatter.format(date)
+            val timeString = timeFormatter.format(date)
 
-        "$dateString @ $timeString"
-    } catch (e: ParseException) {
-        val sdf = if (is24HourFormat) {
-            SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
-        } else {
-            SimpleDateFormat("yyyy-MM-dd hh:mm a", Locale.getDefault())
+            "$dateString @ $timeString"
+        } catch (e: ParseException) {
+            val sdf =
+                if (is24HourFormat) {
+                    SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+                } else {
+                    SimpleDateFormat("yyyy-MM-dd hh:mm a", Locale.getDefault())
+                }
+            sdf.format(date)
         }
-        sdf.format(date)
-    }
 
     return dateString
 }
@@ -45,11 +48,12 @@ fun Timestamp.toDateYyyyMmDd(): String {
 fun Timestamp.toTime(context: Context): String {
     val is24HourFormat = android.text.format.DateFormat.is24HourFormat(context)
     val date = this.toDate()
-    val sdf = if (is24HourFormat) {
-        SimpleDateFormat("HH:mm", Locale.getDefault())
-    } else {
-        SimpleDateFormat("hh:mm a", Locale.getDefault())
-    }
+    val sdf =
+        if (is24HourFormat) {
+            SimpleDateFormat("HH:mm", Locale.getDefault())
+        } else {
+            SimpleDateFormat("hh:mm a", Locale.getDefault())
+        }
     return sdf.format(date)
 }
 
@@ -65,11 +69,12 @@ fun currentMonthId(): String {
 
 fun String.toTimestamp(context: Context): Timestamp? {
     val is24HourFormat = android.text.format.DateFormat.is24HourFormat(context)
-    val sdf = if (is24HourFormat) {
-        SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
-    } else {
-        SimpleDateFormat("yyyy-MM-dd hh:mm a", Locale.getDefault())
-    }
+    val sdf =
+        if (is24HourFormat) {
+            SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+        } else {
+            SimpleDateFormat("yyyy-MM-dd hh:mm a", Locale.getDefault())
+        }
     try {
         val date = sdf.parse(this)
         return date?.let { Timestamp(it) }

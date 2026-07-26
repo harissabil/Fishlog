@@ -29,7 +29,7 @@ fun WeatherCurrentTemp(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
-        modifier = modifier
+        modifier = modifier,
     ) {
         Text(
             text = "${temp?.roundToInt()?.toString() ?: "N/A"}${units ?: "°C"}",
@@ -39,11 +39,11 @@ fun WeatherCurrentTemp(
         Column {
             Text(
                 text = "H: ${maxTemp?.roundToInt()?.toString() ?: "N/A"}${units ?: "°C"}",
-                style = MaterialTheme.typography.bodySmall
+                style = MaterialTheme.typography.bodySmall,
             )
             Text(
                 text = "L: ${minTemp?.roundToInt()?.toString() ?: "N/A"}${units ?: "°C"}",
-                style = MaterialTheme.typography.bodySmall
+                style = MaterialTheme.typography.bodySmall,
             )
         }
     }
@@ -53,15 +53,5 @@ fun WeatherCurrentTemp(
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun WeatherCurrentTempPreview() {
-    FischTheme {
-        Surface {
-            WeatherCurrentTemp(
-                Modifier,
-                29.9,
-                10.0,
-                9.0,
-                "°C"
-            )
-        }
-    }
+    FischTheme { Surface { WeatherCurrentTemp(Modifier, 29.9, 10.0, 9.0, "°C") } }
 }

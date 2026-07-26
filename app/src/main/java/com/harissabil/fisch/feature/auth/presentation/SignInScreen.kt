@@ -56,16 +56,14 @@ import com.harissabil.fisch.core.common.theme.spacing
 import com.harissabil.fisch.core.common.util.Constant.WEB_CLIENT_ID
 import com.harissabil.fisch.feature.auth.presentation.component.SignInButton
 import com.harissabil.fisch.feature.home.presentation.component.TermOfServiceAndPrivacyPolicyText
+import java.security.MessageDigest
+import java.util.UUID
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.security.MessageDigest
-import java.util.UUID
 
 @Composable
-fun SignInScreen(
-    viewModel: SignInViewModel = hiltViewModel(),
-) {
+fun SignInScreen(viewModel: SignInViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsState()
 
     val snackbarHostState = remember { SnackbarHostState() }
@@ -83,9 +81,7 @@ fun SignInScreen(
         viewModel.eventFlow.collectLatest { event ->
             when (event) {
                 is SignInViewModel.UIEvent.ShowSnackbar -> {
-                    snackbarHostState.showSnackbar(
-                        message = event.message
-                    )
+                    snackbarHostState.showSnackbar(message = event.message)
                 }
             }
         }
@@ -96,67 +92,60 @@ fun SignInScreen(
 
     val loginManager = LoginManager.getInstance()
     val callbackManager = remember { CallbackManager.Factory.create() }
-    val facebookLauncher = rememberLauncherForActivityResult(
-        loginManager.createLogInActivityResultContract(callbackManager, null)
-    ) {
-        // nothing to do. handled in FacebookCallback
-    }
+    val facebookLauncher =
+        rememberLauncherForActivityResult(
+            loginManager.createLogInActivityResultContract(callbackManager, null)
+        ) {
+            // nothing to do. handled in FacebookCallback
+        }
 
     DisposableEffect(Unit) {
-        loginManager.registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
-            override fun onCancel() {
-                viewModel.onError("Something went wrong!")
-            }
-
-            override fun onError(error: FacebookException) {
-                viewModel.onError(error.message ?: "Something went wrong!")
-            }
-
-            override fun onSuccess(result: LoginResult) {
-                scope.launch {
-                    val token = result.accessToken.token
-                    viewModel.signInWithFacebook(token)
+        loginManager.registerCallback(
+            callbackManager,
+            object : FacebookCallback<LoginResult> {
+                override fun onCancel() {
+                    viewModel.onError("Something went wrong!")
                 }
-            }
 
-        })
+                override fun onError(error: FacebookException) {
+                    viewModel.onError(error.message ?: "Something went wrong!")
+                }
 
-        onDispose {
-            loginManager.unregisterCallback(callbackManager)
-        }
+                override fun onSuccess(result: LoginResult) {
+                    scope.launch {
+                        val token = result.accessToken.token
+                        viewModel.signInWithFacebook(token)
+                    }
+                }
+            },
+        )
+
+        onDispose { loginManager.unregisterCallback(callbackManager) }
     }
 
-    Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-    ) { paddingValues ->
+    Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }) { paddingValues ->
         SignInContent(
             modifier = Modifier.padding(paddingValues),
             onGoogleSignIn = {
-                scope.launch {
-                    getGoogleIdToken(context)?.let { viewModel.signInWithGoogle(it) }
-                }
+                scope.launch { getGoogleIdToken(context)?.let { viewModel.signInWithGoogle(it) } }
             },
-            onFacebookSignIn = {
-                facebookLauncher.launch(listOf("email", "public_profile"))
-            },
-            onNotNow = {
-                viewModel.onError("Coming soon")
-            },
+            onFacebookSignIn = { facebookLauncher.launch(listOf("email", "public_profile")) },
+            onNotNow = { viewModel.onError("Coming soon") },
             onTermOfServiceClick = {
                 onLinkClick(
                     context,
                     primaryColor,
-                    "https://github.com/harissabil/Fishlog/blob/master/docs/terms-of-service.md"
+                    "https://github.com/harissabil/Fishlog/blob/master/docs/terms-of-service.md",
                 )
             },
             onPrivacyPolicyClick = {
                 onLinkClick(
                     context,
                     primaryColor,
-                    "https://github.com/harissabil/Fishlog/blob/master/docs/privacy-policy.md"
+                    "https://github.com/harissabil/Fishlog/blob/master/docs/privacy-policy.md",
                 )
             },
-            isLoading = state.isLoading
+            isLoading = state.isLoading,
         )
     }
 }
@@ -171,34 +160,23 @@ fun SignInContent(
     onPrivacyPolicyClick: () -> Unit,
     isLoading: Boolean,
 ) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(MaterialTheme.spacing.large)
-                .then(modifier),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.fillMaxSize().padding(MaterialTheme.spacing.large).then(modifier),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                contentAlignment = Alignment.Center
+                modifier = Modifier.fillMaxWidth().weight(1f),
+                contentAlignment = Alignment.Center,
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_launcher_foreground_splash),
                     contentDescription = null,
-                    modifier = Modifier.size(200.dp)
+                    modifier = Modifier.size(200.dp),
                 )
             }
             Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(fraction = 0.5f)
-                    .weight(1f),
+                modifier = Modifier.fillMaxWidth().fillMaxHeight(fraction = 0.5f).weight(1f),
                 contentAlignment = Alignment.BottomCenter,
             ) {
                 Column {
@@ -209,22 +187,24 @@ fun SignInContent(
                         icon = R.drawable.logo_google,
                     )
                     Spacer(modifier = Modifier.height(MaterialTheme.spacing.extraLarge))
-//                    SignInButton(
-//                        modifier = Modifier.fillMaxWidth(),
-//                        onClick = onFacebookSignIn,
-//                        label = "Continue with Facebook",
-//                        icon = R.drawable.logo_facebook,
-//                    )
-//                    Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
-//                    FishTextButton(
-//                        text = "Not Now",
-//                        modifier = Modifier.fillMaxWidth(),
-//                        onClick = onNotNow
-//                    )
-//                    Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
+                    //                    SignInButton(
+                    //                        modifier = Modifier.fillMaxWidth(),
+                    //                        onClick = onFacebookSignIn,
+                    //                        label = "Continue with Facebook",
+                    //                        icon = R.drawable.logo_facebook,
+                    //                    )
+                    //                    Spacer(modifier =
+                    // Modifier.height(MaterialTheme.spacing.medium))
+                    //                    FishTextButton(
+                    //                        text = "Not Now",
+                    //                        modifier = Modifier.fillMaxWidth(),
+                    //                        onClick = onNotNow
+                    //                    )
+                    //                    Spacer(modifier =
+                    // Modifier.height(MaterialTheme.spacing.medium))
                     TermOfServiceAndPrivacyPolicyText(
                         onTermOfServiceClick = onTermOfServiceClick,
-                        onPrivacyPolicyClick = onPrivacyPolicyClick
+                        onPrivacyPolicyClick = onPrivacyPolicyClick,
                     )
                 }
             }
@@ -245,20 +225,17 @@ private suspend fun getGoogleIdToken(context: Context): String? {
         val digest = md.digest(bytes)
         val hashedNonce = digest.fold("") { str, it -> str + "%02x".format(it) }
 
-        val googleIdOption: GetGoogleIdOption = GetGoogleIdOption.Builder()
-            .setFilterByAuthorizedAccounts(false)
-            .setServerClientId(WEB_CLIENT_ID)
-            .setNonce(hashedNonce)
-            .build()
+        val googleIdOption: GetGoogleIdOption =
+            GetGoogleIdOption.Builder()
+                .setFilterByAuthorizedAccounts(false)
+                .setServerClientId(WEB_CLIENT_ID)
+                .setNonce(hashedNonce)
+                .build()
 
-        val request: GetCredentialRequest = GetCredentialRequest.Builder()
-            .addCredentialOption(googleIdOption)
-            .build()
+        val request: GetCredentialRequest =
+            GetCredentialRequest.Builder().addCredentialOption(googleIdOption).build()
 
-        val result = credentialManager.getCredential(
-            context = context,
-            request = request
-        )
+        val result = credentialManager.getCredential(context = context, request = request)
 
         val credential = result.credential
 
@@ -266,7 +243,7 @@ private suspend fun getGoogleIdToken(context: Context): String? {
 
         return googleIdTokenCredential.idToken
     } catch (e: CreateCredentialCancellationException) {
-        //do nothing, the user chose not to save the credential
+        // do nothing, the user chose not to save the credential
         Timber.tag("Credential").v("User cancelled the save")
         return null
     } catch (e: CreateCredentialException) {
@@ -282,18 +259,17 @@ private suspend fun getGoogleIdToken(context: Context): String? {
 }
 
 private fun onLinkClick(context: Context, colorPrimary: Int, url: String) {
-    val customTabsIntent: CustomTabsIntent = CustomTabsIntent.Builder()
-        .setDefaultColorSchemeParams(
-            CustomTabColorSchemeParams.Builder()
-                .setToolbarColor(colorPrimary)
-                .build()
-        )
-        .setUrlBarHidingEnabled(false)
-        .setShowTitle(true)
-        .build()
+    val customTabsIntent: CustomTabsIntent =
+        CustomTabsIntent.Builder()
+            .setDefaultColorSchemeParams(
+                CustomTabColorSchemeParams.Builder().setToolbarColor(colorPrimary).build()
+            )
+            .setUrlBarHidingEnabled(false)
+            .setShowTitle(true)
+            .build()
     customTabsIntent.intent.putExtra(
         Intent.EXTRA_REFERRER,
-        ("android-app://" + context.packageName).toUri()
+        ("android-app://" + context.packageName).toUri(),
     )
     customTabsIntent.launchUrl(context, url.toUri())
 }
@@ -310,7 +286,7 @@ private fun SignInContentPreview() {
                 onNotNow = {},
                 onTermOfServiceClick = {},
                 onPrivacyPolicyClick = {},
-                isLoading = false
+                isLoading = false,
             )
         }
     }

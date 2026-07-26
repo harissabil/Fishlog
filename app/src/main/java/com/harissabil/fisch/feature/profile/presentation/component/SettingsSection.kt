@@ -12,7 +12,6 @@ import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LightMode
-import androidx.compose.material.icons.outlined.SmartToy
 import androidx.compose.material.icons.outlined.WorkspacePremium
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -48,10 +47,8 @@ fun SettingsSection(
     onAboutClick: () -> Unit,
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .then(modifier),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier.fillMaxWidth().then(modifier),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
             var themeMenu by remember { mutableStateOf(false) }
@@ -59,62 +56,75 @@ fun SettingsSection(
             DropdownMenu(
                 offset = DpOffset(88.dp, 0.dp),
                 expanded = themeMenu,
-                onDismissRequest = { themeMenu = false }
+                onDismissRequest = { themeMenu = false },
             ) {
                 DropdownMenuItem(
                     text = {
                         Text(
                             text = "System Default",
                             style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.padding(horizontal = MaterialTheme.spacing.extraSmall)
+                            modifier =
+                                Modifier.padding(horizontal = MaterialTheme.spacing.extraSmall),
                         )
                     },
-                    onClick = { themeMenu = false; onThemeClick(Theme.SYSTEM_DEFAULT) },
+                    onClick = {
+                        themeMenu = false
+                        onThemeClick(Theme.SYSTEM_DEFAULT)
+                    },
                 )
                 DropdownMenuItem(
                     text = {
                         Text(
                             text = "Light",
                             style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.padding(horizontal = MaterialTheme.spacing.extraSmall)
+                            modifier =
+                                Modifier.padding(horizontal = MaterialTheme.spacing.extraSmall),
                         )
                     },
-                    onClick = { themeMenu = false; onThemeClick(Theme.LIGHT) },
+                    onClick = {
+                        themeMenu = false
+                        onThemeClick(Theme.LIGHT)
+                    },
                 )
                 DropdownMenuItem(
                     text = {
                         Text(
                             text = "Dark",
                             style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.padding(horizontal = MaterialTheme.spacing.extraSmall)
+                            modifier =
+                                Modifier.padding(horizontal = MaterialTheme.spacing.extraSmall),
                         )
                     },
-                    onClick = { themeMenu = false; onThemeClick(Theme.DARK) },
+                    onClick = {
+                        themeMenu = false
+                        onThemeClick(Theme.DARK)
+                    },
                 )
             }
 
             SettingItem(
                 modifier = Modifier.animateContentSize(),
-                icon = when (themeValue) {
-                    "Dark" -> {
-                        Icons.Outlined.DarkMode
-                    }
-
-                    "Light" -> {
-                        Icons.Outlined.LightMode
-                    }
-
-                    else -> {
-                        if (isSystemInDarkTheme()) {
+                icon =
+                    when (themeValue) {
+                        "Dark" -> {
                             Icons.Outlined.DarkMode
-                        } else {
+                        }
+
+                        "Light" -> {
                             Icons.Outlined.LightMode
                         }
-                    }
-                },
+
+                        else -> {
+                            if (isSystemInDarkTheme()) {
+                                Icons.Outlined.DarkMode
+                            } else {
+                                Icons.Outlined.LightMode
+                            }
+                        }
+                    },
                 title = "Theme",
                 value = themeValue,
-                onCLick = { themeMenu = true }
+                onCLick = { themeMenu = true },
             )
         }
         Box(modifier = Modifier.fillMaxWidth()) {
@@ -123,56 +133,62 @@ fun SettingsSection(
             DropdownMenu(
                 offset = DpOffset(88.dp, 0.dp),
                 expanded = aiLanguageMenu,
-                onDismissRequest = { aiLanguageMenu = false }
+                onDismissRequest = { aiLanguageMenu = false },
             ) {
                 DropdownMenuItem(
                     text = {
                         Text(
                             text = "English",
                             style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.padding(horizontal = MaterialTheme.spacing.extraSmall)
+                            modifier =
+                                Modifier.padding(horizontal = MaterialTheme.spacing.extraSmall),
                         )
                     },
-                    onClick = { aiLanguageMenu = false; onAILanguageClick(AiLanguage.ENGLISH) },
+                    onClick = {
+                        aiLanguageMenu = false
+                        onAILanguageClick(AiLanguage.ENGLISH)
+                    },
                 )
                 DropdownMenuItem(
                     text = {
                         Text(
                             text = "Bahasa Indonesia",
                             style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.padding(horizontal = MaterialTheme.spacing.extraSmall)
+                            modifier =
+                                Modifier.padding(horizontal = MaterialTheme.spacing.extraSmall),
                         )
                     },
                     onClick = {
-                        aiLanguageMenu = false; onAILanguageClick(AiLanguage.BAHASA_INDONESIA)
+                        aiLanguageMenu = false
+                        onAILanguageClick(AiLanguage.BAHASA_INDONESIA)
                     },
                 )
             }
 
-//            SettingItem(
-//                icon = Icons.Outlined.SmartToy,
-//                title = "AI Language",
-//                value = aiLanguageValue,
-//                onCLick = { aiLanguageMenu = true }
-//            )
+            //            SettingItem(
+            //                icon = Icons.Outlined.SmartToy,
+            //                title = "AI Language",
+            //                value = aiLanguageValue,
+            //                onCLick = { aiLanguageMenu = true }
+            //            )
         }
         SettingItem(
             icon = Icons.Outlined.WorkspacePremium,
             title = "Plan",
             value = planValue,
-            onCLick = onPlanClick
+            onCLick = onPlanClick,
         )
         SettingItem(
             icon = Icons.Outlined.Download,
             title = "Export My Data",
             value = "CSV and photos (.zip)",
-            onCLick = onExportDataClick
+            onCLick = onExportDataClick,
         )
         SettingItem(
             icon = Icons.Outlined.Info,
             title = "About",
             value = aboutValue,
-            onCLick = onAboutClick
+            onCLick = onAboutClick,
         )
     }
 }
@@ -192,7 +208,7 @@ private fun SettingsSectionPreview() {
                 onPlanClick = {},
                 onExportDataClick = {},
                 aboutValue = "Version 2.0.0",
-                onAboutClick = {}
+                onAboutClick = {},
             )
         }
     }

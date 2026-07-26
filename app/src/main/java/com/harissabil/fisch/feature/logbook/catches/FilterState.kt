@@ -3,7 +3,7 @@ package com.harissabil.fisch.feature.logbook.catches
 enum class ReleaseFilter(val value: String) {
     ALL("All"),
     RELEASED("Released"),
-    KEPT("Kept")
+    KEPT("Kept"),
 }
 
 data class FilterState(

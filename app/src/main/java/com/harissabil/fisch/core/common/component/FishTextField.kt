@@ -35,7 +35,6 @@ fun FishTextField(
     keyboardActions: KeyboardActions = KeyboardActions.Default,
 ) {
     OutlinedTextField(
-
         modifier = modifier,
         interactionSource = interactionSource,
         value = value,
@@ -43,28 +42,15 @@ fun FishTextField(
         readOnly = readOnly,
         enabled = enabled,
         shape = RoundedCornerShape(size = 8.dp),
-        label = {
-            label?.let {
-                Text(
-                    text = it,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-
-        },
-        placeholder = {
-            placeholder?.let {
-                Text(text = it)
-            }
-        },
+        label = { label?.let { Text(text = it, maxLines = 1, overflow = TextOverflow.Ellipsis) } },
+        placeholder = { placeholder?.let { Text(text = it) } },
         singleLine = singleLine,
         leadingIcon = leadingIcon,
         trailingIcon = trailingIcon,
         supportingText = supportingText,
         isError = isError,
         keyboardActions = keyboardActions,
-        keyboardOptions = keyboardOptions
+        keyboardOptions = keyboardOptions,
     )
 }
 
@@ -72,13 +58,5 @@ fun FishTextField(
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun FishTextFieldPreview() {
-    FischTheme {
-        Surface {
-            FishTextField(
-                value = "",
-                onValueChange = {},
-                label = "Fish Type"
-            )
-        }
-    }
+    FischTheme { Surface { FishTextField(value = "", onValueChange = {}, label = "Fish Type") } }
 }

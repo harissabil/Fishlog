@@ -1,7 +1,6 @@
 package com.harissabil.fisch.feature.profile.presentation
 
 import android.content.Intent
-import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -25,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.harissabil.fisch.BuildConfig
 import com.harissabil.fisch.R
@@ -37,12 +37,11 @@ import com.harissabil.fisch.feature.profile.domain.model.UserData
 import com.harissabil.fisch.feature.profile.presentation.component.ProfileMoreOptionBottomSheet
 import com.harissabil.fisch.feature.profile.presentation.component.ProfileTop
 import com.harissabil.fisch.feature.profile.presentation.component.SettingsSection
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import androidx.core.net.toUri
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,21 +57,20 @@ fun ProfileScreen(
 
     val scope = rememberCoroutineScope()
 
-    val exportDataLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.CreateDocument("application/zip")
-    ) { uri ->
-        if (uri != null) {
-            viewModel.onEvent(ProfileEvent.ExportData(context, uri))
+    val exportDataLauncher =
+        rememberLauncherForActivityResult(
+            ActivityResultContracts.CreateDocument("application/zip")
+        ) { uri ->
+            if (uri != null) {
+                viewModel.onEvent(ProfileEvent.ExportData(context, uri))
+            }
         }
-    }
 
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
             when (event) {
                 is ProfileViewModel.UIEvent.ShowSnackbar -> {
-                    snackbarHostState.showSnackbar(
-                        message = event.message
-                    )
+                    snackbarHostState.showSnackbar(message = event.message)
                 }
             }
         }
@@ -86,11 +84,13 @@ fun ProfileScreen(
         onEvent = { event ->
             when (event) {
                 ProfileEvent.SignOut -> {
-                    scope.launch { profileMoreOptionBottomSheetState.hide() }.invokeOnCompletion {
-                        if (!profileMoreOptionBottomSheetState.isVisible) {
-                            viewModel.onEvent(ProfileEvent.ShowMoreOption(false))
+                    scope
+                        .launch { profileMoreOptionBottomSheetState.hide() }
+                        .invokeOnCompletion {
+                            if (!profileMoreOptionBottomSheetState.isVisible) {
+                                viewModel.onEvent(ProfileEvent.ShowMoreOption(false))
+                            }
                         }
-                    }
                 }
 
                 else -> Unit
@@ -102,22 +102,26 @@ fun ProfileScreen(
         profileMoreOptionBottomSheetState = profileMoreOptionBottomSheetState,
         appVersion = context.getString(R.string.version, BuildConfig.VERSION_NAME),
         onAboutClick = onAboutClick,
-        planValue = if (state.isPlus) "Fishlog Plus" else "Free (${state.logbookCountThisMonth}/5 logs this month)",
+        planValue =
+            if (state.isPlus) "Fishlog Plus"
+            else "Free (${state.logbookCountThisMonth}/5 logs this month)",
         onExportDataClick = {
             val dateStamp = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())
             exportDataLauncher.launch("fishlog_export_$dateStamp.zip")
         },
         onPlanClick = {
             if (state.isPlus) {
-                val intent = Intent(
-                    Intent.ACTION_VIEW,
-                    "https://play.google.com/store/account/subscriptions?sku=fisch_plus_monthly&package=${context.packageName}".toUri()
-                )
+                val intent =
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        "https://play.google.com/store/account/subscriptions?sku=fisch_plus_monthly&package=${context.packageName}"
+                            .toUri(),
+                    )
                 context.startActivity(intent)
             } else {
                 viewModel.onEvent(ProfileEvent.ShowPaywall(true))
             }
-        }
+        },
     )
 
     if (state.showPaywallSheet) {
@@ -129,7 +133,7 @@ fun ProfileScreen(
                 context.findActivity()?.let { activity ->
                     viewModel.onEvent(ProfileEvent.SubscribeToPlus(activity))
                 }
-            }
+            },
         )
     }
 }
@@ -161,14 +165,10 @@ fun ProfileContent(
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
+            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            ProfileTop(
-                userData = userData, catches = catches, visits = visits
-            )
+            ProfileTop(userData = userData, catches = catches, visits = visits)
             SettingsSection(
                 modifier = Modifier.padding(vertical = MaterialTheme.spacing.medium),
                 themeValue = state.themeValue,
@@ -179,7 +179,7 @@ fun ProfileContent(
                 onPlanClick = onPlanClick,
                 onExportDataClick = onExportDataClick,
                 aboutValue = appVersion,
-                onAboutClick = onAboutClick
+                onAboutClick = onAboutClick,
             )
         }
         if (isLoading) {
@@ -196,12 +196,13 @@ private fun ProfileContentPreview() {
         Box(modifier = Modifier.background(MaterialTheme.colorScheme.background)) {
             ProfileContent(
                 state = ProfileState(),
-                userData = UserData(
-                    userId = "123",
-                    userName = "John Doe",
-                    email = "johndoe@gmail.com",
-                    profilePictureUrl = "https://randomuser",
-                ),
+                userData =
+                    UserData(
+                        userId = "123",
+                        userName = "John Doe",
+                        email = "johndoe@gmail.com",
+                        profilePictureUrl = "https://randomuser",
+                    ),
                 catches = null,
                 visits = null,
                 isLoading = false,
@@ -212,7 +213,7 @@ private fun ProfileContentPreview() {
                 onAboutClick = {},
                 planValue = "Free (2/5 logs this month)",
                 onPlanClick = {},
-                onExportDataClick = {}
+                onExportDataClick = {},
             )
         }
     }

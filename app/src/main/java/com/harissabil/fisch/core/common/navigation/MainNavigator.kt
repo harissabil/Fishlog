@@ -73,27 +73,23 @@ fun MainNavigator() {
             BottomNavigationItem(
                 selectedIcon = Icons.Filled.Home,
                 unselectedIcon = Icons.Outlined.Home,
-                text = "Home"
+                text = "Home",
             ),
             BottomNavigationItem(
                 selectedIcon = Icons.Filled.Phishing,
                 unselectedIcon = Icons.Outlined.Phishing,
-                text = "Catches"
+                text = "Catches",
             ),
-            BottomNavigationItem(
-                selectedIcon = null,
-                unselectedIcon = null,
-                text = null
-            ),
+            BottomNavigationItem(selectedIcon = null, unselectedIcon = null, text = null),
             BottomNavigationItem(
                 selectedIcon = Icons.Filled.Map,
                 unselectedIcon = Icons.Outlined.Map,
-                text = "Map"
+                text = "Map",
             ),
             BottomNavigationItem(
                 selectedIcon = Icons.Filled.Person,
                 unselectedIcon = Icons.Outlined.Person,
-                text = "Profile"
+                text = "Profile",
             ),
         )
     }
@@ -102,38 +98,40 @@ fun MainNavigator() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     var selectedItem by rememberSaveable { mutableIntStateOf(0) }
-    selectedItem = when (currentRoute) {
-        Route.HomeScreen.route -> 0
-        Route.CatchesScreen.route -> 1
-        Route.MapScreen.route -> 3
-        Route.ProfileScreen.route -> 4
-        else -> 0
-    }
+    selectedItem =
+        when (currentRoute) {
+            Route.HomeScreen.route -> 0
+            Route.CatchesScreen.route -> 1
+            Route.MapScreen.route -> 3
+            Route.ProfileScreen.route -> 4
+            else -> 0
+        }
 
     var isBottomBarVisible by rememberSaveable { mutableStateOf(true) }
 
-    isBottomBarVisible = when (currentRoute) {
-        Route.CatchDetailScreen.route -> false
-        Route.AddCatchScreen.route -> false
-        Route.AboutScreen.route -> false
-        else -> true
-    }
+    isBottomBarVisible =
+        when (currentRoute) {
+            Route.CatchDetailScreen.route -> false
+            Route.AddCatchScreen.route -> false
+            Route.AboutScreen.route -> false
+            else -> true
+        }
 
     var isTopAppBarElevated by remember { mutableStateOf(false) }
 
-    isTopAppBarElevated = when (currentRoute) {
-        Route.ProfileScreen.route -> true
-        Route.MapScreen.route -> true
-        else -> false
-    }
+    isTopAppBarElevated =
+        when (currentRoute) {
+            Route.ProfileScreen.route -> true
+            Route.MapScreen.route -> true
+            else -> false
+        }
 
     var scaffoldViewState by remember { mutableStateOf(ScaffoldViewState()) }
 
     val snackbarHostState = remember { SnackbarHostState() }
 
-    val scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(
-        canScroll = { false }
-    )
+    val scrollBehavior: TopAppBarScrollBehavior =
+        TopAppBarDefaults.pinnedScrollBehavior(canScroll = { false })
 
     val scope = rememberCoroutineScope()
 
@@ -149,9 +147,10 @@ fun MainNavigator() {
                 onBackClick = scaffoldViewState.onBackClick,
                 onActionClick = scaffoldViewState.onActionClick,
                 scrollBehavior = scrollBehavior,
-                containerColor = if (isTopAppBarElevated) MaterialTheme.colorScheme.surfaceColorAtElevation(
-                    10.dp
-                ) else null
+                containerColor =
+                    if (isTopAppBarElevated)
+                        MaterialTheme.colorScheme.surfaceColorAtElevation(10.dp)
+                    else null,
             )
         },
         bottomBar = {
@@ -182,104 +181,97 @@ fun MainNavigator() {
         NavHost(
             navController = navController,
             startDestination = Route.HomeScreen.route,
-            modifier = Modifier.padding(contentPadding)
+            modifier = Modifier.padding(contentPadding),
         ) {
             composable(route = Route.HomeScreen.route) {
                 LaunchedEffect(key1 = Unit) {
-                    scaffoldViewState = ScaffoldViewState(
-                        topAppBarTitle = "Home",
-                        navigationIcon = R.drawable.ic_launcher_foreground,
-                        onBackClick = null
-                    )
+                    scaffoldViewState =
+                        ScaffoldViewState(
+                            topAppBarTitle = "Home",
+                            navigationIcon = R.drawable.ic_launcher_foreground,
+                            onBackClick = null,
+                        )
                 }
                 HomeScreen(
                     snackbarHostState = snackbarHostState,
                     onNavigateToDetail = { toDetailState ->
-                        navigateToDetail(
-                            navController,
-                            toDetailState
-                        )
-                    }
+                        navigateToDetail(navController, toDetailState)
+                    },
                 )
             }
             slideContainerAnimationComposable(route = Route.CatchesScreen.route) {
                 LaunchedEffect(key1 = Unit) {
-                    scaffoldViewState = ScaffoldViewState(
-                        topAppBarTitle = "Catches",
-                        navigationIcon = null,
-                        onBackClick = null
-                    )
+                    scaffoldViewState =
+                        ScaffoldViewState(
+                            topAppBarTitle = "Catches",
+                            navigationIcon = null,
+                            onBackClick = null,
+                        )
                 }
                 CatchesScreen(
                     snackbarHostState = snackbarHostState,
                     listState = catchesListState,
                     onNavigateToDetail = { toDetailState ->
-                        navigateToDetail(
-                            navController,
-                            toDetailState
-                        )
-                    }
+                        navigateToDetail(navController, toDetailState)
+                    },
                 )
             }
             scaleInAndOutAnimationComposable(route = Route.AddCatchScreen.route) {
                 val focusManager = LocalFocusManager.current
 
                 LaunchedEffect(key1 = Unit) {
-                    scaffoldViewState = ScaffoldViewState(
-                        topAppBarTitle = "Add Catch",
-                        navigationIcon = null,
-                        onBackClick = {
-                            if (navController.canGoBack) {
-                                focusManager.clearFocus()
-                                navController.navigateUp()
-                            }
-                        }
-                    )
+                    scaffoldViewState =
+                        ScaffoldViewState(
+                            topAppBarTitle = "Add Catch",
+                            navigationIcon = null,
+                            onBackClick = {
+                                if (navController.canGoBack) {
+                                    focusManager.clearFocus()
+                                    navController.navigateUp()
+                                }
+                            },
+                        )
                 }
                 AddCatchScreen(
                     snackbarHostState = snackbarHostState,
-                    onUploadSuccess = { navController.popBackStack() }
+                    onUploadSuccess = { navController.popBackStack() },
                 )
             }
             composable(route = Route.MapScreen.route) {
                 LaunchedEffect(key1 = Unit) {
-                    scaffoldViewState = ScaffoldViewState(
-                        topAppBarTitle = "Map",
-                        navigationIcon = null,
-                        onBackClick = null
-                    )
+                    scaffoldViewState =
+                        ScaffoldViewState(
+                            topAppBarTitle = "Map",
+                            navigationIcon = null,
+                            onBackClick = null,
+                        )
                 }
                 MapScreen(
                     snackbarHostState = snackbarHostState,
                     onNavigateToDetail = { toDetailState ->
-                        navigateToDetail(
-                            navController,
-                            toDetailState
-                        )
-                    }
+                        navigateToDetail(navController, toDetailState)
+                    },
                 )
             }
             slideContainerAnimationComposable(route = Route.ProfileScreen.route) {
                 val viewModel = hiltViewModel<ProfileViewModel>()
 
                 LaunchedEffect(key1 = Unit) {
-                    scaffoldViewState = ScaffoldViewState(
-                        topAppBarTitle = "Profile",
-                        navigationIcon = null,
-                        onBackClick = null,
-                        onActionClick = {
-                            viewModel.onEvent(ProfileEvent.ShowMoreOption(true))
-                        }
-                    )
+                    scaffoldViewState =
+                        ScaffoldViewState(
+                            topAppBarTitle = "Profile",
+                            navigationIcon = null,
+                            onBackClick = null,
+                            onActionClick = { viewModel.onEvent(ProfileEvent.ShowMoreOption(true)) },
+                        )
                 }
                 ProfileScreen(
                     viewModel = viewModel,
                     snackbarHostState = snackbarHostState,
-                    onAboutClick = { navController.navigate(Route.AboutScreen.route) }
+                    onAboutClick = { navController.navigate(Route.AboutScreen.route) },
                 )
             }
             slideHorizontallyAnimationComposable(route = Route.CatchDetailScreen.route) {
-
                 val viewModel = hiltViewModel<CatchDetailViewModel>()
                 val state by viewModel.state.collectAsState()
 
@@ -291,60 +283,65 @@ fun MainNavigator() {
                         onConfirmation = {
                             openDiscardFishAlertDialog = false
                             navController.navigateUp()
-                            navController.previousBackStackEntry?.savedStateHandle?.clearSavedStateProvider(
-                                TO_DETAIL_STATE
-                            )
+                            navController.previousBackStackEntry
+                                ?.savedStateHandle
+                                ?.clearSavedStateProvider(TO_DETAIL_STATE)
                         },
                         dialogTitle = "Discard changes",
                         dialogText = "If you go back, your changes will be lost.",
                         isDestructiveType = true,
                         confirmText = "Discard",
-                        dismissText = "Keep"
+                        dismissText = "Keep",
                     )
                 }
 
                 LaunchedEffect(key1 = state.isInEditMode) {
-                    scaffoldViewState = ScaffoldViewState(
-                        topAppBarTitle = "Detail Catch",
-                        navigationIcon = null,
-                        onBackClick = {
-                            if (state.isInEditMode) openDiscardFishAlertDialog = true
-                            else {
-                                if (navController.canGoBack) {
-                                    navController.navigateUp()
-                                    navController.previousBackStackEntry?.savedStateHandle?.clearSavedStateProvider(
-                                        TO_DETAIL_STATE
-                                    )
+                    scaffoldViewState =
+                        ScaffoldViewState(
+                            topAppBarTitle = "Detail Catch",
+                            navigationIcon = null,
+                            onBackClick = {
+                                if (state.isInEditMode) openDiscardFishAlertDialog = true
+                                else {
+                                    if (navController.canGoBack) {
+                                        navController.navigateUp()
+                                        navController.previousBackStackEntry
+                                            ?.savedStateHandle
+                                            ?.clearSavedStateProvider(TO_DETAIL_STATE)
+                                    }
                                 }
-                            }
-                        },
-                        onActionClick = if (!state.isInEditMode) {
-                            { viewModel.onEvent(CatchDetailEvent.MoreOption(true)) }
-                        } else null
-                    )
+                            },
+                            onActionClick =
+                                if (!state.isInEditMode) {
+                                    { viewModel.onEvent(CatchDetailEvent.MoreOption(true)) }
+                                } else null,
+                        )
                 }
 
-                navController.previousBackStackEntry?.savedStateHandle?.get<ToDetailState>(
-                    TO_DETAIL_STATE
-                )
+                navController.previousBackStackEntry
+                    ?.savedStateHandle
+                    ?.get<ToDetailState>(TO_DETAIL_STATE)
                     ?.let { logbook ->
                         CatchDetailScreen(
                             viewModel = viewModel,
                             state = state,
                             detailState = logbook,
                             onUploadSuccess = { navController.popBackStack() },
-                            snackbarHostState = snackbarHostState
+                            snackbarHostState = snackbarHostState,
                         )
                     }
             }
 
             slideHorizontallyAnimationComposable(route = Route.AboutScreen.route) {
                 LaunchedEffect(key1 = Unit) {
-                    scaffoldViewState = ScaffoldViewState(
-                        topAppBarTitle = "About",
-                        navigationIcon = null,
-                        onBackClick = { if (navController.canGoBack) navController.navigateUp() }
-                    )
+                    scaffoldViewState =
+                        ScaffoldViewState(
+                            topAppBarTitle = "About",
+                            navigationIcon = null,
+                            onBackClick = {
+                                if (navController.canGoBack) navController.navigateUp()
+                            },
+                        )
                 }
                 AboutScreen()
             }
@@ -355,9 +352,7 @@ fun MainNavigator() {
 private fun navigateToTab(navController: NavController, route: String) {
     navController.navigate(route) {
         navController.graph.startDestinationRoute?.let { screenRoute ->
-            popUpTo(screenRoute) {
-                saveState = true
-            }
+            popUpTo(screenRoute) { saveState = true }
         }
         launchSingleTop = true
         restoreState = true

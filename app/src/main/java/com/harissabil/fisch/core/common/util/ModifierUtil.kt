@@ -18,30 +18,28 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.IntSize
 
 fun Modifier.shimmerEffect(): Modifier = composed {
-    var size by remember {
-        mutableStateOf(IntSize.Zero)
-    }
+    var size by remember { mutableStateOf(IntSize.Zero) }
     val transition = rememberInfiniteTransition(label = "shimmer")
-    val startOffsetX by transition.animateFloat(
-        initialValue = -2 * size.width.toFloat(),
-        targetValue = 2 * size.width.toFloat(),
-        animationSpec = infiniteRepeatable(
-            animation = tween(1000)
-        ), label = "shimmer"
-    )
+    val startOffsetX by
+        transition.animateFloat(
+            initialValue = -2 * size.width.toFloat(),
+            targetValue = 2 * size.width.toFloat(),
+            animationSpec = infiniteRepeatable(animation = tween(1000)),
+            label = "shimmer",
+        )
 
     background(
-        brush = Brush.linearGradient(
-            colors = listOf(
-                Color.Gray.copy(alpha = 0.5f),
-                Color.Gray.copy(alpha = 0.75f),
-                Color.Gray.copy(alpha = 0.5f),
-            ),
-            start = Offset(startOffsetX, 0f),
-            end = Offset(startOffsetX + size.width.toFloat(), size.height.toFloat())
+            brush =
+                Brush.linearGradient(
+                    colors =
+                        listOf(
+                            Color.Gray.copy(alpha = 0.5f),
+                            Color.Gray.copy(alpha = 0.75f),
+                            Color.Gray.copy(alpha = 0.5f),
+                        ),
+                    start = Offset(startOffsetX, 0f),
+                    end = Offset(startOffsetX + size.width.toFloat(), size.height.toFloat()),
+                )
         )
-    )
-        .onGloballyPositioned {
-            size = it.size
-        }
+        .onGloballyPositioned { size = it.size }
 }

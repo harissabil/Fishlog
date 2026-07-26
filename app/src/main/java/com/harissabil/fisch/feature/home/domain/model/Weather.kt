@@ -16,11 +16,7 @@ data class Weather(
     val longitude: Double?,
 )
 
-data class HourlyUnits(
-    val temperature2m: String?,
-    val time: String?,
-    val weatherCode: String?,
-)
+data class HourlyUnits(val temperature2m: String?, val time: String?, val weatherCode: String?)
 
 data class CurrentUnits(
     val pressureMsl: String?,

@@ -1,6 +1,7 @@
 @file:Suppress("unused")
 
 package com.harissabil.fisch.core.common.theme
+
 import androidx.compose.ui.graphics.Color
 
 val sourceColor = Color(0xFF08a9ed)

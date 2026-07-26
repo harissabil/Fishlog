@@ -1,6 +1,5 @@
 package com.harissabil.fisch.feature.onboarding.presentation.component
 
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,10 +24,12 @@ fun PagerIndicator(
     Row(modifier = modifier, horizontalArrangement = Arrangement.SpaceBetween) {
         repeat(times = pagesSize) { page ->
             Box(
-                modifier = Modifier
-                    .size(10.dp)
-                    .clip(CircleShape)
-                    .background(color = if (page == selectedPage) selectedColor else unselectedColor)
+                modifier =
+                    Modifier.size(10.dp)
+                        .clip(CircleShape)
+                        .background(
+                            color = if (page == selectedPage) selectedColor else unselectedColor
+                        )
             )
         }
     }

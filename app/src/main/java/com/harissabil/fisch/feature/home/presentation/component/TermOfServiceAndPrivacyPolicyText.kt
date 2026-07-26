@@ -21,7 +21,9 @@ fun TermOfServiceAndPrivacyPolicyText(
     val temrOfService = "Terms of Service"
     val privacyPolicy = "Privacy Policy"
     val annotatedString = buildAnnotatedString {
-        withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f))) {
+        withStyle(
+            style = SpanStyle(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f))
+        ) {
             append("By continuing, you agree to our ")
             withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
                 pushStringAnnotation(tag = temrOfService, annotation = temrOfService)
@@ -35,23 +37,21 @@ fun TermOfServiceAndPrivacyPolicyText(
         }
     }
     ClickableText(
-        modifier = Modifier
-            .fillMaxWidth()
-            .then(modifier),
+        modifier = Modifier.fillMaxWidth().then(modifier),
         text = annotatedString,
-        style = TextStyle(
-            fontSize = MaterialTheme.typography.bodySmall.fontSize,
-            textAlign = TextAlign.Center
-        ),
+        style =
+            TextStyle(
+                fontSize = MaterialTheme.typography.bodySmall.fontSize,
+                textAlign = TextAlign.Center,
+            ),
         onClick = { offset ->
-            annotatedString.getStringAnnotations(offset, offset)
-                .firstOrNull()?.let { annotation ->
-                    if (annotation.tag == temrOfService) {
-                        onTermOfServiceClick()
-                    } else if (annotation.tag == privacyPolicy) {
-                        onPrivacyPolicyClick()
-                    }
+            annotatedString.getStringAnnotations(offset, offset).firstOrNull()?.let { annotation ->
+                if (annotation.tag == temrOfService) {
+                    onTermOfServiceClick()
+                } else if (annotation.tag == privacyPolicy) {
+                    onPrivacyPolicyClick()
                 }
-        }
+            }
+        },
     )
 }

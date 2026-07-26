@@ -17,29 +17,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun SignOutButton(
-    modifier: Modifier = Modifier,
-    onSignOut: () -> Unit,
-) {
+fun SignOutButton(modifier: Modifier = Modifier, onSignOut: () -> Unit) {
     TextButton(
         onClick = onSignOut,
-        colors = ButtonColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            contentColor = MaterialTheme.colorScheme.error,
-            disabledContainerColor = MaterialTheme.colorScheme.surface,
-            disabledContentColor = MaterialTheme.colorScheme.error,
-        ),
+        colors =
+            ButtonColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.error,
+                disabledContainerColor = MaterialTheme.colorScheme.surface,
+                disabledContentColor = MaterialTheme.colorScheme.error,
+            ),
         shape = RoundedCornerShape(size = 8.dp),
-        modifier = modifier
+        modifier = modifier,
     ) {
         Icon(
             imageVector = Icons.AutoMirrored.Outlined.Logout,
             contentDescription = null,
-            modifier = Modifier.padding(end = 8.dp)
+            modifier = Modifier.padding(end = 8.dp),
         )
-        Text(
-            text = "Sign out",
-            modifier = Modifier.animateContentSize()
-        )
+        Text(text = "Sign out", modifier = Modifier.animateContentSize())
     }
 }

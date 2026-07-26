@@ -17,22 +17,24 @@ import com.harissabil.fisch.core.firebase.firestore.domain.model.Constant.LOGBOO
 import com.harissabil.fisch.core.firebase.firestore.domain.model.Constant.MAPS
 import com.harissabil.fisch.core.firebase.firestore.domain.model.Constant.QUOTA_EXCEEDED_MESSAGE
 import com.harissabil.fisch.core.firebase.firestore.domain.model.Constant.USERS
-import com.harissabil.fisch.core.firebase.firestore.domain.model.LogbookCounter
 import com.harissabil.fisch.core.firebase.firestore.domain.model.Logbook
+import com.harissabil.fisch.core.firebase.firestore.domain.model.LogbookCounter
 import com.harissabil.fisch.core.firebase.firestore.domain.model.Map
 import com.harissabil.fisch.core.firebase.firestore.domain.model.UserPlan
 import com.harissabil.fisch.core.firebase.storage.domain.StorageRepository
+import javax.inject.Inject
+import javax.inject.Named
+import javax.inject.Singleton
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import timber.log.Timber
-import javax.inject.Inject
-import javax.inject.Named
-import javax.inject.Singleton
 
 @Singleton
-class FirestoreRepositoryImpl @Inject constructor(
+class FirestoreRepositoryImpl
+@Inject
+constructor(
     @Named(LOGBOOKS) private val logbooksRef: CollectionReference,
     @Named(MAPS) private val mapsRef: CollectionReference,
     @Named(USERS) private val usersRef: CollectionReference,
@@ -44,41 +46,36 @@ class FirestoreRepositoryImpl @Inject constructor(
 
     override fun getLogbooks(): Flow<Resource<List<LogbookResponse>>> = callbackFlow {
         val snapshotListener =
-            logbooksRef.whereEqualTo(
-                EMAIL,
-                auth.currentUser?.email
-            ).addSnapshotListener { snapshot, e ->
-                val logbooksResponse = if (snapshot != null) {
-                    Timber.d("logbooks: ${snapshot.documents}")
-                    val logbooks = snapshot.toObjects(LogbookResponse::class.java)
-                    Resource.Success(logbooks)
-                } else {
-                    Resource.Error(e?.message ?: "Something went wrong!")
-                }
+            logbooksRef.whereEqualTo(EMAIL, auth.currentUser?.email).addSnapshotListener {
+                snapshot,
+                e ->
+                val logbooksResponse =
+                    if (snapshot != null) {
+                        Timber.d("logbooks: ${snapshot.documents}")
+                        val logbooks = snapshot.toObjects(LogbookResponse::class.java)
+                        Resource.Success(logbooks)
+                    } else {
+                        Resource.Error(e?.message ?: "Something went wrong!")
+                    }
                 trySend(logbooksResponse)
             }
-        awaitClose {
-            snapshotListener.remove()
-        }
+        awaitClose { snapshotListener.remove() }
     }
 
     override fun getMap(): Flow<Resource<List<MapResponse>>> = callbackFlow {
         val snapshotListener =
-            mapsRef.whereEqualTo(
-                EMAIL,
-                auth.currentUser?.email
-            ).addSnapshotListener { snapshot, e ->
-                val mapsResponse = if (snapshot != null) {
-                    val maps = snapshot.toObjects(MapResponse::class.java)
-                    Resource.Success(maps)
-                } else {
-                    Resource.Error(e?.message ?: "Something went wrong!")
-                }
+            mapsRef.whereEqualTo(EMAIL, auth.currentUser?.email).addSnapshotListener { snapshot, e
+                ->
+                val mapsResponse =
+                    if (snapshot != null) {
+                        val maps = snapshot.toObjects(MapResponse::class.java)
+                        Resource.Success(maps)
+                    } else {
+                        Resource.Error(e?.message ?: "Something went wrong!")
+                    }
                 trySend(mapsResponse)
             }
-        awaitClose {
-            snapshotListener.remove()
-        }
+        awaitClose { snapshotListener.remove() }
     }
 
     override suspend fun addLogbook(
@@ -103,58 +100,68 @@ class FirestoreRepositoryImpl @Inject constructor(
 
             val logbookDocument = logbooksRef.document()
 
-            val fishImageUrl = if (fishImage != null) {
-                storageRepository.uploadImage(
-                    image = fishImage.toCompressedJpeg(),
-                    fileName = System.currentTimeMillis().toString()
-                ).data
-            } else {
-                null
-            }
+            val fishImageUrl =
+                if (fishImage != null) {
+                    storageRepository
+                        .uploadImage(
+                            image = fishImage.toCompressedJpeg(),
+                            fileName = System.currentTimeMillis().toString(),
+                        )
+                        .data
+                } else {
+                    null
+                }
 
-            val logbookToAdd = Logbook(
-                id = logbookDocument.id,
-                email = currentUser.email,
-                jenisIkan = logbook.jenisIkan,
-                jumlahIkan = logbook.jumlahIkan,
-                waktuPenangkapan = logbook.waktuPenangkapan,
-                tempatPenangkapan = logbook.tempatPenangkapan,
-                fotoIkan = fishImageUrl,
-                beratIkan = logbook.beratIkan,
-                panjangIkan = logbook.panjangIkan,
-                umpan = logbook.umpan,
-                dilepaskan = logbook.dilepaskan,
-                catatan = logbook.catatan,
-            )
+            val logbookToAdd =
+                Logbook(
+                    id = logbookDocument.id,
+                    email = currentUser.email,
+                    jenisIkan = logbook.jenisIkan,
+                    jumlahIkan = logbook.jumlahIkan,
+                    waktuPenangkapan = logbook.waktuPenangkapan,
+                    tempatPenangkapan = logbook.tempatPenangkapan,
+                    fotoIkan = fishImageUrl,
+                    beratIkan = logbook.beratIkan,
+                    panjangIkan = logbook.panjangIkan,
+                    umpan = logbook.umpan,
+                    dilepaskan = logbook.dilepaskan,
+                    catatan = logbook.catatan,
+                )
 
             // Atomic re-check + counter increment + logbook creation, closing the race the
             // pre-check alone can't (also mirrors what the Firestore Security Rules enforce).
             try {
-                logbooksRef.firestore.runTransaction { transaction ->
-                    val isPlusInTx =
-                        transaction.get(userDocRef).toObject(UserPlan::class.java)?.isPlus == true
-                    val countInTx =
-                        transaction.get(counterDocRef).toObject(LogbookCounter::class.java)?.count
-                            ?: 0
-                    if (!isPlusInTx && countInTx >= FREE_MONTHLY_LOGBOOK_LIMIT) {
-                        throw QuotaExceededException()
+                logbooksRef.firestore
+                    .runTransaction { transaction ->
+                        val isPlusInTx =
+                            transaction.get(userDocRef).toObject(UserPlan::class.java)?.isPlus ==
+                                true
+                        val countInTx =
+                            transaction
+                                .get(counterDocRef)
+                                .toObject(LogbookCounter::class.java)
+                                ?.count ?: 0
+                        if (!isPlusInTx && countInTx >= FREE_MONTHLY_LOGBOOK_LIMIT) {
+                            throw QuotaExceededException()
+                        }
+                        transaction.set(counterDocRef, LogbookCounter(count = countInTx + 1))
+                        transaction.set(logbookDocument, logbookToAdd)
                     }
-                    transaction.set(counterDocRef, LogbookCounter(count = countInTx + 1))
-                    transaction.set(logbookDocument, logbookToAdd)
-                }.await()
+                    .await()
             } catch (e: QuotaExceededException) {
                 return Resource.Error(QUOTA_EXCEEDED_MESSAGE, false)
             }
 
             if (lat != null && lon != null) {
                 val mapId = mapsRef.document().id
-                val mapToAdd = Map(
-                    id = mapId,
-                    email = currentUser.email,
-                    logbookRef = logbookDocument,
-                    placeName = logbook.tempatPenangkapan,
-                    latLong = GeoPoint(lat, lon),
-                )
+                val mapToAdd =
+                    Map(
+                        id = mapId,
+                        email = currentUser.email,
+                        logbookRef = logbookDocument,
+                        placeName = logbook.tempatPenangkapan,
+                        latLong = GeoPoint(lat, lon),
+                    )
                 mapsRef.document(mapId).set(mapToAdd).await()
             }
 
@@ -169,60 +176,67 @@ class FirestoreRepositoryImpl @Inject constructor(
         fishImage: Bitmap?,
         lat: Double?,
         lon: Double?,
-    ): Resource<Boolean> = try {
+    ): Resource<Boolean> =
+        try {
 
-        val fishImageUrl = if (fishImage != null) {
-            val compressedImage = fishImage.toCompressedJpeg()
+            val fishImageUrl =
+                if (fishImage != null) {
+                    val compressedImage = fishImage.toCompressedJpeg()
 
-            if (logbook.fotoIkan != null) {
-                storageRepository.updateImage(
-                    image = compressedImage,
-                    path = logbook.fotoIkan!!.getFilenameFromUrl()
-                ).data
-            } else {
-                storageRepository.uploadImage(
-                    image = compressedImage,
-                    fileName = System.currentTimeMillis().toString()
-                ).data
-            }
-        } else {
-            logbook.fotoIkan
-        }
-
-        if (lat != null && lon != null) {
-            val mapsQuerySnapshot = mapsRef.whereEqualTo("logbook", logbook.id).get().await()
-            for (document in mapsQuerySnapshot.documents) {
-                val maps = document.toObject(MapResponse::class.java)!!
-                if (lat == maps.latLong?.latitude && lon == maps.latLong?.longitude) {
-                    break
+                    if (logbook.fotoIkan != null) {
+                        storageRepository
+                            .updateImage(
+                                image = compressedImage,
+                                path = logbook.fotoIkan!!.getFilenameFromUrl(),
+                            )
+                            .data
+                    } else {
+                        storageRepository
+                            .uploadImage(
+                                image = compressedImage,
+                                fileName = System.currentTimeMillis().toString(),
+                            )
+                            .data
+                    }
                 } else {
-                    document.reference.update("latLong", GeoPoint(lat, lon)).await()
+                    logbook.fotoIkan
+                }
+
+            if (lat != null && lon != null) {
+                val mapsQuerySnapshot = mapsRef.whereEqualTo("logbook", logbook.id).get().await()
+                for (document in mapsQuerySnapshot.documents) {
+                    val maps = document.toObject(MapResponse::class.java)!!
+                    if (lat == maps.latLong?.latitude && lon == maps.latLong?.longitude) {
+                        break
+                    } else {
+                        document.reference.update("latLong", GeoPoint(lat, lon)).await()
+                    }
                 }
             }
+
+            val logbookToUpdate =
+                Logbook(
+                    id = logbook.id,
+                    email = logbook.email,
+                    jenisIkan = logbook.jenisIkan,
+                    jumlahIkan = logbook.jumlahIkan,
+                    waktuPenangkapan = logbook.waktuPenangkapan,
+                    tempatPenangkapan = logbook.tempatPenangkapan,
+                    fotoIkan = fishImageUrl,
+                    beratIkan = logbook.beratIkan,
+                    panjangIkan = logbook.panjangIkan,
+                    umpan = logbook.umpan,
+                    dilepaskan = logbook.dilepaskan,
+                    catatan = logbook.catatan,
+                )
+
+            Timber.d("logbookToUpdate: $logbookToUpdate")
+
+            logbooksRef.document(logbook.id!!).set(logbookToUpdate).await()
+            Resource.Success(true)
+        } catch (e: Exception) {
+            Resource.Error(e.message ?: "Something went wrong!", false)
         }
-
-        val logbookToUpdate = Logbook(
-            id = logbook.id,
-            email = logbook.email,
-            jenisIkan = logbook.jenisIkan,
-            jumlahIkan = logbook.jumlahIkan,
-            waktuPenangkapan = logbook.waktuPenangkapan,
-            tempatPenangkapan = logbook.tempatPenangkapan,
-            fotoIkan = fishImageUrl,
-            beratIkan = logbook.beratIkan,
-            panjangIkan = logbook.panjangIkan,
-            umpan = logbook.umpan,
-            dilepaskan = logbook.dilepaskan,
-            catatan = logbook.catatan,
-        )
-
-        Timber.d("logbookToUpdate: $logbookToUpdate")
-
-        logbooksRef.document(logbook.id!!).set(logbookToUpdate).await()
-        Resource.Success(true)
-    } catch (e: Exception) {
-        Resource.Error(e.message ?: "Something went wrong!", false)
-    }
 
     override suspend fun deleteLogbook(logbookId: String, imageUrl: String?): Resource<Boolean> =
         try {
@@ -251,4 +265,3 @@ class FirestoreRepositoryImpl @Inject constructor(
         return url.last().replace("%2F", "/")
     }
 }
-

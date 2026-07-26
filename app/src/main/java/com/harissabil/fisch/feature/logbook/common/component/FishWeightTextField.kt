@@ -54,26 +54,18 @@ fun FishWeightTextField(
         },
         label = "Weight (kg)",
         leadingIcon = {
-            Icon(
-                imageVector = Icons.Outlined.MonitorWeight,
-                contentDescription = null,
-            )
+            Icon(imageVector = Icons.Outlined.MonitorWeight, contentDescription = null)
         },
         trailingIcon = {
-            AnimatedTextFieldTrailingIcon(
-                visible = value.isNotEmpty() && isFocused,
-            ) {
+            AnimatedTextFieldTrailingIcon(visible = value.isNotEmpty() && isFocused) {
                 IconButton(
                     onClick = {
                         onValueChange("")
                         keyboardController?.hide()
                     },
                     content = {
-                        Icon(
-                            imageVector = Icons.Outlined.Cancel,
-                            contentDescription = "Clear",
-                        )
-                    }
+                        Icon(imageVector = Icons.Outlined.Cancel, contentDescription = "Clear")
+                    },
                 )
             }
         },
@@ -82,20 +74,20 @@ fun FishWeightTextField(
             AnimatedVisibility(visible = isError) {
                 supportingText?.let {
                     Column {
-                        Text(
-                            text = it,
-                            color = MaterialTheme.colorScheme.error
+                        Text(text = it, color = MaterialTheme.colorScheme.error)
+                        Spacer(
+                            modifier =
+                                Modifier.height(
+                                    MaterialTheme.spacing.small + MaterialTheme.spacing.small
+                                )
                         )
-                        Spacer(modifier = Modifier.height(MaterialTheme.spacing.small + MaterialTheme.spacing.small))
                     }
                 }
             }
         },
-        keyboardOptions = KeyboardOptions(
-            imeAction = ImeAction.Next,
-            keyboardType = KeyboardType.Decimal
-        ),
-        readOnly = !isInEditMode
+        keyboardOptions =
+            KeyboardOptions(imeAction = ImeAction.Next, keyboardType = KeyboardType.Decimal),
+        readOnly = !isInEditMode,
     )
 }
 
@@ -109,7 +101,7 @@ private fun FishWeightTextFieldPreview() {
                 value = "2.4",
                 onValueChange = {},
                 isError = false,
-                supportingText = null
+                supportingText = null,
             )
         }
     }

@@ -12,14 +12,16 @@ import com.harissabil.fisch.core.datastore.preference.domain.Theme
 import com.harissabil.fisch.core.datastore.preference.domain.usecase.ThemeUseCase
 import com.harissabil.fisch.core.firebase.auth.domain.usecase.GetSignedInUser
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(
+class MainViewModel
+@Inject
+constructor(
     private val readAppEntry: ReadAppEntry,
     private val readUserSignedIn: ReadUserSignedIn,
     private val getSignedInUser: GetSignedInUser,
@@ -41,32 +43,31 @@ class MainViewModel @Inject constructor(
     }
 
     private fun getAppEntry() {
-        combine(
-            readAppEntry.invoke(),
-            readUserSignedIn.invoke()
-        ) { onBoardingScreenPassed, isUserSignedIn ->
-            startDestionation = when {
-                onBoardingScreenPassed -> {
-                    if (isUserSignedIn && getSignedInUser.invoke().data != null) {
-//                    if (isUserSignedIn) {
-                        Route.MainNavigation.route
-                    } else {
-                        Route.SignInNavigation.route
-                    }
-                }
+        combine(readAppEntry.invoke(), readUserSignedIn.invoke()) {
+                onBoardingScreenPassed,
+                isUserSignedIn ->
+                startDestionation =
+                    when {
+                        onBoardingScreenPassed -> {
+                            if (isUserSignedIn && getSignedInUser.invoke().data != null) {
+                                //                    if (isUserSignedIn) {
+                                Route.MainNavigation.route
+                            } else {
+                                Route.SignInNavigation.route
+                            }
+                        }
 
-                else -> {
-                    Route.AppStartNavigation.route
-                }
+                        else -> {
+                            Route.AppStartNavigation.route
+                        }
+                    }
+                delay(300)
+                splashCondition = false
             }
-            delay(300)
-            splashCondition = false
-        }.launchIn(viewModelScope)
+            .launchIn(viewModelScope)
     }
 
     private fun getTheme() {
-        themeUseCase.getTheme().onEach { theme ->
-            themeValue = theme
-        }.launchIn(viewModelScope)
+        themeUseCase.getTheme().onEach { theme -> themeValue = theme }.launchIn(viewModelScope)
     }
 }

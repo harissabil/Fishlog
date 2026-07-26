@@ -17,8 +17,6 @@ object StorageRepositoryModule {
 
     @Provides
     @Singleton
-    fun provideStorageRepository(): StorageRepository = StorageRepositoryImpl(
-        storage = Firebase.storage,
-        auth = Firebase.auth
-    )
+    fun provideStorageRepository(): StorageRepository =
+        StorageRepositoryImpl(storage = Firebase.storage, auth = Firebase.auth)
 }
