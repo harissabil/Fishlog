@@ -26,6 +26,7 @@ import com.harissabil.fisch.core.common.component.FishAlertDialog
 import com.harissabil.fisch.core.common.theme.FischTheme
 import com.harissabil.fisch.core.firebase.firestore.domain.model.Logbook
 import com.harissabil.fisch.feature.logbook.catches.component.CatchesList
+import com.harissabil.fisch.feature.logbook.catches.component.FilterOptionsBottomSheet
 import com.harissabil.fisch.feature.logbook.catches.component.SortOptionsBottomSheet
 import com.harissabil.fisch.feature.logbook.common.component.MoreOptionBottomSheet
 import com.harissabil.fisch.feature.logbook.common.mapper.toToDetailState
@@ -56,6 +57,11 @@ fun CatchesScreen(
     var showSortOptionsBottomSheet by rememberSaveable { mutableStateOf(false) }
     val selectedSortOption by viewModel.sortOption.collectAsState()
 
+    val filterOptionsBottomSheetState = rememberModalBottomSheetState()
+    var showFilterOptionsBottomSheet by rememberSaveable { mutableStateOf(false) }
+    val selectedFilterState by viewModel.filterState.collectAsState()
+    val availableBaits by viewModel.availableBaits.collectAsState()
+
     LaunchedEffect(key1 = Unit) {
         viewModel.eventFlow.collectLatest { event ->
             when (event) {
@@ -84,6 +90,18 @@ fun CatchesScreen(
                     scope.launch { sortOptionsBottomSheetState.hide() }.invokeOnCompletion {
                         if (!sortOptionsBottomSheetState.isVisible) {
                             showSortOptionsBottomSheet = false
+                        }
+                    }
+                }
+
+                CatchesEvent.FilterIconClick -> {
+                    showFilterOptionsBottomSheet = true
+                }
+
+                is CatchesEvent.FilterCatches -> {
+                    scope.launch { filterOptionsBottomSheetState.hide() }.invokeOnCompletion {
+                        if (!filterOptionsBottomSheetState.isVisible) {
+                            showFilterOptionsBottomSheet = false
                         }
                     }
                 }
@@ -124,7 +142,12 @@ fun CatchesScreen(
         showSortOptionsBottomSheet = showSortOptionsBottomSheet,
         sortOptionsBottomSheetState = sortOptionsBottomSheetState,
         onSortOptionsBottomSheetDismissRequest = { showSortOptionsBottomSheet = false },
-        selectedSortOption = selectedSortOption
+        selectedSortOption = selectedSortOption,
+        showFilterOptionsBottomSheet = showFilterOptionsBottomSheet,
+        filterOptionsBottomSheetState = filterOptionsBottomSheetState,
+        onFilterOptionsBottomSheetDismissRequest = { showFilterOptionsBottomSheet = false },
+        selectedFilterState = selectedFilterState,
+        availableBaits = availableBaits,
     )
 }
 
@@ -148,6 +171,11 @@ fun CatchesContent(
     sortOptionsBottomSheetState: SheetState,
     onSortOptionsBottomSheetDismissRequest: () -> Unit,
     selectedSortOption: SortBy,
+    showFilterOptionsBottomSheet: Boolean,
+    filterOptionsBottomSheetState: SheetState,
+    onFilterOptionsBottomSheetDismissRequest: () -> Unit,
+    selectedFilterState: FilterState,
+    availableBaits: List<String>,
 ) {
 
     if (openAlertDialog) {
@@ -179,6 +207,15 @@ fun CatchesContent(
             onSortOptionClick = { onEvent(CatchesEvent.SortCatches(it)) }
         )
     }
+    if (showFilterOptionsBottomSheet) {
+        FilterOptionsBottomSheet(
+            onDismissRequest = onFilterOptionsBottomSheetDismissRequest,
+            sheetState = filterOptionsBottomSheetState,
+            filterState = selectedFilterState,
+            availableBaits = availableBaits,
+            onApply = { onEvent(CatchesEvent.FilterCatches(it)) }
+        )
+    }
 
     CatchesList(
         modifier = Modifier
@@ -188,6 +225,8 @@ fun CatchesContent(
         query = query,
         onQueryChange = { onEvent(CatchesEvent.UpdateSearchQuery(it)) },
         onSort = { onEvent(CatchesEvent.SortIconClick) },
+        onFilter = { onEvent(CatchesEvent.FilterIconClick) },
+        isFilterActive = selectedFilterState.isActive,
         logbooks = logbooks,
         isLoading = isLoading,
         onItemClick = onItemClick,
@@ -217,6 +256,11 @@ private fun CatchesContentPreview() {
                 showSortOptionsBottomSheet = false,
                 sortOptionsBottomSheetState = rememberModalBottomSheetState(),
                 selectedSortOption = SortBy.LATEST,
+                showFilterOptionsBottomSheet = false,
+                filterOptionsBottomSheetState = rememberModalBottomSheetState(),
+                onFilterOptionsBottomSheetDismissRequest = { },
+                selectedFilterState = FilterState(),
+                availableBaits = emptyList(),
                 openAlertDialog = false,
                 onDismissRequest = {},
                 onDeleteClick = {}

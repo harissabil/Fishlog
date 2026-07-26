@@ -10,6 +10,10 @@ sealed class CatchesEvent {
 
     data class SortCatches(val sortBy: SortBy) : CatchesEvent()
 
+    data object FilterIconClick : CatchesEvent()
+
+    data class FilterCatches(val filterState: FilterState) : CatchesEvent()
+
     data object GetLogbooks : CatchesEvent()
 
     data class MoreOption(val logbook: Logbook) : CatchesEvent()

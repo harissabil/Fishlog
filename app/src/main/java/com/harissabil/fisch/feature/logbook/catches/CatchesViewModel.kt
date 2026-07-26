@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -37,15 +38,31 @@ class CatchesViewModel @Inject constructor(
     private val _sortOption = MutableStateFlow(SortBy.LATEST)
     val sortOption: StateFlow<SortBy> = _sortOption.asStateFlow()
 
+    private val _filterState = MutableStateFlow(FilterState())
+    val filterState: StateFlow<FilterState> = _filterState.asStateFlow()
+
     private val _logbooks = MutableStateFlow<List<Logbook>?>(null)
+
+    val availableBaits = _logbooks.map { logbooks ->
+        logbooks
+            ?.mapNotNull { it.umpan?.trim()?.takeIf { bait -> bait.isNotEmpty() } }
+            ?.distinct()
+            ?.sorted()
+            ?: emptyList()
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Lazily,
+        initialValue = emptyList()
+    )
 
     val filteredLogbooks = combine(
         _searchQuery,
         _logbooks,
-        _sortOption
-    ) { query, logbooks, sortOption ->
+        _sortOption,
+        _filterState
+    ) { query, logbooks, sortOption, filterState ->
         // Filtering based on search query
-        val filteredList = if (query.isEmpty()) {
+        val queriedList = if (query.isEmpty()) {
             logbooks
         } else {
             logbooks?.filter { logbook ->
@@ -53,6 +70,19 @@ class CatchesViewModel @Inject constructor(
                         query in (logbook.tempatPenangkapan?.lowercase().orEmpty()) ||
                         query in (logbook.umpan?.lowercase().orEmpty())
             }
+        }
+
+        // Filtering based on the selected filter options
+        val filteredList = queriedList?.filter { logbook ->
+            val matchesRelease = when (filterState.releaseFilter) {
+                ReleaseFilter.ALL -> true
+                ReleaseFilter.RELEASED -> logbook.dilepaskan == true
+                ReleaseFilter.KEPT -> logbook.dilepaskan != true
+            }
+            val matchesBait = filterState.selectedBaits.isEmpty() ||
+                    logbook.umpan in filterState.selectedBaits
+
+            matchesRelease && matchesBait
         }
 
         // Sorting based on the selected option
@@ -85,6 +115,8 @@ class CatchesViewModel @Inject constructor(
             is CatchesEvent.UpdateSearchQuery -> updateSearchQuery(event.searchQuery)
             is CatchesEvent.SortIconClick -> Unit
             is CatchesEvent.SortCatches -> sortCatches(event.sortBy)
+            is CatchesEvent.FilterIconClick -> Unit
+            is CatchesEvent.FilterCatches -> filterCatches(event.filterState)
             is CatchesEvent.GetLogbooks -> getLogbooks()
             is CatchesEvent.MoreOption -> moreOption(event.logbook)
             is CatchesEvent.EditLogbook -> Unit
@@ -98,6 +130,10 @@ class CatchesViewModel @Inject constructor(
 
     private fun sortCatches(sortBy: SortBy) {
         _sortOption.update { sortBy }
+    }
+
+    private fun filterCatches(filterState: FilterState) {
+        _filterState.update { filterState }
     }
 
     private fun getLogbooks() = viewModelScope.launch {
