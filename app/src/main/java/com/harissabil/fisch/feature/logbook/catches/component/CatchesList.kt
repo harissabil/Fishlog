@@ -40,6 +40,8 @@ fun CatchesList(
     query: String,
     onQueryChange: (String) -> Unit,
     onSort: () -> Unit,
+    onFilter: () -> Unit,
+    isFilterActive: Boolean,
     logbooks: List<Logbook?>?,
     isLoading: Boolean,
     onItemClick: (logbook: Logbook?) -> Unit,
@@ -100,7 +102,9 @@ fun CatchesList(
                         .padding(top = MaterialTheme.spacing.small),
                     query = query,
                     onQueryChange = onQueryChange,
-                    onSort = onSort
+                    onSort = onSort,
+                    onFilter = onFilter,
+                    isFilterActive = isFilterActive
                 )
             }
             if (!isLoading && !logbooks.isNullOrEmpty()) {
@@ -135,6 +139,8 @@ private fun CatchesListPreview() {
                     query = "",
                     onQueryChange = {},
                     onSort = { },
+                    onFilter = { },
+                    isFilterActive = false,
                     logbooks = listOf(
                         Logbook(
                             id = "1",
