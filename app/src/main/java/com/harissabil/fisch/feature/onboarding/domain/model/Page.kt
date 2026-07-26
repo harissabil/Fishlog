@@ -16,8 +16,8 @@ val pages = listOf(
         image = R.drawable.onboarding1
     ),
     Page(
-        title = "Log Your Catch and Identify Fish",
-        description = "Log your catch and identify fish with our AI-powered fish recognition feature.",
+        title = "Log Every Catch in Detail",
+        description = "Record species, weight, length, bait, and whether you released or kept your catch, complete with photos.",
         image = R.drawable.onboarding2
     ),
     Page(
