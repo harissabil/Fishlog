@@ -194,6 +194,7 @@ class ProfileViewModel @Inject constructor(
                     delay(1000)
                     _state.value = _state.value.copy(isLoading = false)
                     deleteUserSignedIn.invoke()
+                    billingManager.clearLocalEntitlement()
                 }
             }
         }

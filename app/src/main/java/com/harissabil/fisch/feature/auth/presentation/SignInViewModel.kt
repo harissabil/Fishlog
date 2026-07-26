@@ -2,6 +2,7 @@ package com.harissabil.fisch.feature.auth.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.harissabil.fisch.core.billing.domain.BillingManager
 import com.harissabil.fisch.core.common.util.Resource
 import com.harissabil.fisch.core.firebase.auth.data.dto.SignedInResponse
 import com.harissabil.fisch.feature.auth.domain.SaveUserSignedIn
@@ -24,6 +25,7 @@ class SignInViewModel @Inject constructor(
     private val saveUserSignedIn: SaveUserSignedIn,
     private val signInWithFacebook: SignInWithFacebook,
     private val signInWithGoogle: SignInWithGoogle,
+    private val billingManager: BillingManager,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SignInState())
@@ -60,6 +62,9 @@ class SignInViewModel @Inject constructor(
                         isLoading = false,
                         isInSignInProcess = false
                     )
+                    if (result.data != null) {
+                        billingManager.refreshEntitlement()
+                    }
                 }
             }
         }

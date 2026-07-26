@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.harissabil.fisch.core.billing.domain.BillingManager
 import com.harissabil.fisch.core.common.navigation.Route
 import com.harissabil.fisch.core.datastore.local_user_manager.domain.usecase.ReadAppEntry
 import com.harissabil.fisch.core.datastore.local_user_manager.domain.usecase.ReadUserSignedIn
@@ -17,7 +16,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,7 +24,6 @@ class MainViewModel @Inject constructor(
     private val readUserSignedIn: ReadUserSignedIn,
     private val getSignedInUser: GetSignedInUser,
     private val themeUseCase: ThemeUseCase,
-    private val billingManager: BillingManager,
 ) : ViewModel() {
 
     var splashCondition by mutableStateOf(true)
@@ -41,13 +38,6 @@ class MainViewModel @Inject constructor(
     init {
         getAppEntry()
         getTheme()
-        refreshEntitlement()
-    }
-
-    private fun refreshEntitlement() {
-        viewModelScope.launch {
-            billingManager.refreshEntitlement()
-        }
     }
 
     private fun getAppEntry() {

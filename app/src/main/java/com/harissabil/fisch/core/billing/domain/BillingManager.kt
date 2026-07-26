@@ -12,5 +12,7 @@ interface BillingManager {
 
     suspend fun refreshEntitlement()
 
+    fun clearLocalEntitlement()
+
     fun launchPurchaseFlow(activity: Activity)
 }

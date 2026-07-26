@@ -13,6 +13,7 @@ import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
+import com.google.firebase.auth.FirebaseAuth
 import com.harissabil.fisch.core.billing.domain.BillingManager
 import com.harissabil.fisch.core.billing.domain.PLUS_MONTHLY_PRODUCT_ID
 import com.harissabil.fisch.core.firebase.firestore.domain.model.UserPlan
@@ -25,7 +26,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import timber.log.Timber
+import java.security.MessageDigest
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.resume
@@ -34,9 +38,11 @@ import kotlin.coroutines.resume
 class BillingManagerImpl @Inject constructor(
     application: Application,
     private val updateUserPlan: UpdateUserPlan,
+    private val auth: FirebaseAuth,
 ) : BillingManager, PurchasesUpdatedListener {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val connectionMutex = Mutex()
 
     private val _isPlus = MutableStateFlow(false)
     override val isPlus: StateFlow<Boolean> = _isPlus.asStateFlow()
@@ -54,12 +60,21 @@ class BillingManagerImpl @Inject constructor(
     }
 
     override suspend fun refreshEntitlement() {
-        if (!ensureConnected()) return
-        queryPlanProductDetails()
-        queryActivePurchases()
+        // Guards against concurrent callers (app start, sign-in, sign-out) racing on
+        // BillingClient.startConnection() and interleaving stale query results.
+        connectionMutex.withLock {
+            Timber.tag("BillingManager").d("refreshEntitlement: start, uid=${auth.currentUser?.uid}")
+            if (!ensureConnected()) {
+                Timber.tag("BillingManager").w("refreshEntitlement: not connected, aborting")
+                return@withLock
+            }
+            queryPlanProductDetails()
+            queryActivePurchases()
+        }
     }
 
     override fun launchPurchaseFlow(activity: Activity) {
+        val uid = auth.currentUser?.uid ?: return
         val productDetails = _planProductDetails.value ?: return
         val offerToken = productDetails.subscriptionOfferDetails?.firstOrNull()?.offerToken
             ?: return
@@ -73,9 +88,14 @@ class BillingManagerImpl @Inject constructor(
                         .build()
                 )
             )
+            .setObfuscatedAccountId(hashUid(uid))
             .build()
 
         billingClient.launchBillingFlow(activity, flowParams)
+    }
+
+    override fun clearLocalEntitlement() {
+        _isPlus.value = false
     }
 
     override fun onPurchasesUpdated(billingResult: BillingResult, purchases: List<Purchase>?) {
@@ -117,6 +137,8 @@ class BillingManagerImpl @Inject constructor(
                 cont.resume(result.productDetailsList)
             }
         }
+        Timber.tag("BillingManager")
+            .d("queryPlanProductDetails: found ${productDetailsList.size} product(s)")
         _planProductDetails.value = productDetailsList.firstOrNull()
     }
 
@@ -131,16 +153,44 @@ class BillingManagerImpl @Inject constructor(
             }
         }
 
-        val activePurchase = purchases.firstOrNull {
-            it.products.contains(PLUS_MONTHLY_PRODUCT_ID) &&
-                    it.purchaseState == Purchase.PurchaseState.PURCHASED
+        val uid = auth.currentUser?.uid
+        Timber.tag("BillingManager").d(
+            "queryActivePurchases: uid=$uid, raw purchases=${
+                purchases.map {
+                    "products=${it.products}, state=${it.purchaseState}, " +
+                            "acknowledged=${it.isAcknowledged}, " +
+                            "tag=${it.accountIdentifiers?.obfuscatedAccountId}"
+                }
+            }"
+        )
+
+        val activePurchase = purchases.firstOrNull { purchase ->
+            if (!purchase.products.contains(PLUS_MONTHLY_PRODUCT_ID) ||
+                purchase.purchaseState != Purchase.PurchaseState.PURCHASED
+            ) {
+                return@firstOrNull false
+            }
+            // Purchases made before account-tagging shipped have no tag at all — Play Billing
+            // reports that as an EMPTY STRING, not null, so check both. Honor those for
+            // whoever's signed in (legacy behavior). Only reject a purchase that's tagged
+            // for a DIFFERENT account than the one currently signed in.
+            val tag = purchase.accountIdentifiers?.obfuscatedAccountId
+            tag.isNullOrEmpty() || (uid != null && tag == hashUid(uid))
         }
+
+        Timber.tag("BillingManager")
+            .d("queryActivePurchases: activePurchase found=${activePurchase != null}")
 
         if (activePurchase != null) {
             handlePurchase(activePurchase)
         } else {
             _isPlus.value = false
         }
+    }
+
+    private fun hashUid(uid: String): String {
+        val digest = MessageDigest.getInstance("SHA-256").digest(uid.toByteArray())
+        return digest.joinToString("") { "%02x".format(it) }
     }
 
     private fun handlePurchase(purchase: Purchase) {

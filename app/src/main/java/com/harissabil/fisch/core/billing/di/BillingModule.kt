@@ -1,6 +1,8 @@
 package com.harissabil.fisch.core.billing.di
 
 import android.app.Application
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.harissabil.fisch.core.billing.data.BillingManagerImpl
 import com.harissabil.fisch.core.billing.domain.BillingManager
 import com.harissabil.fisch.core.firebase.firestore.domain.usecase.UpdateUserPlan
@@ -22,5 +24,6 @@ object BillingModule {
     ): BillingManager = BillingManagerImpl(
         application = application,
         updateUserPlan = updateUserPlan,
+        auth = Firebase.auth,
     )
 }
