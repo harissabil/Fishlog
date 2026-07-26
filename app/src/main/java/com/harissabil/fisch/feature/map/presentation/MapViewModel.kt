@@ -3,6 +3,7 @@ package com.harissabil.fisch.feature.map.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.Timestamp
 import com.harissabil.fisch.core.common.util.Resource
 import com.harissabil.fisch.core.firebase.firestore.data.mapper.toLogbook
 import com.harissabil.fisch.core.firebase.firestore.data.mapper.toMap
@@ -16,6 +17,7 @@ import com.harissabil.fisch.feature.map.data.toMapItem
 import com.harissabil.fisch.feature.map.domain.MapItem
 import com.harissabil.fisch.feature.map.domain.MapPin
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -29,7 +31,11 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.util.Date
 import javax.inject.Inject
+import kotlin.random.Random
+
+private const val USE_DUMMY_DATA = false
 
 @HiltViewModel
 class MapViewModel @Inject constructor(
@@ -41,18 +47,37 @@ class MapViewModel @Inject constructor(
     private val _mapItems = MutableStateFlow<List<MapItem>?>(null)
     private val _logbooks = MutableStateFlow<List<Logbook>?>(null)
 
+    /** Pre-built pins used when [USE_DUMMY_DATA] is on; bypasses the Firestore join below. */
+    private val _dummyPins = MutableStateFlow<List<MapPin>?>(null)
+
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
     private val _filterState = MutableStateFlow(FilterState())
     val filterState: StateFlow<FilterState> = _filterState.asStateFlow()
 
-    val availableBaits = _logbooks.map { logbooks ->
-        logbooks
-            ?.mapNotNull { it.umpan?.trim()?.takeIf { bait -> bait.isNotEmpty() } }
-            ?.distinct()
-            ?.sorted()
+    private val pins: Flow<List<MapPin>> = combine(
+        _mapItems,
+        _logbooks,
+        _dummyPins,
+    ) { mapItems, logbooks, dummyPins ->
+        if (dummyPins != null) return@combine dummyPins
+
+        val logbooksById = logbooks?.associateBy { it.id } ?: emptyMap()
+
+        mapItems
+            ?.mapNotNull { mapItem ->
+                val logbook = mapItem.logbookRef?.id?.let { logbooksById[it] }
+                if (logbook == null) null else MapPin(mapItem = mapItem, logbook = logbook)
+            }
             ?: emptyList()
+    }
+
+    val availableBaits = pins.map { pins ->
+        pins
+            .mapNotNull { it.logbook.umpan?.trim()?.takeIf { bait -> bait.isNotEmpty() } }
+            .distinct()
+            .sorted()
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.Lazily,
@@ -60,20 +85,10 @@ class MapViewModel @Inject constructor(
     )
 
     val filteredPins: StateFlow<List<MapPin>> = combine(
-        _mapItems,
-        _logbooks,
+        pins,
         _searchQuery,
         _filterState,
-    ) { mapItems, logbooks, query, filterState ->
-        val logbooksById = logbooks?.associateBy { it.id } ?: emptyMap()
-
-        val pins = mapItems
-            ?.mapNotNull { mapItem ->
-                val logbook = mapItem.logbookRef?.id?.let { logbooksById[it] }
-                if (logbook == null) null else MapPin(mapItem = mapItem, logbook = logbook)
-            }
-            ?: emptyList()
-
+    ) { pins, query, filterState ->
         val queriedPins = if (query.isEmpty()) {
             pins
         } else {
@@ -105,8 +120,12 @@ class MapViewModel @Inject constructor(
     val eventFlow: SharedFlow<UIEvent> = _eventFlow.asSharedFlow()
 
     init {
-        getMaps()
-        getLogbooks()
+        if (USE_DUMMY_DATA) {
+            generateDummyPins()
+        } else {
+            getMaps()
+            getLogbooks()
+        }
     }
 
     fun onEvent(event: MapEvent) {
@@ -153,29 +172,56 @@ class MapViewModel @Inject constructor(
                 }
             }
         }
-//        _maps.update {
-//
-//            fun getRandomPosition(): LatLng {
-//                return LatLng(
-//                    1.35 + Random.nextFloat(),
-//                    103.87 + Random.nextFloat()
-//                );
-//            }
-//
-//            val placelist = mutableListOf<MapItem>()
-//            for (i in 0..69) {
-//                placelist.add(
-//                    MapItem(
-//                        id = i.toString(),
-//                        logbookRef = null,
-//                        placeName = "Place $i",
-//                        latLong = getRandomPosition()
-//                    )
-//                )
-//            }
-//
-//            placelist
-//        }
+    }
+
+    /**
+     * Builds [MapPin]s straight from generated data. A pin needs both a [MapItem] and a [Logbook],
+     * so the logbook is synthesised here too rather than joined against Firestore.
+     */
+    private fun generateDummyPins() {
+        val random = Random(seed = 0)
+
+        val species = listOf(
+            "Barramundi", "Grouper", "Snapper", "Threadfin", "Queenfish",
+            "Trevally", "Catfish", "Tilapia", "Mangrove Jack", "Milkfish",
+        )
+        val baits = listOf("Shrimp", "Squid", "Lure", "Worm", "Prawn", "Live Bait")
+
+        val pins = (0..69).map { i ->
+            val placeName = "Place $i"
+            val latLong = LatLng(
+                1.35 + random.nextDouble(),
+                103.87 + random.nextDouble(),
+            )
+            val caughtAt = Timestamp(
+                Date(System.currentTimeMillis() - random.nextLong(0, 90L * 24 * 60 * 60 * 1000))
+            )
+
+            MapPin(
+                mapItem = MapItem(
+                    id = i.toString(),
+                    logbookRef = null,
+                    placeName = placeName,
+                    latLong = latLong,
+                ),
+                logbook = Logbook(
+                    id = "dummy-$i",
+                    email = null,
+                    jenisIkan = species[i % species.size],
+                    jumlahIkan = random.nextInt(1, 6),
+                    waktuPenangkapan = caughtAt,
+                    tempatPenangkapan = placeName,
+                    fotoIkan = null,
+                    beratIkan = random.nextDouble(0.2, 8.0),
+                    panjangIkan = random.nextDouble(10.0, 90.0),
+                    umpan = baits[i % baits.size],
+                    dilepaskan = i % 3 == 0,
+                    catatan = "Dummy catch #$i",
+                ),
+            )
+        }
+
+        _dummyPins.update { pins }
     }
 
     private fun getLogbooks() = viewModelScope.launch {
