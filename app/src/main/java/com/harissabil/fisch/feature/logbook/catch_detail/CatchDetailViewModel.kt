@@ -29,6 +29,7 @@ import com.harissabil.fisch.core.common.util.toTimestamp
 import com.harissabil.fisch.core.datastore.preference.domain.AiLanguage
 import com.harissabil.fisch.core.datastore.preference.domain.usecase.AiLanguageUseCase
 import com.harissabil.fisch.core.datastore.bait_manager.domain.BaitManager
+import com.harissabil.fisch.core.datastore.species_manager.domain.SpeciesManager
 import com.harissabil.fisch.core.firebase.firestore.domain.model.Logbook
 import com.harissabil.fisch.core.firebase.firestore.domain.usecase.DeleteLogbook
 import com.harissabil.fisch.core.firebase.firestore.domain.usecase.UpdateLogbook
@@ -54,6 +55,7 @@ class CatchDetailViewModel @Inject constructor(
     private val geminiClient: GeminiClient,
     private val updateLogbook: UpdateLogbook,
     private val baitManager: BaitManager,
+    private val speciesManager: SpeciesManager,
     private val locationTracker: LocationTracker,
     private val locationHelper: LocationHelper,
     private val deleteLogbook: DeleteLogbook,
@@ -77,6 +79,7 @@ class CatchDetailViewModel @Inject constructor(
         updateLocationServiceStatus()
         getAiLanguage()
         getBaitSuggestions()
+        getFishTypeSuggestions()
     }
 
     fun onEvent(event: CatchDetailEvent) {
@@ -203,6 +206,9 @@ class CatchDetailViewModel @Inject constructor(
                     if (isUploaded && _state.value.bait.isNotBlank()) {
                         baitManager.addBait(_state.value.bait)
                     }
+                    if (isUploaded && _state.value.fishType.isNotBlank()) {
+                        speciesManager.addSpecies(_state.value.fishType)
+                    }
                     _state.value = _state.value.copy(isUploaded = isUploaded, isUploading = false)
                     _eventFlow.emit(
                         UIEvent.ShowSnackbar(
@@ -270,6 +276,12 @@ class CatchDetailViewModel @Inject constructor(
     private fun getBaitSuggestions() {
         baitManager.readBaits().onEach { baits ->
             _state.value = _state.value.copy(baitSuggestions = baits.sorted())
+        }.launchIn(viewModelScope)
+    }
+
+    private fun getFishTypeSuggestions() {
+        speciesManager.readSpecies().onEach { species ->
+            _state.value = _state.value.copy(fishTypeSuggestions = species.sorted())
         }.launchIn(viewModelScope)
     }
 

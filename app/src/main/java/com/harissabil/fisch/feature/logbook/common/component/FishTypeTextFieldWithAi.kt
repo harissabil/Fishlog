@@ -3,12 +3,6 @@ package com.harissabil.fisch.feature.logbook.common.component
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.VectorConverter
-import androidx.compose.animation.core.animateValue
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -17,40 +11,40 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Cancel
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.canopas.lib.showcase.IntroShowcase
 import com.canopas.lib.showcase.IntroShowcaseScope
-import com.canopas.lib.showcase.component.ShowcaseStyle
 import com.harissabil.fisch.R
 import com.harissabil.fisch.core.common.component.FishTextField
 import com.harissabil.fisch.core.common.theme.FischTheme
 import com.harissabil.fisch.core.common.theme.spacing
 import com.harissabil.fisch.core.common.util.AnimatedTextFieldTrailingIcon
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IntroShowcaseScope.FishTypeTextFieldWithAi(
     modifier: Modifier = Modifier,
@@ -60,11 +54,18 @@ fun IntroShowcaseScope.FishTypeTextFieldWithAi(
     supportingText: String?,
     onIdentifyFishType: () -> Unit,
     isIdentifying: Boolean,
+    suggestions: List<String> = emptyList(),
     isInEditMode: Boolean = true,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
+
+    var expanded by remember { mutableStateOf(false) }
+    val filteredSuggestions = remember(value, suggestions) {
+        suggestions.filter { it.contains(value, ignoreCase = true) && it != value }
+    }
+    val menuVisible = expanded && filteredSuggestions.isNotEmpty() && isInEditMode
 
     Row(
         modifier = Modifier
@@ -73,57 +74,83 @@ fun IntroShowcaseScope.FishTypeTextFieldWithAi(
             .then(modifier),
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
     ) {
-        FishTextField(
+        ExposedDropdownMenuBox(
             modifier = Modifier.weight(1f),
-            interactionSource = interactionSource,
-            value = value,
-            onValueChange = onValueChange,
-            label = "Fish Type",
-            leadingIcon = {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_fishlog),
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp)
-                )
-            },
-            trailingIcon = {
-                AnimatedTextFieldTrailingIcon(
-                    visible = value.isNotEmpty() && isFocused,
-                ) {
-                    IconButton(
+            expanded = menuVisible,
+            onExpandedChange = { if (isInEditMode) expanded = it },
+        ) {
+            FishTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .menuAnchor(MenuAnchorType.PrimaryEditable, enabled = isInEditMode),
+                interactionSource = interactionSource,
+                value = value,
+                onValueChange = {
+                    onValueChange(it)
+                    expanded = true
+                },
+                label = "Fish Type",
+                leadingIcon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_fishlog),
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
+                    )
+                },
+                trailingIcon = {
+                    AnimatedTextFieldTrailingIcon(
+                        visible = value.isNotEmpty() && isFocused,
+                    ) {
+                        IconButton(
+                            onClick = {
+                                onValueChange("")
+                                keyboardController?.hide()
+                            },
+                            content = {
+                                Icon(
+                                    imageVector = Icons.Outlined.Cancel,
+                                    contentDescription = "Clear",
+                                )
+                            }
+                        )
+                    }
+                },
+                isError = isError,
+                supportingText = {
+                    AnimatedVisibility(visible = isError) {
+                        supportingText?.let {
+                            Column {
+                                Text(
+                                    text = it,
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                                Spacer(modifier = Modifier.height(MaterialTheme.spacing.small + MaterialTheme.spacing.small))
+                            }
+                        }
+                    }
+                },
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Words,
+                    imeAction = ImeAction.Next
+                ),
+                readOnly = !isInEditMode
+            )
+
+            ExposedDropdownMenu(
+                expanded = menuVisible,
+                onDismissRequest = { expanded = false },
+            ) {
+                filteredSuggestions.forEach { suggestion ->
+                    DropdownMenuItem(
+                        text = { Text(suggestion) },
                         onClick = {
-                            onValueChange("")
-                            keyboardController?.hide()
-                        },
-                        content = {
-                            Icon(
-                                imageVector = Icons.Outlined.Cancel,
-                                contentDescription = "Clear",
-                            )
+                            onValueChange(suggestion)
+                            expanded = false
                         }
                     )
                 }
-            },
-            isError = isError,
-            supportingText = {
-                AnimatedVisibility(visible = isError) {
-                    supportingText?.let {
-                        Column {
-                            Text(
-                                text = it,
-                                color = MaterialTheme.colorScheme.error
-                            )
-                            Spacer(modifier = Modifier.height(MaterialTheme.spacing.small + MaterialTheme.spacing.small))
-                        }
-                    }
-                }
-            },
-            keyboardOptions = KeyboardOptions(
-                capitalization = KeyboardCapitalization.Words,
-                imeAction = ImeAction.Next
-            ),
-            readOnly = !isInEditMode
-        )
+            }
+        }
 
 //        if (isInEditMode) {
 //            FloatingActionButton(
@@ -189,6 +216,7 @@ fun IntroShowcaseScope.FishTypeTextFieldWithAi(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FishTypeTextFieldWithAi(
     modifier: Modifier = Modifier,
@@ -198,11 +226,18 @@ fun FishTypeTextFieldWithAi(
     supportingText: String?,
     onIdentifyFishType: () -> Unit,
     isIdentifying: Boolean,
+    suggestions: List<String> = emptyList(),
     isInEditMode: Boolean = true,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
+
+    var expanded by remember { mutableStateOf(false) }
+    val filteredSuggestions = remember(value, suggestions) {
+        suggestions.filter { it.contains(value, ignoreCase = true) && it != value }
+    }
+    val menuVisible = expanded && filteredSuggestions.isNotEmpty() && isInEditMode
 
     Row(
         modifier = Modifier
@@ -211,57 +246,83 @@ fun FishTypeTextFieldWithAi(
             .then(modifier),
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
     ) {
-        FishTextField(
+        ExposedDropdownMenuBox(
             modifier = Modifier.weight(1f),
-            interactionSource = interactionSource,
-            value = value,
-            onValueChange = onValueChange,
-            label = "Fish Type",
-            leadingIcon = {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_fishlog),
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp)
-                )
-            },
-            trailingIcon = {
-                AnimatedTextFieldTrailingIcon(
-                    visible = value.isNotEmpty() && isFocused,
-                ) {
-                    IconButton(
+            expanded = menuVisible,
+            onExpandedChange = { if (isInEditMode) expanded = it },
+        ) {
+            FishTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .menuAnchor(MenuAnchorType.PrimaryEditable, enabled = isInEditMode),
+                interactionSource = interactionSource,
+                value = value,
+                onValueChange = {
+                    onValueChange(it)
+                    expanded = true
+                },
+                label = "Fish Type",
+                leadingIcon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_fishlog),
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
+                    )
+                },
+                trailingIcon = {
+                    AnimatedTextFieldTrailingIcon(
+                        visible = value.isNotEmpty() && isFocused,
+                    ) {
+                        IconButton(
+                            onClick = {
+                                onValueChange("")
+                                keyboardController?.hide()
+                            },
+                            content = {
+                                Icon(
+                                    imageVector = Icons.Outlined.Cancel,
+                                    contentDescription = "Clear",
+                                )
+                            }
+                        )
+                    }
+                },
+                isError = isError,
+                supportingText = {
+                    AnimatedVisibility(visible = isError) {
+                        supportingText?.let {
+                            Column {
+                                Text(
+                                    text = it,
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                                Spacer(modifier = Modifier.height(MaterialTheme.spacing.small + MaterialTheme.spacing.small))
+                            }
+                        }
+                    }
+                },
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Words,
+                    imeAction = ImeAction.Next
+                ),
+                readOnly = !isInEditMode
+            )
+
+            ExposedDropdownMenu(
+                expanded = menuVisible,
+                onDismissRequest = { expanded = false },
+            ) {
+                filteredSuggestions.forEach { suggestion ->
+                    DropdownMenuItem(
+                        text = { Text(suggestion) },
                         onClick = {
-                            onValueChange("")
-                            keyboardController?.hide()
-                        },
-                        content = {
-                            Icon(
-                                imageVector = Icons.Outlined.Cancel,
-                                contentDescription = "Clear",
-                            )
+                            onValueChange(suggestion)
+                            expanded = false
                         }
                     )
                 }
-            },
-            isError = isError,
-            supportingText = {
-                AnimatedVisibility(visible = isError) {
-                    supportingText?.let {
-                        Column {
-                            Text(
-                                text = it,
-                                color = MaterialTheme.colorScheme.error
-                            )
-                            Spacer(modifier = Modifier.height(MaterialTheme.spacing.small + MaterialTheme.spacing.small))
-                        }
-                    }
-                }
-            },
-            keyboardOptions = KeyboardOptions(
-                capitalization = KeyboardCapitalization.Words,
-                imeAction = ImeAction.Next
-            ),
-            readOnly = !isInEditMode
-        )
+            }
+        }
 
 //        if (isInEditMode) {
 //            FloatingActionButton(
@@ -319,6 +380,7 @@ private fun FishTypeTextFieldWithAiPreview() {
                     supportingText = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
                     onIdentifyFishType = {},
                     isIdentifying = false,
+                    suggestions = listOf("Nila", "Mujair", "Lele"),
                     isInEditMode = false
                 )
             }

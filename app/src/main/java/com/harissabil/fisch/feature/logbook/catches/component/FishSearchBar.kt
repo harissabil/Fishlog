@@ -40,9 +40,9 @@ fun FishSearchBar(
     modifier: Modifier = Modifier,
     query: String,
     onQueryChange: (String) -> Unit,
-    onSort: () -> Unit,
     onFilter: () -> Unit,
     isFilterActive: Boolean,
+    onSort: (() -> Unit)? = null,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -123,15 +123,17 @@ fun FishSearchBar(
                                 }
                             }
                         )
-                        IconButton(
-                            onClick = onSort,
-                            content = {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.Sort,
-                                    contentDescription = "Sort by"
-                                )
-                            }
-                        )
+                        if (onSort != null) {
+                            IconButton(
+                                onClick = onSort,
+                                content = {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.Sort,
+                                        contentDescription = "Sort by"
+                                    )
+                                }
+                            )
+                        }
                     }
                 }
             }

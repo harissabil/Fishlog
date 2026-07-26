@@ -10,6 +10,7 @@ data class AddCatchState(
     val fishType: String = "",
     val fishTypeError: String? = null,
     val isIdentifying: Boolean = false,
+    val fishTypeSuggestions: List<String> = emptyList(),
 
     val fishQuantity: String = "",
     val fishQuantityError: String? = null,

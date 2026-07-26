@@ -180,7 +180,8 @@ fun AddCatchContent(
                     isError = state.fishTypeError != null,
                     supportingText = state.fishTypeError,
                     onIdentifyFishType = { onEvent(AddCatchEvent.IdentifyFishType) },
-                    isIdentifying = state.isIdentifying
+                    isIdentifying = state.isIdentifying,
+                    suggestions = state.fishTypeSuggestions
                 )
 
                 FishQuantityTextField(

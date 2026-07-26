@@ -247,6 +247,7 @@ fun CatchDetailContent(
                 supportingText = state.fishTypeError,
                 onIdentifyFishType = { onEvent(CatchDetailEvent.IdentifyFishType) },
                 isIdentifying = state.isIdentifying,
+                suggestions = state.fishTypeSuggestions,
                 isInEditMode = isInEditMode
             )
 
