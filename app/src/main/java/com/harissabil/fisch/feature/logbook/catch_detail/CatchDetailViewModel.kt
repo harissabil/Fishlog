@@ -122,25 +122,33 @@ class CatchDetailViewModel @Inject constructor(
 
     private fun setLogbook(logbook: ToDetailState, context: Context) {
         setIsInEditMode(logbook.isInEditMode)
+
+        _state.value = _state.value.copy(
+            id = logbook.id ?: "",
+            email = logbook.email ?: "",
+            fishUrl = logbook.fotoIkan,
+            fishType = logbook.jenisIkan ?: "",
+            fishQuantity = logbook.jumlahIkan?.toString() ?: "",
+            imageBitmaps = null,
+            fishWeight = logbook.beratIkan?.toString() ?: "",
+            fishLength = logbook.panjangIkan?.toString() ?: "",
+            bait = logbook.umpan ?: "",
+            isReleased = logbook.dilepaskan ?: false,
+            captureDate = logbook.waktuPenangkapan?.toDateYyyyMmDd() ?: "",
+            captureTime = logbook.waktuPenangkapan?.toTime(context) ?: "",
+            captureLocation = logbook.tempatPenangkapan ?: "",
+            notes = logbook.catatan ?: "",
+        )
+
+        // A catch can be saved without a photo, so only fetch the bitmap when there is one.
+        if (logbook.fotoIkan.isNullOrBlank()) return
+
         val loader = ImageLoader(context)
         val req = ImageRequest.Builder(context)
             .data(logbook.fotoIkan)
             .target { result ->
                 _state.value = _state.value.copy(
-                    id = logbook.id ?: "",
-                    email = logbook.email ?: "",
-                    fishUrl = logbook.fotoIkan,
-                    fishType = logbook.jenisIkan!!,
-                    fishQuantity = logbook.jumlahIkan.toString(),
-                    imageBitmaps = (result as BitmapDrawable).bitmap,
-                    fishWeight = logbook.beratIkan?.toString() ?: "",
-                    fishLength = logbook.panjangIkan?.toString() ?: "",
-                    bait = logbook.umpan ?: "",
-                    isReleased = logbook.dilepaskan ?: false,
-                    captureDate = logbook.waktuPenangkapan?.toDateYyyyMmDd() ?: "",
-                    captureTime = logbook.waktuPenangkapan?.toTime(context) ?: "",
-                    captureLocation = logbook.tempatPenangkapan ?: "",
-                    notes = logbook.catatan ?: "",
+                    imageBitmaps = (result as? BitmapDrawable)?.bitmap
                 )
             }
             .build()

@@ -58,13 +58,18 @@ fun Long.toDateYyyyMmDd(): String {
     return sdf.format(this)
 }
 
-fun String.toTimestamp(context: Context): Timestamp {
+fun String.toTimestamp(context: Context): Timestamp? {
     val is24HourFormat = android.text.format.DateFormat.is24HourFormat(context)
     val sdf = if (is24HourFormat) {
         SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
     } else {
         SimpleDateFormat("yyyy-MM-dd hh:mm a", Locale.getDefault())
     }
-    val date = sdf.parse(this)
-    return Timestamp(date!!)
+    try {
+        val date = sdf.parse(this)
+        return date?.let { Timestamp(it) }
+    } catch (e: ParseException) {
+        e.printStackTrace()
+        return null
+    }
 }
