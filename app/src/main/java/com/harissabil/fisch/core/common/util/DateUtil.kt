@@ -58,6 +58,11 @@ fun Long.toDateYyyyMmDd(): String {
     return sdf.format(this)
 }
 
+fun currentMonthId(): String {
+    val sdf = SimpleDateFormat("yyyy-MM", Locale.US)
+    return sdf.format(java.util.Date())
+}
+
 fun String.toTimestamp(context: Context): Timestamp? {
     val is24HourFormat = android.text.format.DateFormat.is24HourFormat(context)
     val sdf = if (is24HourFormat) {
