@@ -37,6 +37,10 @@ provide us with certain personally identifiable information, including but not l
 email address, profile photo. The information that the Service Provider request will be retained by
 them and used as described in this privacy policy.
 
+If you subscribe to Fishlog Plus, your subscription status (e.g. whether your subscription is active)
+is stored to determine which features are available to you. Payment information itself (such as your
+card details) is handled entirely by Google Play and is never seen or stored by the Service Provider.
+
 **Third Party Access**
 
 Only aggregated, anonymized data is periodically transmitted to external services to aid the Service
@@ -55,7 +59,7 @@ used by the Application:
 * [Firebase Storage](https://firebase.google.com/support/privacy/)
 * [Facebook](https://www.facebook.com/about/privacy/update/printable)
 * [Google Maps API](https://cloud.google.com/maps-platform/terms/)
-* [Gemini API](https://support.google.com/gemini/answer/13594961?sjid=11502731659432885784-AP#)
+* [Google Play Billing](https://support.google.com/googleplay/answer/2476088)
 
 The Service Provider may disclose User Provided and Automatically Collected Information:
 
@@ -77,7 +81,20 @@ application marketplace or network.
 The Service Provider will retain User Provided data for as long as you use the Application and for a
 reasonable time thereafter. If you'd like them to delete User Provided Data that you have provided
 via the Application, please contact them at harissabildev@gmail.com and they will respond in a
-reasonable time.
+reasonable time. You can also export a copy of your own data (as a CSV file and your uploaded photos)
+at any time using the Export My Data feature in the Application's Settings.
+
+**Service Continuity**
+
+Fishlog is developed and maintained by a single independent developer, not a company, and is not backed
+by guaranteed long-term infrastructure funding. We intend to keep the Application and your data available
+for as long as reasonably possible. However, if ongoing hosting costs become unsustainable, we reserve the
+right to delete data associated with free-tier accounts that have been inactive for 12 months or more, or —
+in the unlikely event the Application is discontinued entirely — to give advance notice (in-app and/or by
+email, where reasonably possible) before winding down the service. Fishlog Plus subscribers' data will not
+be subject to inactivity-based deletion while their subscription is active. You can export your data at any
+time using the Export My Data feature in Settings, so you're never dependent on advance notice to keep a
+copy of your catches.
 
 **Children**
 
