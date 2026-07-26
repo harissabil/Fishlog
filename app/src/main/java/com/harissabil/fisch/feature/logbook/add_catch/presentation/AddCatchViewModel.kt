@@ -16,14 +16,16 @@ import com.google.android.gms.location.Priority
 import com.google.android.gms.location.SettingsClient
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.GeoPoint
+import com.harissabil.fisch.core.billing.domain.BillingManager
 import com.harissabil.fisch.core.common.helper.LocationHelper
 import com.harissabil.fisch.core.common.util.Constant
 import com.harissabil.fisch.core.common.util.getReadableLocation
 import com.harissabil.fisch.core.common.util.toTimestamp
+import com.harissabil.fisch.core.datastore.bait_manager.domain.BaitManager
 import com.harissabil.fisch.core.datastore.preference.domain.AiLanguage
 import com.harissabil.fisch.core.datastore.preference.domain.usecase.AiLanguageUseCase
-import com.harissabil.fisch.core.datastore.bait_manager.domain.BaitManager
 import com.harissabil.fisch.core.datastore.species_manager.domain.SpeciesManager
+import com.harissabil.fisch.core.firebase.firestore.domain.model.Constant.QUOTA_EXCEEDED_MESSAGE
 import com.harissabil.fisch.core.firebase.firestore.domain.model.Logbook
 import com.harissabil.fisch.core.firebase.firestore.domain.usecase.AddLogbook
 import com.harissabil.fisch.core.gemini.GeminiClient
@@ -57,6 +59,7 @@ class AddCatchViewModel @Inject constructor(
     private val saveIntroShown: SaveIntroShown,
     private val readIntroShown: ReadIntroShown,
     private val aiLanguageUseCase: AiLanguageUseCase,
+    private val billingManager: BillingManager,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(AddCatchState())
@@ -78,6 +81,8 @@ class AddCatchViewModel @Inject constructor(
         getAiLanguage()
         getBaitSuggestions()
         getFishTypeSuggestions()
+        getPlusPriceLabel()
+        dismissPaywallWhenSubscribed()
     }
 
     fun onEvent(event: AddCatchEvent) {
@@ -106,7 +111,30 @@ class AddCatchViewModel @Inject constructor(
 
             is AddCatchEvent.SetNotes -> setNotes(event.notes)
             is AddCatchEvent.UploadCatchData -> uploadCatchData(event.context)
+            AddCatchEvent.DismissPaywall -> _state.update { it.copy(showPaywallSheet = false) }
+            is AddCatchEvent.SubscribeToPlus -> billingManager.launchPurchaseFlow(event.activity)
         }
+    }
+
+    private fun getPlusPriceLabel() {
+        billingManager.planProductDetails.onEach { productDetails ->
+            val price = productDetails
+                ?.subscriptionOfferDetails
+                ?.firstOrNull()
+                ?.pricingPhases
+                ?.pricingPhaseList
+                ?.firstOrNull()
+                ?.formattedPrice
+            _state.update { it.copy(plusPriceLabel = price) }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun dismissPaywallWhenSubscribed() {
+        billingManager.isPlus.onEach { isPlus ->
+            if (isPlus) {
+                _state.update { it.copy(showPaywallSheet = false) }
+            }
+        }.launchIn(viewModelScope)
     }
 
     private fun getAiLanguage() {
@@ -140,6 +168,10 @@ class AddCatchViewModel @Inject constructor(
                     lat = _geoPoint.value?.latitude,
                     long = _geoPoint.value?.longitude,
                 )
+                if (addLogbook.message == QUOTA_EXCEEDED_MESSAGE) {
+                    _state.value = _state.value.copy(isUploading = false, showPaywallSheet = true)
+                    return@launch
+                }
                 addLogbook.data?.let { isUploaded ->
                     if (isUploaded && _state.value.bait.isNotBlank()) {
                         baitManager.addBait(_state.value.bait)
@@ -172,11 +204,15 @@ class AddCatchViewModel @Inject constructor(
             _state.value = _state.value.copy(fishQuantityError = "*Fish quantity is required")
             isValid = false
         }
-        if (_state.value.fishWeight.isNotEmpty() && _state.value.fishWeight.toDoubleOrNull().let { it == null || it <= 0.0 }) {
+        if (_state.value.fishWeight.isNotEmpty() && _state.value.fishWeight.toDoubleOrNull()
+                .let { it == null || it <= 0.0 }
+        ) {
             _state.value = _state.value.copy(fishWeightError = "*Enter a valid weight")
             isValid = false
         }
-        if (_state.value.fishLength.isNotEmpty() && _state.value.fishLength.toDoubleOrNull().let { it == null || it <= 0.0 }) {
+        if (_state.value.fishLength.isNotEmpty() && _state.value.fishLength.toDoubleOrNull()
+                .let { it == null || it <= 0.0 }
+        ) {
             _state.value = _state.value.copy(fishLengthError = "*Enter a valid length")
             isValid = false
         }

@@ -1,5 +1,9 @@
 package com.harissabil.fisch.feature.profile.presentation
 
+import android.content.Intent
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,12 +31,18 @@ import com.harissabil.fisch.R
 import com.harissabil.fisch.core.common.component.FishFullscreenLoading
 import com.harissabil.fisch.core.common.theme.FischTheme
 import com.harissabil.fisch.core.common.theme.spacing
+import com.harissabil.fisch.core.common.util.findActivity
+import com.harissabil.fisch.feature.paywall.presentation.PaywallBottomSheet
 import com.harissabil.fisch.feature.profile.domain.model.UserData
 import com.harissabil.fisch.feature.profile.presentation.component.ProfileMoreOptionBottomSheet
 import com.harissabil.fisch.feature.profile.presentation.component.ProfileTop
 import com.harissabil.fisch.feature.profile.presentation.component.SettingsSection
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import androidx.core.net.toUri
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,8 +54,17 @@ fun ProfileScreen(
     val context = LocalContext.current
     val state by viewModel.state.collectAsState()
     val profileMoreOptionBottomSheetState = rememberModalBottomSheetState()
+    val paywallSheetState = rememberModalBottomSheetState()
 
     val scope = rememberCoroutineScope()
+
+    val exportDataLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument("application/zip")
+    ) { uri ->
+        if (uri != null) {
+            viewModel.onEvent(ProfileEvent.ExportData(context, uri))
+        }
+    }
 
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
@@ -78,13 +97,41 @@ fun ProfileScreen(
             }
             viewModel.onEvent(event)
         },
-        isLoading = state.isLoading,
+        isLoading = state.isLoading || state.isExporting,
         showProfileMoreOptionBottomSheet = state.showProfileMoreOptionBottomSheet,
         profileMoreOptionBottomSheetState = profileMoreOptionBottomSheetState,
         appVersion = context.getString(R.string.version, BuildConfig.VERSION_NAME),
-        onAboutClick = onAboutClick
+        onAboutClick = onAboutClick,
+        planValue = if (state.isPlus) "Fishlog Plus" else "Free (${state.logbookCountThisMonth}/5 logs this month)",
+        onExportDataClick = {
+            val dateStamp = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())
+            exportDataLauncher.launch("fishlog_export_$dateStamp.zip")
+        },
+        onPlanClick = {
+            if (state.isPlus) {
+                val intent = Intent(
+                    Intent.ACTION_VIEW,
+                    "https://play.google.com/store/account/subscriptions?sku=fisch_plus_monthly&package=${context.packageName}".toUri()
+                )
+                context.startActivity(intent)
+            } else {
+                viewModel.onEvent(ProfileEvent.ShowPaywall(true))
+            }
+        }
     )
 
+    if (state.showPaywallSheet) {
+        PaywallBottomSheet(
+            onDismissRequest = { viewModel.onEvent(ProfileEvent.ShowPaywall(false)) },
+            sheetState = paywallSheetState,
+            priceLabel = state.plusPriceLabel,
+            onSubscribeClick = {
+                context.findActivity()?.let { activity ->
+                    viewModel.onEvent(ProfileEvent.SubscribeToPlus(activity))
+                }
+            }
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -100,6 +147,9 @@ fun ProfileContent(
     onEvent: (ProfileEvent) -> Unit,
     appVersion: String,
     onAboutClick: () -> Unit,
+    planValue: String,
+    onPlanClick: () -> Unit,
+    onExportDataClick: () -> Unit,
 ) {
     if (showProfileMoreOptionBottomSheet) {
         ProfileMoreOptionBottomSheet(
@@ -125,6 +175,9 @@ fun ProfileContent(
                 onThemeClick = { onEvent(ProfileEvent.SetTheme(it)) },
                 aiLanguageValue = state.aiLanguageValue,
                 onAILanguageClick = { onEvent(ProfileEvent.SetAiLanguage(it)) },
+                planValue = planValue,
+                onPlanClick = onPlanClick,
+                onExportDataClick = onExportDataClick,
                 aboutValue = appVersion,
                 onAboutClick = onAboutClick
             )
@@ -156,7 +209,10 @@ private fun ProfileContentPreview() {
                 profileMoreOptionBottomSheetState = rememberModalBottomSheetState(),
                 onEvent = {},
                 appVersion = "Version 2.0.0",
-                onAboutClick = {}
+                onAboutClick = {},
+                planValue = "Free (2/5 logs this month)",
+                onPlanClick = {},
+                onExportDataClick = {}
             )
         }
     }

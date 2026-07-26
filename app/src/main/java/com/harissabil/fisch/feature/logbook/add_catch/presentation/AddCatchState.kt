@@ -37,4 +37,7 @@ data class AddCatchState(
     val isUploading: Boolean = false,
 
     val isUploaded: Boolean = false,
+
+    val showPaywallSheet: Boolean = false,
+    val plusPriceLabel: String? = null,
 )

@@ -1,5 +1,6 @@
 package com.harissabil.fisch.feature.logbook.add_catch.presentation
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
 import androidx.activity.result.IntentSenderRequest
@@ -41,4 +42,8 @@ sealed class AddCatchEvent {
     data class SetNotes(val notes: String) : AddCatchEvent()
 
     data class UploadCatchData(val context: Context) : AddCatchEvent()
+
+    data object DismissPaywall : AddCatchEvent()
+
+    data class SubscribeToPlus(val activity: Activity) : AddCatchEvent()
 }

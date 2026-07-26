@@ -12,4 +12,11 @@ data class ProfileState(
     val userData: UserData? = null,
     val catches: Int? = null,
     val visits: Int? = null,
+
+    val isPlus: Boolean = false,
+    val logbookCountThisMonth: Int = 0,
+    val plusPriceLabel: String? = null,
+    val showPaywallSheet: Boolean = false,
+
+    val isExporting: Boolean = false,
 )

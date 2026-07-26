@@ -1,18 +1,24 @@
 package com.harissabil.fisch.feature.profile.presentation
 
+import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.harissabil.fisch.core.billing.domain.BillingManager
 import com.harissabil.fisch.core.common.util.Resource
 import com.harissabil.fisch.core.datastore.preference.domain.AiLanguage
 import com.harissabil.fisch.core.datastore.preference.domain.Theme
 import com.harissabil.fisch.core.datastore.preference.domain.usecase.AiLanguageUseCase
 import com.harissabil.fisch.core.datastore.preference.domain.usecase.ThemeUseCase
 import com.harissabil.fisch.core.firebase.auth.domain.usecase.GetSignedInUser
+import com.harissabil.fisch.core.firebase.firestore.domain.usecase.GetLogbookCountThisMonth
 import com.harissabil.fisch.core.firebase.firestore.domain.usecase.GetLogbooks
 import com.harissabil.fisch.feature.profile.data.toUserData
 import com.harissabil.fisch.feature.profile.domain.usecase.DeleteUserSignedIn
+import com.harissabil.fisch.feature.profile.domain.usecase.ExportUserDataToZip
 import com.harissabil.fisch.feature.profile.domain.usecase.SignOutUser
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,6 +26,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -34,6 +41,9 @@ class ProfileViewModel @Inject constructor(
     private val themeUseCase: ThemeUseCase,
     private val aiLanguageUseCase: AiLanguageUseCase,
     private val getLogbooks: GetLogbooks,
+    private val getLogbookCountThisMonth: GetLogbookCountThisMonth,
+    private val billingManager: BillingManager,
+    private val exportUserDataToZip: ExportUserDataToZip,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ProfileState())
@@ -45,6 +55,7 @@ class ProfileViewModel @Inject constructor(
     init {
         getPreferences()
         getCatchesAndVisits()
+        getPlanStatus()
     }
 
     fun onEvent(event: ProfileEvent) {
@@ -54,7 +65,56 @@ class ProfileViewModel @Inject constructor(
             is ProfileEvent.SetAiLanguage -> setAiLanguage(event.aiLanguage)
             ProfileEvent.GetSignedInUser -> getSignedInUser()
             ProfileEvent.SignOut -> onSignOut()
+            is ProfileEvent.ShowPaywall -> _state.update { it.copy(showPaywallSheet = event.isShow) }
+            is ProfileEvent.SubscribeToPlus -> billingManager.launchPurchaseFlow(event.activity)
+            is ProfileEvent.ExportData -> exportData(event.context, event.uri)
         }
+    }
+
+    private fun exportData(context: Context, uri: Uri) {
+        _state.update { it.copy(isExporting = true) }
+        viewModelScope.launch(Dispatchers.IO) {
+            val result = try {
+                context.contentResolver.openOutputStream(uri)?.use { outputStream ->
+                    exportUserDataToZip(outputStream)
+                } ?: Resource.Error("Unable to open the selected file")
+            } catch (e: Exception) {
+                Resource.Error(e.message ?: "Something went wrong!")
+            }
+            _state.update { it.copy(isExporting = false) }
+            _eventFlow.emit(
+                UIEvent.ShowSnackbar(
+                    if (result is Resource.Success) "Data exported successfully"
+                    else result.message ?: "Failed to export data"
+                )
+            )
+        }
+    }
+
+    private fun getPlanStatus() {
+        billingManager.isPlus.onEach { isPlus ->
+            _state.update {
+                it.copy(
+                    isPlus = isPlus,
+                    showPaywallSheet = if (isPlus) false else it.showPaywallSheet
+                )
+            }
+        }.launchIn(viewModelScope)
+
+        billingManager.planProductDetails.onEach { productDetails ->
+            val price = productDetails
+                ?.subscriptionOfferDetails
+                ?.firstOrNull()
+                ?.pricingPhases
+                ?.pricingPhaseList
+                ?.firstOrNull()
+                ?.formattedPrice
+            _state.update { it.copy(plusPriceLabel = price) }
+        }.launchIn(viewModelScope)
+
+        getLogbookCountThisMonth().onEach { result ->
+            _state.update { it.copy(logbookCountThisMonth = result.data ?: 0) }
+        }.launchIn(viewModelScope)
     }
 
     private fun getCatchesAndVisits() {

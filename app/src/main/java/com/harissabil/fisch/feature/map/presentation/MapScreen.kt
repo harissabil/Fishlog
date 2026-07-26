@@ -1,5 +1,9 @@
 package com.harissabil.fisch.feature.map.presentation
 
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -23,7 +28,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MapStyleOptions
@@ -65,9 +74,43 @@ fun MapScreen(
 
     val context = LocalContext.current
     val cameraPositionState = rememberCameraPositionState()
+
+    fun hasLocationPermission() =
+        ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+
+    var hasLocationPermission by rememberSaveable { mutableStateOf(hasLocationPermission()) }
+
+    val requestLocationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        hasLocationPermission = (permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false) ||
+                (permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false)
+        if (hasLocationPermission) {
+            viewModel.onEvent(MapEvent.RecenterToMyLocation)
+        }
+    }
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                hasLocationPermission = hasLocationPermission()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
     val properties = MapProperties(
         mapStyleOptions = MapStyleOptions.loadRawResourceStyle(context, R.raw.map_style),
-        isMyLocationEnabled = true
+        isMyLocationEnabled = hasLocationPermission
     )
     val uiSettings = MapUiSettings(
         zoomControlsEnabled = false,
@@ -172,7 +215,18 @@ fun MapScreen(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(MaterialTheme.spacing.medium),
-            onClick = { viewModel.onEvent(MapEvent.RecenterToMyLocation) },
+            onClick = {
+                if (hasLocationPermission) {
+                    viewModel.onEvent(MapEvent.RecenterToMyLocation)
+                } else {
+                    requestLocationPermissionLauncher.launch(
+                        arrayOf(
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION
+                        )
+                    )
+                }
+            },
         ) {
             Icon(
                 imageVector = Icons.Default.MyLocation,

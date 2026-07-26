@@ -9,9 +9,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DarkMode
+import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.SmartToy
+import androidx.compose.material.icons.outlined.WorkspacePremium
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
@@ -39,6 +41,9 @@ fun SettingsSection(
     onThemeClick: (theme: Theme) -> Unit,
     aiLanguageValue: String,
     onAILanguageClick: (aiLanguage: AiLanguage) -> Unit,
+    planValue: String,
+    onPlanClick: () -> Unit,
+    onExportDataClick: () -> Unit,
     aboutValue: String,
     onAboutClick: () -> Unit,
 ) {
@@ -152,6 +157,18 @@ fun SettingsSection(
 //            )
         }
         SettingItem(
+            icon = Icons.Outlined.WorkspacePremium,
+            title = "Plan",
+            value = planValue,
+            onCLick = onPlanClick
+        )
+        SettingItem(
+            icon = Icons.Outlined.Download,
+            title = "Export My Data",
+            value = "CSV and photos (.zip)",
+            onCLick = onExportDataClick
+        )
+        SettingItem(
             icon = Icons.Outlined.Info,
             title = "About",
             value = aboutValue,
@@ -171,6 +188,9 @@ private fun SettingsSectionPreview() {
                 onThemeClick = {},
                 aiLanguageValue = "English",
                 onAILanguageClick = {},
+                planValue = "Free (2/5 logs this month)",
+                onPlanClick = {},
+                onExportDataClick = {},
                 aboutValue = "Version 2.0.0",
                 onAboutClick = {}
             )

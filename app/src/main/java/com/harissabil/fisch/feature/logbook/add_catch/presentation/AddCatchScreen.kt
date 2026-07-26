@@ -17,9 +17,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -36,6 +38,7 @@ import com.harissabil.fisch.core.common.component.FishButton
 import com.harissabil.fisch.core.common.component.FishFullscreenLoading
 import com.harissabil.fisch.core.common.theme.FischTheme
 import com.harissabil.fisch.core.common.theme.spacing
+import com.harissabil.fisch.core.common.util.findActivity
 import com.harissabil.fisch.feature.logbook.common.component.FishBaitTextField
 import com.harissabil.fisch.feature.logbook.common.component.FishCaptureDateTimeTextField
 import com.harissabil.fisch.feature.logbook.common.component.FishCaptureLocationTextField
@@ -46,8 +49,11 @@ import com.harissabil.fisch.feature.logbook.common.component.FishReleasedToggle
 import com.harissabil.fisch.feature.logbook.common.component.FishTypeTextFieldWithAi
 import com.harissabil.fisch.feature.logbook.common.component.FishUploadImage
 import com.harissabil.fisch.feature.logbook.common.component.FishWeightTextField
+import com.harissabil.fisch.feature.paywall.presentation.PaywallBottomSheet
+import com.harissabil.fisch.feature.paywall.presentation.PaywallTrigger
 import kotlinx.coroutines.flow.collectLatest
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddCatchScreen(
     viewModel: AddCatchViewModel = hiltViewModel(),
@@ -56,6 +62,7 @@ fun AddCatchScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
+    val paywallSheetState = rememberModalBottomSheetState()
 
     val focusManager = LocalFocusManager.current
 
@@ -135,6 +142,20 @@ fun AddCatchScreen(
             viewModel.onEvent(event)
         }
     )
+
+    if (state.showPaywallSheet) {
+        PaywallBottomSheet(
+            onDismissRequest = { viewModel.onEvent(AddCatchEvent.DismissPaywall) },
+            sheetState = paywallSheetState,
+            trigger = PaywallTrigger.QUOTA_EXCEEDED,
+            priceLabel = state.plusPriceLabel,
+            onSubscribeClick = {
+                context.findActivity()?.let { activity ->
+                    viewModel.onEvent(AddCatchEvent.SubscribeToPlus(activity))
+                }
+            }
+        )
+    }
 }
 
 @Composable

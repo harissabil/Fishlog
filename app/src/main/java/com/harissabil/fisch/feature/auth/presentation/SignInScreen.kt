@@ -209,20 +209,20 @@ fun SignInContent(
                         label = "Continue with Google",
                         icon = R.drawable.logo_google,
                     )
-                    Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
-                    SignInButton(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = onFacebookSignIn,
-                        label = "Continue with Facebook",
-                        icon = R.drawable.logo_facebook,
-                    )
-                    Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
-                    FishTextButton(
-                        text = "Not Now",
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = onNotNow
-                    )
-                    Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
+                    Spacer(modifier = Modifier.height(MaterialTheme.spacing.extraLarge))
+//                    SignInButton(
+//                        modifier = Modifier.fillMaxWidth(),
+//                        onClick = onFacebookSignIn,
+//                        label = "Continue with Facebook",
+//                        icon = R.drawable.logo_facebook,
+//                    )
+//                    Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
+//                    FishTextButton(
+//                        text = "Not Now",
+//                        modifier = Modifier.fillMaxWidth(),
+//                        onClick = onNotNow
+//                    )
+//                    Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
                     TermOfServiceAndPrivacyPolicyText(
                         onTermOfServiceClick = onTermOfServiceClick,
                         onPrivacyPolicyClick = onPrivacyPolicyClick
