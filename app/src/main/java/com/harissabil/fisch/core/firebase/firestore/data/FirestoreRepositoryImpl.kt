@@ -5,15 +5,22 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.GeoPoint
 import com.harissabil.fisch.core.common.util.Resource
+import com.harissabil.fisch.core.common.util.currentMonthId
 import com.harissabil.fisch.core.common.util.toCompressedJpeg
 import com.harissabil.fisch.core.firebase.firestore.data.dto.LogbookResponse
 import com.harissabil.fisch.core.firebase.firestore.data.dto.MapResponse
 import com.harissabil.fisch.core.firebase.firestore.domain.FirestoreRepository
+import com.harissabil.fisch.core.firebase.firestore.domain.model.Constant.COUNTERS
 import com.harissabil.fisch.core.firebase.firestore.domain.model.Constant.EMAIL
+import com.harissabil.fisch.core.firebase.firestore.domain.model.Constant.FREE_MONTHLY_LOGBOOK_LIMIT
 import com.harissabil.fisch.core.firebase.firestore.domain.model.Constant.LOGBOOKS
 import com.harissabil.fisch.core.firebase.firestore.domain.model.Constant.MAPS
+import com.harissabil.fisch.core.firebase.firestore.domain.model.Constant.QUOTA_EXCEEDED_MESSAGE
+import com.harissabil.fisch.core.firebase.firestore.domain.model.Constant.USERS
+import com.harissabil.fisch.core.firebase.firestore.domain.model.LogbookCounter
 import com.harissabil.fisch.core.firebase.firestore.domain.model.Logbook
 import com.harissabil.fisch.core.firebase.firestore.domain.model.Map
+import com.harissabil.fisch.core.firebase.firestore.domain.model.UserPlan
 import com.harissabil.fisch.core.firebase.storage.domain.StorageRepository
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -28,9 +35,12 @@ import javax.inject.Singleton
 class FirestoreRepositoryImpl @Inject constructor(
     @Named(LOGBOOKS) private val logbooksRef: CollectionReference,
     @Named(MAPS) private val mapsRef: CollectionReference,
+    @Named(USERS) private val usersRef: CollectionReference,
     private val auth: FirebaseAuth,
     private val storageRepository: StorageRepository,
 ) : FirestoreRepository {
+
+    private class QuotaExceededException : Exception()
 
     override fun getLogbooks(): Flow<Resource<List<LogbookResponse>>> = callbackFlow {
         val snapshotListener =
@@ -80,6 +90,17 @@ class FirestoreRepositoryImpl @Inject constructor(
         try {
             val currentUser = auth.currentUser ?: return Resource.Error("Something went wrong!")
 
+            val userDocRef = usersRef.document(currentUser.uid)
+            val counterDocRef = userDocRef.collection(COUNTERS).document(currentMonthId())
+
+            // Cheap pre-check before any Storage upload cost is incurred.
+            val isPlus = userDocRef.get().await().toObject(UserPlan::class.java)?.isPlus == true
+            val countSoFar =
+                counterDocRef.get().await().toObject(LogbookCounter::class.java)?.count ?: 0
+            if (!isPlus && countSoFar >= FREE_MONTHLY_LOGBOOK_LIMIT) {
+                return Resource.Error(QUOTA_EXCEEDED_MESSAGE, false)
+            }
+
             val logbookDocument = logbooksRef.document()
 
             val fishImageUrl = if (fishImage != null) {
@@ -105,7 +126,25 @@ class FirestoreRepositoryImpl @Inject constructor(
                 dilepaskan = logbook.dilepaskan,
                 catatan = logbook.catatan,
             )
-            logbooksRef.document(logbookDocument.id).set(logbookToAdd).await()
+
+            // Atomic re-check + counter increment + logbook creation, closing the race the
+            // pre-check alone can't (also mirrors what the Firestore Security Rules enforce).
+            try {
+                logbooksRef.firestore.runTransaction { transaction ->
+                    val isPlusInTx =
+                        transaction.get(userDocRef).toObject(UserPlan::class.java)?.isPlus == true
+                    val countInTx =
+                        transaction.get(counterDocRef).toObject(LogbookCounter::class.java)?.count
+                            ?: 0
+                    if (!isPlusInTx && countInTx >= FREE_MONTHLY_LOGBOOK_LIMIT) {
+                        throw QuotaExceededException()
+                    }
+                    transaction.set(counterDocRef, LogbookCounter(count = countInTx + 1))
+                    transaction.set(logbookDocument, logbookToAdd)
+                }.await()
+            } catch (e: QuotaExceededException) {
+                return Resource.Error(QUOTA_EXCEEDED_MESSAGE, false)
+            }
 
             if (lat != null && lon != null) {
                 val mapId = mapsRef.document().id
