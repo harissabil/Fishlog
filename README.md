@@ -48,10 +48,6 @@ Visit the [Fishlog Play Store page](https://play.google.com/store/apps/details?i
 ...
 
 MAPS_API_KEY="your key here"
-FACEBOOK_APP_ID="your app id here"
-fb_login_protocol_scheme="your scheme here"
-FACEBOOK_CLIENT_TOKEN="your client token here"
-GEMINI_API_KEY="your key here"
 ```
 4. Add the `google-services.json` file to the `app` folder. You can download the file from the Firebase console.
 5. Sync the project with Gradle and run the app on an Android emulator or a physical Android device.
